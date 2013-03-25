@@ -18,7 +18,8 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         'Extensible.calendar.view.Week',
         'Extensible.calendar.view.Month',
         'Extensible.calendar.view.MultiDay',
-        'Extensible.calendar.view.MultiWeek'
+        'Extensible.calendar.view.MultiWeek',
+        'Extensible.calendar.view.Scheduler'
     ],
     
     /**
@@ -62,6 +63,11 @@ Ext.define('Extensible.calendar.CalendarPanel', {
      * If all other views are hidden, the month view will show by default even if this config is false.
      */
     showMonthView: true,
+    /**
+     * @cfg {Boolean} showSchedulerView
+     * True to include the scheduler view (and toolbar button), false to hide them (defaults to true).
+     */
+    showSchedulerView: true,
     /**
      * @cfg {Boolean} showNavBar
      * True to display the calendar navigation toolbar, false to hide it (defaults to true). Note that
@@ -154,6 +160,11 @@ Ext.define('Extensible.calendar.CalendarPanel', {
      */
     monthText: 'Month',
     /**
+     * @cfg {String} schedulerText
+     * Text to use for the 'Scheduler' nav bar button.
+     */
+    schedulerText: 'Scheduler',
+    /**
      * @cfg {Boolean} editModal
      * True to show the default event editor window modally over the entire page, false to allow user
      * interaction with the page while showing the window (the default). Note that if you replace the
@@ -218,6 +229,11 @@ Ext.define('Extensible.calendar.CalendarPanel', {
      * managed by this CalendarPanel.
      */
     /**
+     * @cfg {Object} schedulerViewCfg
+     * A config object that will be applied only to the {@link Extensible.calendar.view.Scheduler SchedulerView}
+     * managed by this CalendarPanel.
+     */
+    /**
      * @cfg {Object} editViewCfg
      * A config object that will be applied only to the {@link Extensible.calendar.form.EventDetails
      * EventEditForm} managed by this CalendarPanel.
@@ -271,7 +287,13 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         }
         
         this.tbar.items.push('->');
-        
+
+        if(this.showSchedulerView) {
+            this.tbar.items.push({
+                id: this.id+'-tb-scheduler', text: this.schedulerText, handler: this.onSchedulerNavClick, scope: this, toggleGroup: this.id+'-tb-views'
+            });
+            this.viewCount++;
+        }
         if(this.showDayView) {
             this.tbar.items.push({
                 id: this.id+'-tb-day', text: this.dayText, handler: this.onDayNavClick, scope: this, toggleGroup: this.id+'-tb-views'
@@ -305,7 +327,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             this.viewCount++;
             this.showMonthView = true;
         }
-        
+
         var idx = this.viewCount-1;
         this.activeItem = (this.activeItem === undefined ? idx : (this.activeItem > idx ? idx : this.activeItem));
         
@@ -566,7 +588,18 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             startDay: this.startDay,
             ownerCalendarPanel: this
         };
-        
+
+        if(this.showSchedulerView) {
+            var scheduler = Ext.apply({
+                xtype: 'extensible.schedulerview',
+                title: this.schedulerText
+            }, sharedViewCfg);
+
+            scheduler = Ext.apply(Ext.apply(scheduler, this.viewConfig), this.schedulerViewCfg);
+            scheduler.id = this.id+'-scheduler';
+            this.initEventRelay(scheduler);
+            this.add(scheduler);
+        }
         if(this.showDayView) {
             var day = Ext.apply({
                 xtype: 'extensible.dayview',
@@ -976,7 +1009,12 @@ Ext.define('Extensible.calendar.CalendarPanel', {
     onMonthNavClick: function() {
         this.setActiveView(this.id+'-month');
     },
-    
+
+    // private
+    onSchedulerNavClick: function() {
+        this.setActiveView(this.id+'-scheduler');
+    },
+
     /**
      * Return the calendar view that is currently active, which will be a subclass of
      * {@link Extensible.calendar.view.AbstractCalendar AbstractCalendar}.

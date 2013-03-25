@@ -255,6 +255,24 @@
     zoom: 1
 }
 
+
+/* -----------------------------------------
+ * Scheduler-specific styles
+ */
+.ext-cal-dayview .ext-cal-timescale {
+    position: relative;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    padding: 0;
+    line-height: normal;
+    background: #eee;
+    /* margin-top: 1px; */
+    color: #FF0000;
+}
+
+
+
+
 /* -----------------------------------------
  * Month-specific styles
  */
