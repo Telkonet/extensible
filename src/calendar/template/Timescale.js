@@ -30,22 +30,10 @@ Ext.define('Extensible.calendar.template.Timescale', {
         // private
         applyTemplate: function(o) {
 
-            //alert('this.viewStartHour: ' + this.viewStartHour);
-            //alert('this.viewEndHour: ' + this.viewEndHour);
-
-
             this.today = Extensible.Date.today();
             this.dayCount = this.dayCount || 1;
 
-            var i = 0,
-                days = [];
-                // ,dt = Ext.Date.clone(o.viewStart);
-
-            /*
-            for (; i<this.dayCount; i++) {
-                days[i] = Extensible.Date.add(dt, {days: i});
-            }
-            */
+            var i = 0;
 
             var times = [],
                 start = this.viewStartHour,
@@ -64,8 +52,6 @@ Ext.define('Extensible.calendar.template.Timescale', {
             }
 
             templateConfig = {
-                days: days,
-                dayCount: days.length,
                 times: times,
                 hourHeight: this.hourHeight,
                 hourSeparatorCls: this.showHourSeparator ? '' : 'no-sep', // the class suppresses the default separator
