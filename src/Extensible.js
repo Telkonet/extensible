@@ -121,7 +121,7 @@ Ext.define('Extensible', {
         diffDays: function(start, end) {
             // All calculations are in milliseconds
             var day = 1000 * 60 * 60 * 24,
-                clear = Ext.Date.clearTime,
+                clear = this.clearTime,
                 timezoneOffset = (start.getTimezoneOffset() - end.getTimezoneOffset()) * 60 * 1000,
                 diff = clear(end, true).getTime() - clear(start, true).getTime() + timezoneOffset,
                 days = Math.round(diff / day);
@@ -275,7 +275,7 @@ Ext.define('Extensible', {
          * @return {Date} The current date, with time 00:00
          */
         today: function() {
-            return Ext.Date.clearTime(new Date());
+            return this.clearTime(new Date());
         },
         
         /**
@@ -344,12 +344,54 @@ Ext.define('Extensible', {
                 newDt = dateAdd(newDt, ExtDate.MILLI, o.millis);
             }
              
-            return o.clearTime ? ExtDate.clearTime(newDt): newDt;
+            return o.clearTime ? this.clearTime(newDt): newDt;
         },
-        
+
+        /*
         clearTime: function(dt, clone) {
             return Ext.Date.clearTime(dt, clone);
         },
+        */
+
+       /**
+        * Attempts to clear all time information from this Date by setting the time to midnight of the same day,
+        * automatically adjusting for Daylight Saving Time (DST) where applicable.
+        *
+        * This implementation is a copy of Ext.Date.clearTime() but fixes a bug in the way DST is handled to work
+        * around a bug in Safari. Safari does not properly handle the DST start in the Sydney and Auckland time zones.
+        *
+        * @param {Date} date The date
+        * @param {Boolean} clone true to create a clone of this date, clear the time and return it (defaults to false).
+        * @return {Date} this or the clone.
+        */
+       clearTime : function(date, clone) {
+           if (clone) {
+               return this.clearTime(Ext.Date.clone(date));
+           }
+
+           // get current date before clearing time
+           var d = date.getDate();
+
+           // clear time
+           date.setHours(0);
+           date.setMinutes(0);
+           date.setSeconds(0);
+           date.setMilliseconds(0);
+
+           if (date.getDate() != d) { // account for DST (i.e. day of month changed when setting hour = 0)
+               // note: DST adjustments are assumed to occur in multiples of 1 hour (this is almost always the case)
+               // refer to http://www.timeanddate.com/time/aboutdst.html for the (rare) exceptions to this rule
+
+               // increment hour until cloned date == current date
+               for (var hr = 1; date.getDate() != d; hr++) {
+                   date.setDate(d);
+                   date.setHours(hr);
+               }
+           }
+
+           return date;
+       },
+
 
        /**
         * For the passed Date object, function calculates the beginning of the day and returns it as a new Date object.
@@ -382,10 +424,9 @@ dt = Extensible.getDayBeginning(currentDt, 7);
         * from the passed date.
         */
         getDayBeginning: function(dt, ndays) {
-            var D = Ext.Date;
             ndays = (ndays === undefined) ? 0 : ndays;
-            return D.clearTime(D.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
-        },
+            return this.clearTime(Ext.Date.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
+       },
 
        /**
         * For the passed Date object, function calculates the end of the day and returns it as a new Date object.
@@ -431,7 +472,7 @@ dt = Extensible.getDayEnd(currentDt, 7);
             } else {
                 unit = D. MILLI;
             }
-            return D.add(D.clearTime(D.add(dt, D.HOUR, 24 * ndays + 36 - dt.getHours()), false), unit, -1);
+            return D.add(this.clearTime(D.add(dt, D.HOUR, 24 * ndays + 36 - dt.getHours()), false), unit, -1);
         }
     }
 });
