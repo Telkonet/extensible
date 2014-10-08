@@ -408,7 +408,8 @@ Ext.define('Extensible.calendar.view.DayBody', {
     renderItems: function() {
         var day = 0,
             evt,
-            evts = [];
+            evts = [],
+            M = Extensible.calendar.data.EventMappings;
         
         for (; day < this.dayCount; day++) {
             var ev = 0,
@@ -423,7 +424,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
                     continue;
                 }
                 var item = evt.data || evt.event.data,
-                    M = Extensible.calendar.data.EventMappings,
+                    // M = Extensible.calendar.data.EventMappings,
                     ad = item[M.IsAllDay.name] === true,
                     span = this.isEventSpanning(evt.event || evt),
                     renderAsAllDay = ad || span;
@@ -438,7 +439,9 @@ Ext.define('Extensible.calendar.view.DayBody', {
                 });
                 evts.push({
                     data: this.getTemplateEventData(item),
-                    date: Extensible.Date.add(this.viewStart, {days: day})
+                    // Find day beginning in a way that is DST safe
+                    // date: Extensible.Date.add(this.viewStart, {days: day})
+                    date: Extensible.Date.add(this.viewStart, {days: day, hours: 12, clearTime: true})
                 });
             }
         }
@@ -455,7 +458,8 @@ Ext.define('Extensible.calendar.view.DayBody', {
         for (; i<l; i++) {
             evt = evts[i].data;
             evt2 = null;
-            dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
+            // dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
+            dt = evt[M.StartDate.name].getDate();
 
             for (j = 0; j < l; j++) {
                 if (i === j) {
@@ -478,7 +482,8 @@ Ext.define('Extensible.calendar.view.DayBody', {
         // rendering loop
         for (i = 0; i < l; i++) {
             evt = evts[i].data;
-            dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
+            // dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
+            dt = evt[M.StartDate.name].getDate();
 
             if(evt._overlap !== undefined) {
                 var colWidth = 100 / (overlapCols[dt]+1),
@@ -559,7 +564,8 @@ Ext.define('Extensible.calendar.view.DayBody', {
         if(el) {
             if(el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var dt = this.getDateFromId(el.id, this.dayElIdDelimiter);
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt)));
+                // Add 12:00 to date to avoid wrong dates on days when DST starts.
+                this.onDayClick(Ext.Date.parseDate(dt + ' 12:00', 'Ymd G:i'), true, Ext.get(this.getDayId(dt)));
                 return;
             }
         }

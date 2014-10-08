@@ -81,9 +81,10 @@ Ext.define('Extensible.calendar.view.DayHeader', {
         if (el) {
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var parts = el.id.split(this.dayElIdDelimiter),
-                    dt = parts[parts.length-1];
+                    // Make dt point to noon of clicked day to avoid DST issues.
+                    dt = parts[parts.length-1] + ' 12:00';
                     
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)));
+                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd G:i'), true, Ext.get(this.getDayId(dt, true)));
                 return;
             }
         }

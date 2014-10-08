@@ -60,6 +60,8 @@ Ext.define('Extensible.calendar.template.Month', {
         
         for (var i = 0; i < 7; i++) {
             var d = D.add(dt, {days: i});
+            // var d = D.getDayBeginning(dt, i);
+
             days.push({
                 name: Ext.Date.format(d, this.dayHeaderFormat),
                 title: Ext.Date.format(d, this.dayHeaderTitleFormat)

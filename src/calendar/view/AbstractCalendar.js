@@ -718,7 +718,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         
         var filterFn = function(rec) {
             var EventMappings = Extensible.calendar.data.EventMappings,
-                startDt = Ext.Date.clearTime(rec.data[EventMappings.StartDate.name], true),
+                startDt = Extensible.Date.clearTime(rec.data[EventMappings.StartDate.name], true),
                 startsOnDate = currentDt.getTime() === startDt.getTime(),
                 spansFromPrevView = (w === 0 && d === 0 && (currentDt > rec.data[EventMappings.StartDate.name]));
     
@@ -742,7 +742,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
                     this.sortEventRecordsForDay(evts);
                     this.prepareEventGrid(evts, w, d);
                 }
-                currentDt = Extensible.Date.add(currentDt, {days: 1});
+                currentDt = Extensible.Date.getDayBeginning(currentDt, 1);
             }
         }
         this.currentWeekCount = w;
@@ -1200,7 +1200,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
      * @return {Boolean} True or false
      */
     isToday: function() {
-        var today = Ext.Date.clearTime(new Date()).getTime();
+        var today = Extensible.Date.clearTime(new Date()).getTime();
         return this.viewStart.getTime() <= today && this.viewEnd.getTime() >= today;
     },
 
@@ -1296,6 +1296,8 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
     setStartDate: function(start, /*private*/reload) {
         var me = this;
 
+        // Set time of start date to noon to stay away from DST issues.
+        start.setHours(12, 0, 0, 0);
         Extensible.log('setStartDate (base) '+Ext.Date.format(start, 'Y-m-d'));
 
         var cloneDt = Ext.Date.clone,
@@ -1305,7 +1307,8 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
             cloneViewEnd = me.viewEnd ? cloneDt(me.viewEnd) : null;
 
         if (me.fireEvent('beforedatechange', me, cloneStartDate, cloneStart, cloneViewStart, cloneViewEnd) !== false) {
-            me.startDate = Ext.Date.clearTime(start);
+            me.startDate = start;
+
             me.setViewBounds(start);
 
             if (me.ownerCalendarPanel && me.ownerCalendarPanel.startDate !== me.startDate) {
@@ -1334,23 +1337,32 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         switch(this.weekCount) {
             case 0:
             case 1:
-                me.viewStart = me.dayCount < 7 && !me.startDayIsStatic ?
-                    start: Dt.add(start, {days: -offset, clearTime: true});
-                me.viewEnd = Dt.add(me.viewStart, {days: me.dayCount || 7, seconds: -1});
+                // Handle daily and weekly views
+                if (me.dayCount < 7 && !me.startDayIsStatic) {
+                    // me.viewStart = Dt.clearTime(start);
+                    me.viewStart = Dt.getDayBeginning(start, 0);
+                } else {
+                    // me.viewStart = Dt.add(start, {days: -offset, clearTime: true});
+                    me.viewStart = Dt.getDayBeginning(start, -offset);
+                }
+                // me.viewEnd = Dt.add(me.viewStart, {days: me.dayCount || 7, seconds: -1});
+                // me.viewEnd = Dt.add(Dt.add(me.viewStart, {days: me.dayCount || 7, hours: 12, clearTime: true}), {seconds: -1});
+                me.viewEnd = Dt.getDayEnd(me.viewStart, me.dayCount - 1, 'seconds');
                 return;
 
             case -1:
-                // auto by month
-                start = Ext.Date.getFirstDateOfMonth(start);
+                // Handle monthly view
+                start = new Date(start.getFullYear(), start.getMonth(), 1, 12);
                 offset = start.getDay() - me.startDay;
                 if (offset < 0) {
                     // if the offset is negative then some days will be in the previous week so add a week to the offset
                     offset += 7;
                 }
-                me.viewStart = Dt.add(start, {days: -offset, clearTime: true});
+                // me.viewStart = Dt.add(start, {days: -offset, clearTime: true});
+                me.viewStart = Dt.getDayBeginning(start, -offset);
 
                 // start from current month start, not view start:
-                var end = Dt.add(start, {months: 1, seconds: -1});
+                var end = Dt.add(start, {months: 1, days: -1}); // var end points to noon of last day of month.
 
                 // fill out to the end of the week:
                 offset = me.startDay;
@@ -1359,12 +1371,20 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
                     offset -= 7;
                 }
 
-                me.viewEnd = Dt.add(end, {days: 6 - end.getDay() + offset});
+                // me.viewEnd = Dt.add(end, {days: 6 - end.getDay() + offset});
+                // me.viewEnd = Dt.add(Dt.add(end, {days: 7 - end.getDay() + offset, clearTime: true}), {seconds: -1});
+                me.viewEnd = Dt.getDayEnd(end, 6 - end.getDay() + offset, 'seconds');
                 return;
 
             default:
-                me.viewStart = Dt.add(start, {days: -offset, clearTime: true});
-                me.viewEnd = Dt.add(me.viewStart, {days: me.weekCount * 7, seconds: -1});
+                // Handle multi-week view, list view, etc.
+                // me.viewStart = Dt.add(start, {days: -offset, clearTime: true});
+                me.viewStart = Dt.getDayBeginning(start, -offset);
+                // Find viewEnd in a way that is save on days when DST starts. First, add days and hours to point to noon of
+                // day after the viewEnd, then clear time, then subtract one second.
+                // me.viewEnd = Dt.add(me.viewStart, {days: me.weekCount * 7, seconds: -1});
+                // me.viewEnd = Dt.add(Dt.add(me.viewStart, {days: me.weekCount * 7, hours: 12, clearTime: true}), {seconds: -1});
+                me.viewEnd = Dt.getDayEnd(me.viewStart, me.weekCount * 7 - 1, 'seconds');
         }
     },
 
@@ -1915,12 +1935,36 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
     },
 
     doShiftEvent: function(rec, newStartDate, moveOrCopy) {
+        /*
         var EventMappings = Extensible.calendar.data.EventMappings,
             diff = newStartDate.getTime() - rec.getStartDate().getTime(),
             updateData = {};
 
         updateData[EventMappings.StartDate.name] = newStartDate;
         updateData[EventMappings.EndDate.name] = Extensible.Date.add(rec.getEndDate(), {millis: diff});
+        */
+
+        var M = Extensible.calendar.data.EventMappings,
+            D = Extensible.Date,
+            diff,
+            updateData = {},
+            newEndDate;
+
+        updateData[M.StartDate.name] = newStartDate;
+        if (rec.data[M.IsAllDay.name]) {
+            diff = D.diffDays(rec.getStartDate(), newStartDate);
+            newEndDate = D.add(rec.getEndDate(), {days: diff});
+            updateData[M.EndDate.name] = newEndDate;
+
+            // Event duration may change for all-day events due to DST start or end. Recalculate duration.
+            if (M.Duration) {
+                var newDuration = D.diff(newStartDate, newEndDate, Extensible.calendar.data.EventModel.resolution);
+                updateData[M.Duration.name] = D.diff(newStartDate, newEndDate, Extensible.calendar.data.EventModel.resolution);
+            }
+        } else {
+            diff = newStartDate.getTime() - rec.getStartDate().getTime();
+            updateData[M.EndDate.name] = D.add(rec.getEndDate(), {millis: diff});
+        }
 
         rec.set(updateData);
 
@@ -2099,7 +2143,8 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
                     if (el && !Ext.isEmpty(this.dayOverClass)) {
                         el[type === 'over' ? 'addCls' : 'removeCls'](this.dayOverClass);
                     }
-                    this.fireEvent('day' + type, this, Ext.Date.parseDate(dt, "Ymd"), el);
+                    // The parsed date is pointed to noon to stay away from DST issues.
+                    this.fireEvent('day' + type, this, Ext.Date.parseDate(dt + ' 12:00', "Ymd G:i"), el);
                 }
             }
         }

@@ -26,6 +26,9 @@ Extensible.Config = {
          * - 'debug': (default) non-minifed single file (e.g. ext-all-debug.js)
          * - 'dynamic': uses Ext.Loader to load classes individually (e.g., ext.js). NOTE: this
          *    option does not work for IE, which will be defaulted to the 'debug' option.
+         * - 'dynamic-extensible': Loads the Extensible framework dymically and the EXT JS framework from a
+         *   non-minified single file. This loads much faster than the 'dynamic' mode. NOTE: this
+         *    option does not work for IE, which will be defaulted to the 'debug' option.
          * 
          * Typically the default of 'debug' is the best trade-off between code readability and
          * load/execution speed. If you need to step into framework files frequently during
@@ -39,7 +42,7 @@ Extensible.Config = {
          * 
          * @config {String} mode
          */
-        mode: 'debug',
+        mode: 'dynamic-extensible',
         
         /**
          * The root path to the Ext JS framework (defaults to loading 4.1.0 from the Sencha CDN via
@@ -172,7 +175,10 @@ Extensible.Config = {
     // private -- write out the CSS and script includes to the document
     writeIncludes: function() {
         var me = this,
-            cacheBuster = '?_dc=' + (me.cacheExtensible ? Extensible.version : (+new Date)),
+            // Disable cache buster otherwise Firebug cannot remember the breakpoints. A reload of all files
+            // can be force with Shift-Reload.
+            // cacheBuster = '?_dc=' + (me.cacheExtensible ? Extensible.version : (+new Date)),
+            cacheBuster = '?_dc=1',
             suffixExt = '',
             suffixExtensible = '';
         
@@ -189,7 +195,7 @@ Extensible.Config = {
                 // after that, so use the version number instead of a unique string
                 cacheBuster = '?_dc=' + Extensible.version;
                 break;
-            
+
             default:
                 // IE does not work in dynamic mode for the Extensible examples currently
                 // based on how it (mis)handles loading of scripts when mixing includes
@@ -199,8 +205,16 @@ Extensible.Config = {
                     suffixExtensible = '-all-debug';
                 }
                 else {
-                    suffixExt = '-debug';
-                    suffixExtensible = '-bootstrap';
+                    switch (me.mode) {
+                        case 'dynamic-extensible':
+                            suffixExt = '-all-debug';
+                            suffixExtensible = '-bootstrap';
+                            break;
+
+                        default:
+                            suffixExt = '-debug';
+                            suffixExtensible = '-bootstrap';
+                    }
                 }
         }
         

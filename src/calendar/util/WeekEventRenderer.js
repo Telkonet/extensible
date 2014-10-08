@@ -39,12 +39,15 @@ Ext.define('Extensible.calendar.util.WeekEventRenderer', {
          */
         renderEvent: function(event, weekIndex, dayIndex, eventIndex, dayCount, currentDate, renderConfig) {
             var eventMappings = Extensible.calendar.data.EventMappings,
+                D = Extensible.Date,
                 eventData = event.data || event.event.data,
                 startOfWeek = Ext.Date.clone(currentDate),
-                endOfWeek = Extensible.Date.add(startOfWeek, {days: dayCount - dayIndex, millis: -1}),
+                // Calculate week end in a way that handles DST switches correctly
+                // endOfWeek = Extensible.Date.add(startOfWeek, {days: dayCount - dayIndex, millis: -1}),
+                endOfWeek = D.add(D.add(startOfWeek, {days: dayCount - dayIndex, hours: 12, clearTime: true}), {millis: -1}),
                 eventRow = this.getEventRow(renderConfig.viewId, weekIndex, eventIndex),
                 eventEndDate = (event.event || event).getEndDate(),
-                daysToEventEnd = Extensible.Date.diffDays(currentDate, eventEndDate) + 1,
+                daysToEventEnd = D.diffDays(currentDate, eventEndDate) + 1,
                 // Restrict the max span to the current week only since this is for the cuurent week's markup
                 colspan = Math.min(daysToEventEnd, dayCount - dayIndex);
             
@@ -224,7 +227,7 @@ Ext.define('Extensible.calendar.util.WeekEventRenderer', {
                     }
                     
                     // Move to the next date and restart the loop
-                    currentDate = Extensible.Date.add(currentDate, {days: 1});
+                    currentDate = Extensible.Date.getDayBeginning(currentDate, 1);
                 }
             }
         }

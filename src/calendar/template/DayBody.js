@@ -62,6 +62,7 @@ Ext.define('Extensible.calendar.template.DayBody', {
             
         for (; i<this.dayCount; i++) {
             days[i] = Extensible.Date.add(dt, {days: i});
+            // days[i] = Extensible.Date.getDayBeginning(dt, 1);
         }
 
         var times = [],
