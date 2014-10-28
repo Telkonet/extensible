@@ -256,6 +256,39 @@
 }
 
 /* -----------------------------------------
+ * Scheduler-specific styles
+ */
+.ext-cal-schedulerview .ext-cal-gutter {
+    width:50px;
+}
+.ext-cal-schedulerview .ext-cal-gutter-rt {
+    width:16px;
+}
+
+.ext-cal-schedulerview-header {
+    width:100%;
+    border-collapse:collapse;
+}
+.ext-cal-schedulerview-header  td{
+    border:1px solid #c2d3fd;
+}
+.ext-cal-schedulerview-header .thead{}
+.ext-cal-schedulerview-header .thead td{
+    text-align:center;
+    padding:5px 10px;
+}
+
+.ext-cal-schedulerview-allday {
+    width:100%;
+    border-collapse:collapse;
+}
+.ext-cal-schedulerview-allday  td{
+    border:1px solid #c2d3fd;
+    background:#fff;
+}
+
+
+/* -----------------------------------------
  * Month-specific styles
  */
 .ext-cal-monthview .ext-cal-hd-ct {
