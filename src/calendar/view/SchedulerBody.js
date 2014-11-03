@@ -1,11 +1,6 @@
 /**
- * @class Extensible.calendar.view.DayBody
+ * @class Extensible.calendar.view.SchedulerBody
  * @extends Extensible.calendar.view.AbstractCalendar
- * <p>This is the scrolling container within the day and week views where non-all-day events are displayed.
- * Normally you should not need to use this class directly -- instead you should use {@link
- * Extensible.calendar.view.Day DayView} which aggregates this class and the {@link
- * Extensible.calendar.view.DayHeader DayHeaderView} into the single unified view
- * presented by {@link Extensible.calendar.CalendarPanel CalendarPanel}.</p>
  * @constructor
  * @param {Object} config The config object
  */
@@ -41,7 +36,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
              * Fires after the user drags the resize handle of an event to resize it, but before the resize
              * operation is carried out. This is a cancelable event, so returning false from a handler will
              * cancel the resize operation.
-             * @param {Extensible.calendar.view.DayBody} this
+             * @param {Extensible.calendar.view.SchedulerBody} this
              * @param {Extensible.calendar.data.EventModel} rec The original {@link
              * Extensible.calendar.data.EventModel record} for the event that was resized
              * @param {Object} data An object containing the new start and end dates that will be set into the
@@ -53,7 +48,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
              * Fires after the user has drag-dropped the resize handle of an event and the resize operation is
              * complete. If you need to cancel the resize operation you should handle the {@link #beforeeventresize}
              * event and return false from your handler function.
-             * @param {Extensible.calendar.view.DayBody} this
+             * @param {Extensible.calendar.view.SchedulerBody} this
              * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
              * record} for the event that was resized containing the updated start and end dates
              */
@@ -63,10 +58,10 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
              * Fires after the user clicks within the view container and not on an event element. This is a
              * cancelable event, so returning false from a handler will cancel the click without displaying the event
              * editor view. This could be useful for validating that a user can only create events on certain days.
-             * @param {Extensible.calendar.view.DayBody} this
+             * @param {Extensible.calendar.view.SchedulerBody} this
              * @param {Date} dt The date/time that was clicked on
              * @param {Boolean} allday True if the day clicked on represents an all-day box, else false. Clicks
-             * within the DayBodyView always return false for this param.
+             * within the SchedulerBodyView always return false for this param.
              * @param {Ext.Element} el The Element that was clicked on
              */
             dayclick: true
@@ -105,7 +100,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
 
     //private
     refresh: function(reloadData) {
-        Extensible.log('refresh (DayBodyView)');
+        Extensible.log('refresh (SchedulerBodyView)');
         var top = this.el.getScroll().top;
 
         this.callParent(arguments);
@@ -147,8 +142,9 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
 
     // private
     afterRender: function() {
+    	
         if(!this.tpl) {
-            this.tpl = Ext.create('Extensible.calendar.template.DayBody', {
+            this.tpl = Ext.create('Extensible.calendar.template.SchedulerBody', {
                 id: this.id,
                 dayCount: this.dayCount,
                 showTodayText: this.showTodayText,
@@ -563,7 +559,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
 
     // private
     onClick: function(e, t) {
-        if(this.dragPending || Extensible.calendar.view.DayBody.superclass.onClick.apply(this, arguments)) {
+        if(this.dragPending || Extensible.calendar.view.SchedulerBody.superclass.onClick.apply(this, arguments)) {
             // The superclass handled the click already so exit
             return;
         }

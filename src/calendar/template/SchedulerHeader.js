@@ -15,25 +15,26 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
         Ext.apply(this, config);
         
         
-        // prepare calendars 
+        // prepare calendars & events
         var calendars_array = [];
+        var events_array = [];
         for(var i=0; i<this.calendars.length; i++){
         	calendars_array.push(this.calendars[i].data);
+        	
+        	var calendar_events = [];
+        	
+        	// loop over events and assign events to calendar
+            for(var j=0; j<this.events.length; j++){
+            	var event = this.events[j].data;
+            	
+            	if(event.CalendarId==this.calendars[i].data.CalendarId && event.IsAllDay==true){
+            		calendar_events.push(event);
+            	}
+            }
+            events_array.push(calendar_events);
         }
         config.calendars = calendars_array;
-        
-        // prepare events
-        var events_array = [];
-        for(var i=0; i<this.events.length; i++){
-        	
-        	var obj = this.events[i].data;
-        	
-        	if(!events_array[obj.CalendarId])
-        		events_array[obj.CalendarId] = [];
-        	
-        	events_array[obj.CalendarId].push(obj);
-        }       
-        config.events = calendars_array;
+        config.events = events_array;
        
         this.headerCalendarTpl = Ext.create('Extensible.calendar.template.SchedulerHeaderCalendar', config);
         this.headerCalendarTpl.compile();

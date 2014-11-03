@@ -1,13 +1,6 @@
 /**
  * @class Extensible.calendar.template.SchedulerBody
  * @extends Ext.XTemplate
- * <p>This is the template used to render the scrolling body container used in
- * {@link Extensible.calendar.view.Day DayView} and {@link Extensible.calendar.view.Week WeekView}. This template
- * is automatically bound to the underlying event store by the calendar components and expects records of type
- * {@link Extensible.calendar.data.EventModel}.</p>
- * <p>Note that this template would not normally be used directly. Instead you would use the
- * {@link Extensible.calendar.view.DayTemplate} that internally creates an instance of this template along
- * with a {@link Extensible.calendar.DayHeaderTemplate}.</p>
  * @constructor
  * @param {Object} config The config object
  */
@@ -18,7 +11,7 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
     constructor: function(config) {
         
         Ext.apply(this, config);
-    
+        
         Extensible.calendar.template.SchedulerBody.superclass.constructor.call(this,
             '<table class="ext-cal-bg-tbl" cellspacing="0" cellpadding="0" style="height:{dayHeight}px;">',
                 '<tbody>',
