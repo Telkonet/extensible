@@ -126,7 +126,14 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      * overall Day view container vertically scrollable.
      */
     minBodyHeight: 150,
-    
+    /**
+     * @cfg {Number} minColumnWidth
+     * Defines the minimum width in pixels of a column.
+     * If the calculated column width (which is equal and it is calculated such that all columns together fill the
+     * space available to the view) is less  than the value of parameter minColumnWidth, then the column width is set to
+     * minColumnWidth and horizontal scrollbars are introduced.
+     */
+    minColumnWidth:380,
     // private
     isSchedulerView: true,
     isDayView: true, // remove this later
@@ -157,10 +164,11 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         cfg.readOnly = this.readOnly;
         cfg.ddIncrement = this.ddIncrement;
         cfg.minEventDisplayMinutes = this.minEventDisplayMinutes;
+        cfg.minColumnWidth = this.minColumnWidth;
 
         this.items = this.getItemConfig(cfg);
         this.addCls('ext-cal-schedulerview ext-cal-ct');
-        
+
         this.callParent(arguments);
     },
 
@@ -184,18 +192,20 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             ownerCalendarPanel: this.ownerCalendarPanel
         }, cfg);
 
-        return [header, body];
+        //return [header, body];
+        return [header];
 
     },
 
     // private
     afterRender: function() {
         this.callParent(arguments);
-        
+
         this.header = Ext.getCmp(this.id+'-hd');
-        this.body = Ext.getCmp(this.id+'-bd');
-        
-        this.body.on('eventsrendered', this.forceSize, this);
+        //this.body = Ext.getCmp(this.id+'-bd');
+
+        //this.body.on('eventsrendered', this.forceSize, this);
+         this.header.on('eventsrendered', this.forceSize, this);
         this.on('resize', this.onResize, this);
     },
     
@@ -206,7 +216,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             reloadData = false;
         }
         this.header.refresh(reloadData);
-        this.body.refresh(reloadData);
+       //this.body.refresh(reloadData);
     },
     
     // private
@@ -219,8 +229,12 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         Ext.defer(function() {
             var ct = me.el.up('.x-panel-body'),
                 header = me.el.down('.ext-cal-day-header'),
-                bodyHeight = ct ? ct.getHeight() - header.getHeight() : false;
-            
+                bodyHeight = ct ? ct.getHeight() - header.getHeight() : false,
+
+                headerTable = header.el.down('.ext-cal-schedulerview-allday'),
+                computedHeaderTableWidth = Ext.get(headerTable).down('tr').getWidth(), //computed value
+                minHeaderTableWidth = headerTable? Ext.get(headerTable).select('tr>th').elements.length * this.minColumnWidth:false; //min value
+
             if (bodyHeight) {
                 if (bodyHeight < me.minBodyHeight) {
                     bodyHeight = me.minBodyHeight;
@@ -229,7 +243,26 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                 else {
                     me.removeCls('ext-cal-overflow-y');
                 }
-                me.el.down('.ext-cal-body-ct').setHeight(bodyHeight - 1);
+                //me.el.down('.ext-cal-body-ct').setHeight(bodyHeight - 1);
+            }
+
+            if (computedHeaderTableWidth){
+                if (Ext.util.CSS.getRule('.ext-cal-overflow-x')===null)  Ext.util.CSS.createStyleSheet('.ext-cal-overflow-x {overflow-x:scroll!important;}')
+                if (computedHeaderTableWidth<minHeaderTableWidth){
+                    //set columns width to each calendar column:
+                    var tbl = Ext.get(headerTable).down('tr');
+                    tbl = Ext.Array.merge(tbl,Ext.get(tbl).next('tr'));
+                    Ext.each(tbl,function(tr,i){
+                        Ext.get(tr).select('th').applyStyles('width:'+this.minColumnWidth+'px;');
+                        Ext.get(tr).select('td').applyStyles('width:'+this.minColumnWidth+'px;');
+                        });
+                    me.el.down('span').setWidth(minHeaderTableWidth);
+                    //me.el.down('.ext-cal-hd-days-tbl').setWidth(minHeaderTableWidth);
+                    me.addCls('ext-cal-overflow-x');
+                }else{
+                    me.removeCls('ext-cal-overflow-x');
+                    me.el.down('.ext-cal-hd-days-tbl').setWidth('100%');
+                }
             }
         }, Ext.isIE ? 1 : 0, me);
     },
@@ -246,7 +279,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     doHide: function() {
         this.header.doHide.apply(this, arguments);
-        this.body.doHide.apply(this, arguments);
+        //this.body.doHide.apply(this, arguments);
     },
     
     // private
@@ -271,13 +304,13 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     setStartDate: function(dt) {
         this.header.setStartDate(dt, false);
-        this.body.setStartDate(dt, true);
+        //this.body.setStartDate(dt, true);
     },
 
     // private
     renderItems: function() {
         this.header.renderItems();
-        this.body.renderItems();
+        //this.body.renderItems();
     },
     
     /**
@@ -295,7 +328,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveTo: function(dt) {
         dt = this.header.moveTo(dt, false);
-        this.body.moveTo(dt, true);
+        //this.body.moveTo(dt, true);
         this.forceSize();
         
         return dt;
@@ -307,7 +340,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveNext: function() {
         var dt = this.header.moveNext(false);
-        this.body.moveNext(true);
+        //this.body.moveNext(true);
         this.forceSize();
         
         return dt;
@@ -319,7 +352,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     movePrev: function(noRefresh) {
         var dt = this.header.movePrev(false);
-        this.body.movePrev(true);
+        //this.body.movePrev(true);
         this.forceSize();
         
         return dt;
@@ -332,7 +365,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveDays: function(value) {
         var dt = this.header.moveDays(value, false);
-        this.body.moveDays(value, true);
+        //this.body.moveDays(value, true);
         this.forceSize();
         
         return dt;
@@ -344,7 +377,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveToday: function() {
         var dt = this.header.moveToday(false);
-        this.body.moveToday(true);
+        //this.body.moveToday(true);
         this.forceSize();
         
         return dt;
