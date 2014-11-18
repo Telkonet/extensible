@@ -30,6 +30,9 @@
 .ext-cal-overflow-y {
     overflow-y: scroll !important;
 }
+.ext-cal-overflow-x {
+    overflow-x:scroll!important;
+}
 .ext-cal-ct {
     position: relative;
     font-family: helvetica, arial, sans-serif;
@@ -280,10 +283,10 @@
 
 .ext-cal-schedulerview-allday {
     width:100%;
+    border:1px solid #c2d3fd;
     border-collapse:collapse;
 }
 .ext-cal-schedulerview-allday  td{
-    border:1px solid #c2d3fd;
     background:#fff;
 }
 
