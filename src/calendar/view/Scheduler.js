@@ -170,7 +170,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.addCls('ext-cal-schedulerview ext-cal-ct');
 
         this.callParent(arguments);
-        this.listeners={
+        this.listeners = {
                 /**
                  * @event eventcopytocalendar
                  * Fires after an event has been duplicated by the user via the "copy event" command.
@@ -179,7 +179,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
              * record} for the event that was copied (with updated calendar data)
                  *
                  */
-                eventcopytocalendar:{
+                eventcopytocalendar: {
                     fn: function(vw, rec){
                         this.onEventCalendarCopyOrMove(rec, 'copy');
                     },
@@ -192,7 +192,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                  * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
                  * for the event that was moved with updated calendar data
                  */
-                eventmovetocalendar:{
+                eventmovetocalendar: {
                     fn: function(vw, rec){
                         this.onEventCalendarCopyOrMove(rec, 'move');
                     },
@@ -219,7 +219,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             hourHeight: this.hourHeight,
             id: this.id+'-bd',
             ownerCalendarPanel: this.ownerCalendarPanel
-        }, cfg);
+            }, cfg);
 
         //return [header, body];
         return [header];
@@ -233,8 +233,8 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.header = Ext.getCmp(this.id+'-hd');
         //this.body = Ext.getCmp(this.id+'-bd');
 
+        this.header.on('eventsrendered', this.forceSize, this);
         //this.body.on('eventsrendered', this.forceSize, this);
-         this.header.on('eventsrendered', this.forceSize, this);
         this.on('resize', this.onResize, this);
     },
     
@@ -259,33 +259,31 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             var ct = me.el.up('.x-panel-body'),
                 header = me.el.down('.ext-cal-day-header'),
                 bodyHeight = ct ? ct.getHeight() - header.getHeight() : false,
-
                 headerTable = header.el.down('.ext-cal-schedulerview-allday'),
                 computedHeaderTableWidth = Ext.get(headerTable).down('tr').getWidth(), //computed value
-                minHeaderTableWidth = headerTable? me.header.calendarStore.data.items.length * this.minColumnWidth:false; //min value
+                minHeaderTableWidth = headerTable? me.header.calendarStore.data.items.length * this.minColumnWidth:false;
 
             if (bodyHeight) {
                 if (bodyHeight < me.minBodyHeight) {
                     bodyHeight = me.minBodyHeight;
                     me.addCls('ext-cal-overflow-y');
-                }
-                else {
+                } else {
                     me.removeCls('ext-cal-overflow-y');
                 }
                 //me.el.down('.ext-cal-body-ct').setHeight(bodyHeight - 1);
             }
 
-            if (computedHeaderTableWidth){
-                if (computedHeaderTableWidth < minHeaderTableWidth){
+            if (computedHeaderTableWidth) {
+                if (computedHeaderTableWidth < minHeaderTableWidth) {
                     //set columns width to each calendar column:
                     var tbh = Ext.get(headerTable).down('tr'),
 						tbb = tbh.next('tr');
+
 					tbh.select('th').setWidth(this.minColumnWidth);
 					tbb.select('td').setWidth(this.minColumnWidth);
-
 					me.el.down('#app-calendar-scheduler-hd').setWidth(minHeaderTableWidth);
                     me.addCls('ext-cal-overflow-x');
-                }else{
+                } else {
                     me.removeCls('ext-cal-overflow-x');
 					me.el.down('#app-calendar-scheduler-hd').setWidth('100%');
                 }
@@ -438,13 +436,22 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         var mappings = Extensible.calendar.data.EventMappings,
             time = rec.data[mappings.IsAllDay.name] ? '' : ' \\a\\t g:i a',
             action = mode === 'copy' ? 'copied' : 'moved';
-        rec.commit();
+
+            rec.commit();
+
         var calendarId = rec.data[mappings.CalendarId.name];
         var calendarIdx = -1;
 
-        Ext.Object.each(this.calendarStore.data.items, function(k,v){if (v.data.CalendarId===calendarId){ calendarIdx = k; return false; } });
+        Ext.Object.each(this.calendarStore.data.items,
+                            function(k, v){
+                                if (v.data.CalendarId === calendarId) {
+                                    calendarIdx = k; return false;
+                                }
+                            }
+                        );
 
-        var msg = 'Event '+ rec.data[mappings.Title.name] +' was ' + action + ' to '+ this.calendarStore.data.items[calendarIdx].data.Title+' calendar';
+        var msg = 'Event '+ rec.data[mappings.Title.name] +' was ' + action + ' to ' +
+            this.calendarStore.data.items[calendarIdx].data.Title+' calendar';
         Ext.fly('app-msg').update(msg).removeCls('x-hidden');
     }
 });

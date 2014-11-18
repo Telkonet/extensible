@@ -37,6 +37,28 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
      * SchedulerHeaderView always return true for this param.
      * @param {Ext.Element} el The Element that was clicked on
      */
+    initComponent:function(){
+        this.callParent(arguments);
+        this.addEvents({
+            /**
+             * @event eventcopytocalendar
+             * Fires after an event has been duplicated by the user via the "copy event" command.
+             * @param {Extensible.calendar.view.AbstractCalendar} this
+             * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
+             * record} for the event that was copied (with updated calendar data)
+             *
+             */
+            eventcopytocalendar: true,
+            /**
+             * @event eventmovetocalendar
+             * Fires after an event element has been moved to a new calendar and its data updated.
+             * @param {Extensible.calendar.view.AbstractCalendar} this
+             * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
+             * for the event that was moved with updated calendar data
+             */
+            eventmovetocalendar: true
+        });
+    },
     initDD: function() {
         var cfg = {
             view: this,
@@ -45,8 +67,8 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             moveText: this.ddMoveEventText,
             ddGroup: this.ddGroup || this.id+'-SchedulerViewDD'
         };
-      //  this.dragZone = Ext.create('Extensible.calendar.dd.SchedulerDragZone', this.el, cfg);
-      //  this.dropZone = Ext.create('Extensible.calendar.dd.SchedulerDropZone', this.el, cfg);
+        this.dragZone = Ext.create('Extensible.calendar.dd.SchedulerDragZone', this.el, cfg);
+        this.dropZone = Ext.create('Extensible.calendar.dd.SchedulerDropZone', this.el, cfg);
     },
 
     onDestroy: function() {
@@ -86,15 +108,15 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 		var calendars =  this.calendarStore.data.items;
     
 		var maxEvtCountPerCalendar =[]; // counting max events per calendar and only for current day.
-		for (var i=0; i<calendars.length; i++){
-			if (calendars[i].data.IsHidden==true){ // ignore hidden calendars
+		for (var i = 0; i < calendars.length; i++){
+			if (calendars[i].data.IsHidden == true){ // ignore hidden calendars
 				continue;
 			}
-			var z=0;
-			for (var j=0;j<this.store.data.items.length;j++){
-				if(this.store.data.items[j].data.CalendarId==calendars[i].data.CalendarId && this.store.data.items[j].data.IsAllDay==true ){
+			var z = 0;
+			for (var j = 0; j < this.store.data.items.length; j++){
+				if (this.store.data.items[j].data.CalendarId==calendars[i].data.CalendarId && this.store.data.items[j].data.IsAllDay === true) {
 					var currentDate = Ext.Date.clone(this.viewStart);
-					if (Ext.Date.between(currentDate,this.store.data.items[j].data.StartDate,this.store.data.items[j].data.EndDate )===true){
+					if (Ext.Date.between(currentDate,this.store.data.items[j].data.StartDate,this.store.data.items[j].data.EndDate) === true) {
 						z++;
 					}
 				}
@@ -121,30 +143,28 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         });
     },
     renderItems: function(){
-
-      //var calendars = this.calendarStore.data.items; //all calendars
-       var evtGrid = this.allDayOnly ? this.allDayGrid : this.eventGrid; //all events from all calendars
-        var calendars =  this.calendarStore.data.items;
-        var events = this.store.data.items;
-        var calEvts = [];
+        var evtGrid = this.allDayOnly ? this.allDayGrid : this.eventGrid, //all events from all calendars
+            calendars =  this.calendarStore.data.items,
+            events = this.store.data.items,
+            calEvts = [];
 		
-        for (var i = 0; i<calendars.length; i++){
+        for (var i = 0; i < calendars.length; i++) {
             calEvts[0] = [];
-            for (var j = 0; j<events.length; j++){
-                var eventRaw =events[j].data;
-                calEvts[0][0]=[];
+            for (var j = 0; j < events.length; j++) {
+                var eventRaw = events[j].data;
+                calEvts[0][0] = [];
 			}
 			//first level is week, second level is days... in our case is 1 week 1 day.
 			//loop through all events in the Ext object... keep only the current calendar's ones
-			if (evtGrid[0][0]!==undefined){
-				for (var k=0; k<evtGrid[0][0].length;k++){
+			if (evtGrid[0][0] !== undefined) {
+				for (var k = 0; k < evtGrid[0][0].length; k++) {
 					var evtCalId = 0;
-					if (evtGrid[0][0][k].hasOwnProperty('event')){
+					if (evtGrid[0][0][k].hasOwnProperty('event')) {
 						evtCalId = evtGrid[0][0][k].event.data.CalendarId;
-					}else{
+					} else {
 						evtCalId = evtGrid[0][0][k].data.CalendarId;					
 					}
-					if (calendars[i].data.CalendarId == evtCalId){
+					if (calendars[i].data.CalendarId == evtCalId) {
 						calEvts[0][0].push(evtGrid[0][0][k]);
 					}
 				}
@@ -176,7 +196,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         this.el.down('.ext-cal-hd-ad-inner').setHeight(h+5);
        //this.el.down('.ext-cal-bg-tbl').setHeight(h+5);
     },
-    
+
     // private
     moveNext: function() {
         return this.moveDays(this.dayCount, false);
@@ -188,8 +208,100 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
     },
 
     //private
-    onEventDrop: function(rec, dt, mode) {
-        this[(mode || 'move') + 'Event'](rec, dt); // instead of moveEvent from the abstract class we reffer to our own method
+    onEventDrop: function(rec, calIdx, mode) {
+        this[(mode || 'move') + 'Event'](rec, calIdx); // instead of moveEvent from the abstract class we reffer to our own method
+    },
+	onCalendarEndDrag: function(calIdx, onComplete) {
+		// set this flag for other event handlers that might conflict while we're waiting
+		this.dragPending = true;
+
+		var rec = {},
+			boundOnComplete = Ext.bind(this.onCalendarEndDragComplete, this, [onComplete]);
+
+		var M = Extensible.calendar.data.EventMappings,
+			rec = new Extensible.calendar.data.EventModel();
+
+        rec.data[M.StartDate.name] = this.startDate;
+        rec.data[M.EndDate.name] = this.endDate;
+        rec.data[M.IsAllDay.name] = true;
+        rec.data[M.CalendarId.name] = this.calendarStore.data.items[calIdx].data.CalendarId;
+
+		if (this.fireEvent('rangeselect', this, rec, boundOnComplete) !== false) {
+			this.showEventEditor(rec, null);
+
+			if (this.editWin) {
+				this.editWin.on('hide', boundOnComplete, this, {single:true});
+			} else {
+				boundOnComplete();
+			}
+		}
+		else {
+			// client code canceled the selection so clean up immediately
+			this.onCalendarEndDragComplete(boundOnComplete);
+		}
+	},
+    moveEvent: function(rec, calIdx) {
+        this.modifyEvent(rec, calIdx, 'move');
+    },
+
+    //this method is our custom implementation of the shiftEvent method from the AbstractCalendar class.
+    modifyEvent: function(rec, calIdx, moveOrCopy) {
+        var me = this,
+            newRec,
+            calendarId = me.calendarStore.data.items[calIdx].data.CalendarId;
+
+        if (moveOrCopy === 'move') {
+            if (rec.data.CalendarId === calendarId) {
+                // No changes, so we aren't actually moving. Copying to the same date is OK.
+                return;
+            }
+            newRec = rec;
+        } else {
+            newRec = rec.clone();
+        }
+
+        if (me.fireEvent('beforeevent' + moveOrCopy, me, newRec, calendarId) !== false) {
+            if (newRec.isRecurring()) {
+                //if (me.recurrenceOptions.editSingleOnDrag) {
+                me.onRecurrenceEditModeSelected('single', newRec, calendarId, moveOrCopy);
+                //}
+                // else {
+                // Extensible.form.recurrence.RangeEditWindow.prompt({
+                // callback: Ext.bind(me.onRecurrenceEditModeSelected, me, [newRec, newStartDate, moveOrCopy], true),
+                // editModes: ['single', 'future'],
+                // scope: me
+                // });
+                // }
+            } else {
+               me.doModifyEvent(newRec, calendarId, moveOrCopy);
+            }
+        }
+    },
+    onRecurrenceEditModeSelected: function(editMode, rec, calId, moveOrCopy) {
+        var EventMappings = Extensible.calendar.data.EventMappings;
+        if (editMode) {
+            if (moveOrCopy === 'copy') {
+                rec.clearRecurrence();
+            }
+            rec.data[EventMappings.REditMode.name] = editMode;
+            rec.data[EventMappings.RInstanceStartDate.name] = rec.getStartDate();
+            this.doModifyEvent(rec, calId, moveOrCopy);
+        }
+        // else user canceled
+    },
+
+ //this method is our custom implementation of the doShiftEvent method from the AbstractCalendar class.
+    doModifyEvent: function(rec, calId, moveOrCopy) {
+        var EventMappings = Extensible.calendar.data.EventMappings,
+            updateData = {};
+
+        updateData[EventMappings.CalendarId.name] = calId;
+        rec.set(updateData);
+        if (rec.phantom) {
+            this.store.add(rec);
+        }
+        this.save();
+        this.ownerCt.fireEvent('event' + moveOrCopy + 'tocalendar', this, rec);
     },
 
     //private
@@ -199,10 +311,12 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         }
         if (this.fireEvent('dayclick', this, Ext.Date.clone(dt), ad, el) !== false) {
             var M = Extensible.calendar.data.EventMappings,
-            rec = new Extensible.calendar.data.EventModel();
+                rec = new Extensible.calendar.data.EventModel();
+
             rec.data[M.StartDate.name] = dt;
             rec.data[M.IsAllDay.name] = ad;
             rec.data[M.CalendarId.name] = cal;
+
             this.showEventEditor(rec, el);
         }
     },
@@ -220,7 +334,9 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var parts = el.id.split(this.dayElIdDelimiter),
                     dt = parts[parts.length-1];
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)), this.calendarStore.data.items[idxCal]);
+
+                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
+                                this.calendarStore.data.items[idxCal]);
                 return;
             }
         }
