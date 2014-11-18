@@ -133,7 +133,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      * space available to the view) is less  than the value of parameter minColumnWidth, then the column width is set to
      * minColumnWidth and horizontal scrollbars are introduced.
      */
-    minColumnWidth:380,
+    minColumnWidth:200,
     // private
     isSchedulerView: true,
     isDayView: true, // remove this later
@@ -152,9 +152,9 @@ Ext.define('Extensible.calendar.view.Scheduler', {
          * 'Move event to {0}' where {0} is the updated event start date/time supplied by the view)
          */
         this.ddMoveEventText = this.ddMoveEventText || Extensible.calendar.view.AbstractCalendar.prototype.ddMoveEventText;
-        
+
         this.dayCount = 1;
-        
+
         var cfg = Ext.apply({}, this.initialConfig);
         cfg.showTime = this.showTime;
         cfg.showTodayText = this.showTodayText;
@@ -170,6 +170,35 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.addCls('ext-cal-schedulerview ext-cal-ct');
 
         this.callParent(arguments);
+        this.listeners={
+                /**
+                 * @event eventcopytocalendar
+                 * Fires after an event has been duplicated by the user via the "copy event" command.
+                 * @param {Extensible.calendar.view.AbstractCalendar} this
+                 * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
+             * record} for the event that was copied (with updated calendar data)
+                 *
+                 */
+                eventcopytocalendar:{
+                    fn: function(vw, rec){
+                        this.onEventCalendarCopyOrMove(rec, 'copy');
+                    },
+                    scope:this
+                },
+                /**
+                 * @event eventmovetocalendar
+                 * Fires after an event element has been moved to a new calendar and its data updated.
+                 * @param {Extensible.calendar.view.AbstractCalendar} this
+                 * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
+                 * for the event that was moved with updated calendar data
+                 */
+                eventmovetocalendar:{
+                    fn: function(vw, rec){
+                        this.onEventCalendarCopyOrMove(rec, 'move');
+                    },
+                    scope:this
+                }
+        };
     },
 
     getItemConfig: function(cfg) {
@@ -233,7 +262,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
 
                 headerTable = header.el.down('.ext-cal-schedulerview-allday'),
                 computedHeaderTableWidth = Ext.get(headerTable).down('tr').getWidth(), //computed value
-                minHeaderTableWidth = headerTable? Ext.get(headerTable).select('tr>th').elements.length * this.minColumnWidth:false; //min value
+                minHeaderTableWidth = headerTable? me.header.calendarStore.data.items.length * this.minColumnWidth:false; //min value
 
             if (bodyHeight) {
                 if (bodyHeight < me.minBodyHeight) {
@@ -247,21 +276,18 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             }
 
             if (computedHeaderTableWidth){
-                if (Ext.util.CSS.getRule('.ext-cal-overflow-x')===null)  Ext.util.CSS.createStyleSheet('.ext-cal-overflow-x {overflow-x:scroll!important;}')
-                if (computedHeaderTableWidth<minHeaderTableWidth){
+                if (computedHeaderTableWidth < minHeaderTableWidth){
                     //set columns width to each calendar column:
-                    var tbl = Ext.get(headerTable).down('tr');
-                    tbl = Ext.Array.merge(tbl,Ext.get(tbl).next('tr'));
-                    Ext.each(tbl,function(tr,i){
-                        Ext.get(tr).select('th').applyStyles('width:'+this.minColumnWidth+'px;');
-                        Ext.get(tr).select('td').applyStyles('width:'+this.minColumnWidth+'px;');
-                        });
-                    me.el.down('span').setWidth(minHeaderTableWidth);
-                    //me.el.down('.ext-cal-hd-days-tbl').setWidth(minHeaderTableWidth);
+                    var tbh = Ext.get(headerTable).down('tr'),
+						tbb = tbh.next('tr');
+					tbh.select('th').setWidth(this.minColumnWidth);
+					tbb.select('td').setWidth(this.minColumnWidth);
+
+					me.el.down('#app-calendar-scheduler-hd').setWidth(minHeaderTableWidth);
                     me.addCls('ext-cal-overflow-x');
                 }else{
                     me.removeCls('ext-cal-overflow-x');
-                    me.el.down('.ext-cal-hd-days-tbl').setWidth('100%');
+					me.el.down('#app-calendar-scheduler-hd').setWidth('100%');
                 }
             }
         }, Ext.isIE ? 1 : 0, me);
@@ -405,5 +431,20 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     dismissEventEditor: function(dismissMethod) {
         return Extensible.calendar.view.AbstractCalendar.prototype.dismissEventEditor.apply(this, arguments);
+    },
+
+    // handle event move or copy between calendars
+    onEventCalendarCopyOrMove: function(rec, mode) {
+        var mappings = Extensible.calendar.data.EventMappings,
+            time = rec.data[mappings.IsAllDay.name] ? '' : ' \\a\\t g:i a',
+            action = mode === 'copy' ? 'copied' : 'moved';
+        rec.commit();
+        var calendarId = rec.data[mappings.CalendarId.name];
+        var calendarIdx = -1;
+
+        Ext.Object.each(this.calendarStore.data.items, function(k,v){if (v.data.CalendarId===calendarId){ calendarIdx = k; return false; } });
+
+        var msg = 'Event '+ rec.data[mappings.Title.name] +' was ' + action + ' to '+ this.calendarStore.data.items[calendarIdx].data.Title+' calendar';
+        Ext.fly('app-msg').update(msg).removeCls('x-hidden');
     }
 });
