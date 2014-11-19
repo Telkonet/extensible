@@ -1,8 +1,7 @@
 /**
- * @class Extensible.calendar.view.Day
- * @extends Ext.container.Container
- * @constructor
- * @param {Object} config The config object
+ * Displays a view that is grouping events by the calendar they belong. Each calendar has it's own column on the UI. This class does not usually need ot be used directly as you can
+ * use a {@link Extensible.calendar.CalendarPanel CalendarPanel} to manage multiple calendar views at once including
+ * the scheduler view.
  */
 Ext.define('Extensible.calendar.view.Scheduler', {
     extend: 'Ext.container.Container',
@@ -35,7 +34,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
     showTodayText: true,
     /**
      * @cfg {Number} dayCount
-     * The number of days to display in the view (defaults to 1). Only values from 1 to 7 are allowed.
+     * The number of days to display in the view (defaults to 1). Only value 1 is allowed in this case.
      */
     dayCount: 1,
     /**
@@ -133,7 +132,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      * space available to the view) is less  than the value of parameter minColumnWidth, then the column width is set to
      * minColumnWidth and horizontal scrollbars are introduced.
      */
-    minColumnWidth:200,
+    minColumnWidth:80,
     // private
     isSchedulerView: true,
     isDayView: true, // remove this later
@@ -247,8 +246,11 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.header.refresh(reloadData);
        //this.body.refresh(reloadData);
     },
-    
-    // private
+
+    /**
+     * This method is redrawing the body and the header section of the view. Here is also the place where we ensure that the
+     * width of each calendar column is computed using minColumnWidth parameter.
+     */
     forceSize: function() {
         var me = this;
         
@@ -435,6 +437,11 @@ Ext.define('Extensible.calendar.view.Scheduler', {
     },
 
     // handle event move or copy between calendars
+    /**
+     * This is method is called by the eventmovetocalendar and eventcopytocalendar
+     * @param rec Event record to be moved/copied
+     * @param mode
+     */
     onEventCalendarCopyOrMove: function(rec, mode) {
         var mappings = Extensible.calendar.data.EventMappings,
             time = rec.data[mappings.IsAllDay.name] ? '' : ' \\a\\t g:i a',

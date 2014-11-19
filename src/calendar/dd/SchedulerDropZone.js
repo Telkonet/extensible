@@ -1,6 +1,6 @@
 /**
  * Internal drop zone implementation for the calendar components. This provides base functionality
- * and is primarily for the month view -- DayViewDD adds day/week view-specific functionality.
+ * and is primarily for the scheduler view -- SchedulerDD adds calendar column view-specific functionality.
  * @private
  */
 Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
@@ -17,7 +17,12 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
     dateFormat: 'n/j',
     
     shims: [],
-    
+    /**
+     * This is the point where we are retrieving the cell on which the event is about to be dropped.
+     * @param e
+     * @returns {{date: *, el: *, calIdx: *}} the object containing the current day, calendar grid cell and target
+     * calendar index
+     */
     getTargetFromEvent: function(e) {
         var eventCell = Ext.get(e.getTarget()),
             calendarIdx = eventCell.id.split(this.id)[1];
@@ -30,21 +35,32 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
             calIdx: calendarIdx
             };
     },
-    
+    /**
+     *
+     * @param n The custom data associated with the drop node (this is the same value returned from getTargetFromEvent
+     * for this node)
+     * @param dd The drag source that was dragged over this drop zone
+     * @param e The event
+     * @param data An object containing arbitrary data supplied by the drag source
+     * @returns {*} status The CSS class that communicates the drop status back to the source so that the underlying
+     * {@link Ext.dd.StatusProxy} can be updated
+     */
     onNodeOver: function(n, dd, e, data) {
         var eventDragText = (e.ctrlKey || e.altKey) ? this.copyText: this.moveText;
            if (n.calIdx !== null) {
-                this.shim(n,data);
+                this.shim(n);
                 data.proxy.updateMsg(Ext.String.format(data.type === 'eventdrag' ? eventDragText :
                     this.createText, this.view.calendarStore.data.items[n.calIdx].data.Title));
                 return this.dropAllowed;
            }
         return this.dropNotAllowed;
     },
-    
-    shim: function(e,data) {
-        var box,
-            calIdx,
+    /**
+     * This creates and sets-up the layer that is displayed over the current cell that is dragged and dropped
+     * @param n
+     */
+    shim: function(n) {
+        var calIdx,
             shim;
 
         this.DDMInstance.notifyOccluded = true;
@@ -55,14 +71,14 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
             }
         });
         
-        calIdx = e.calIdx;
+        calIdx = n.calIdx;
         if (calIdx !== null) {
             shim = this.shims[calIdx];
             if (!shim) {
                 shim = this.createShim(calIdx);
                 this.shims[calIdx] = shim;
             }
-            shim.boxInfo = e.el.getBox();
+            shim.boxInfo = n.el.getBox();
             shim.isActive = true;
         }
         Ext.each(this.shims, function(shim) {
@@ -77,7 +93,11 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
             }
         });
     },
-    
+    /**
+     *
+     * @param calIdx Index of the current calendar item in the calendar store.
+     * @returns {Ext.Layer} Layer element that will be set overlapped on the current drag/dropped cell
+     */
    createShim: function(calIdx) {
         var owner = this.view.ownerCalendarPanel ? this.view.ownerCalendarPanel: this.view;
         var cal_owner = Ext.get(this.view.id);
@@ -119,7 +139,15 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
     onCalendarDragComplete: function() {
         this.clearShims();
     },
-    
+    /**
+     * Depending on the user behaviour, we can have two possibilities: dragging an event cell, or dragging an empty calendar cell
+     * @param n The custom data associated with the drop node (this is the same value returned from getTargetFromEvent
+     * for this node)
+     * @param dd The drag source that was dragged over this drop zone
+     * @param e The event
+     * @param data An object containing arbitrary data supplied by the drag source
+     * @returns {boolean}
+     */
     onNodeDrop: function(n, dd, e, data) {
         if (n && data) {
             if (data.type === 'eventdrag') {

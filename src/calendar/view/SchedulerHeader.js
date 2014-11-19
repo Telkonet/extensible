@@ -25,7 +25,6 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
     monitorResize: false,
     isHeaderView: true,
 
-    // The event is declared in MonthView but we're just overriding the docs:
     /**
      * @event dayclick
      * Fires after the user clicks within the view container and not on an event element. This is a cancelable event, so
@@ -142,6 +141,10 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             td.dom.removeAttribute('rowspan');
         });
     },
+    /**
+     * Since all other views are using the same renderer  Extensible.calendar.util.WeekEventRenderer, in order to use
+     * mostly the same logic, we call it with a custom data structure that contains all calendar and their associated events
+     */
     renderItems: function(){
         var evtGrid = this.allDayOnly ? this.allDayGrid : this.eventGrid, //all events from all calendars
             calendars =  this.calendarStore.data.items,
@@ -208,9 +211,21 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
     },
 
     //private
+    /**
+     * Called from Extensible.calendar.dd.SchedulerDropZone it triggers the private method that handles the behaviour when
+     * the event is dropped in the view
+     * @param rec Event data record
+     * @param calIdx Index of the current calendar item in the calendar store - from the current cell under the mouse's pointer
+     * @param mode
+     */
     onEventDrop: function(rec, calIdx, mode) {
         this[(mode || 'move') + 'Event'](rec, calIdx); // instead of moveEvent from the abstract class we reffer to our own method
     },
+    /**
+     * Called from Extensible.calendar.dd.SchedulerDropZone if the drag/drop is made on an empty calendar cell.
+     * @param calIdx Index of the current calendar item in the calendar store - from the current cell under the mouse's pointer
+     * @param onComplete callback function that can be passed to be executed at the end of this method
+     */
 	onCalendarEndDrag: function(calIdx, onComplete) {
 		// set this flag for other event handlers that might conflict while we're waiting
 		this.dragPending = true;
@@ -244,7 +259,13 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         this.modifyEvent(rec, calIdx, 'move');
     },
 
-    //this method is our custom implementation of the shiftEvent method from the AbstractCalendar class.
+    /**
+     * This method is our custom implementation of the shiftEvent method from the AbstractCalendar class. It is used
+     * for moving/copying the event on another calendar.
+     * @param rec Current event record
+     * @param calIdx Index of the current calendar item in the calendar store - from the current cell under the mouse's pointer
+     * @param moveOrCopy
+     */
     modifyEvent: function(rec, calIdx, moveOrCopy) {
         var me = this,
             newRec,
@@ -290,7 +311,13 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         // else user canceled
     },
 
- //this method is our custom implementation of the doShiftEvent method from the AbstractCalendar class.
+    /**
+     * This method is our custom implementation of the doShiftEvent method from the AbstractCalendar class.
+     * It's preparing the store for saving the event data changes
+     * @param rec
+     * @param calId
+     * @param moveOrCopy
+     */
     doModifyEvent: function(rec, calId, moveOrCopy) {
         var EventMappings = Extensible.calendar.data.EventMappings,
             updateData = {};
@@ -304,7 +331,15 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         this.ownerCt.fireEvent('event' + moveOrCopy + 'tocalendar', this, rec);
     },
 
-    //private
+    /**
+     * Handles what's happening when the user clicks on an event inside the calendar; the name of the method
+     * is correct since it is inherited from superclass.
+     * The event edit window display method is invoked with the current event data passed as parameter
+     * @param dt
+     * @param ad
+     * @param el
+     * @param cal
+     */
     onDayClick: function(dt, ad, el, cal) {
         if (this.readOnly === true) {
             return;
@@ -320,7 +355,11 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             this.showEventEditor(rec, el);
         }
     },
-    // private
+    /**
+     * This method is preparing the handling of the user's click on an event
+     * @param e
+     * @param t
+     */
     onClick: function(e, t) {
         var el = e.getTarget('td', 3);
         var idxCal = 0;

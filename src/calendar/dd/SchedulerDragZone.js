@@ -1,6 +1,6 @@
 /**
  * Internal drag zone implementation for the calendar components. This provides base functionality
- * and is primarily for the month view -- DayViewDD adds day/week view-specific functionality.
+ * and is primarily for the scheduler view -- SchedulerDD adds calendar column view-specific functionality.
  * @private
  */
 Ext.define('Extensible.calendar.dd.SchedulerDragZone', {
@@ -23,7 +23,11 @@ Ext.define('Extensible.calendar.dd.SchedulerDragZone', {
         this.proxy = Extensible.calendar._statusProxyInstance;
         this.callParent(arguments);
     },
-    
+    /**
+     * Interrogating the passed mouse events to see where this event has taken place
+     * @param e
+     * @returns {*}
+     */
     getDragData: function(e) {
         // Check whether we are dragging on an event first
         var t = e.getTarget(this.eventSelector, this.eventSelectorDepth);
@@ -53,7 +57,13 @@ Ext.define('Extensible.calendar.dd.SchedulerDragZone', {
 
         return null;
     },
-    
+
+    /**
+     * Called once drag threshold has been reached to initialize the proxy element. By default, it clones the this.dragData.ddel
+     * @param x The x position of the click on the dragged object
+     * @param y The y position of the click on the dragged object
+     * @returns {boolean} true to continue the drag, false to cancel
+     */
     onInitDrag: function(x, y) {
         if (this.dragData.ddel) {
             var ghost = this.dragData.ddel.cloneNode(true),
@@ -87,7 +97,11 @@ Ext.define('Extensible.calendar.dd.SchedulerDragZone', {
             return Ext.fly(this.dragData.ddel).getXY();
         }
     },
-    
+    /**
+     * If an invalid drop occured, the shim layer is hidden.
+     * @param e
+     * @param id
+     */
     afterInvalidDrop: function(e, id) {
         Ext.select('.ext-dd-shim').hide();
     },

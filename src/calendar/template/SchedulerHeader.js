@@ -8,8 +8,11 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
     extend: 'Ext.XTemplate',
 
     requires: ['Extensible.calendar.template.SchedulerHeaderCalendar'],
-    
-    // private
+
+    /**
+     * In the constructor we prepare the data structures we need and also the main template which will include itself a sub-template
+     * @param config
+     */
     constructor: function(config) {
         Ext.apply(this, config);
         // prepare calendars & events

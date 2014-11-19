@@ -3,9 +3,13 @@
  */
 Ext.define('Extensible.calendar.template.SchedulerHeaderCalendar', {
     extend: 'Ext.XTemplate',
-    
+
+    /**
+     * This is the template that is used to build the scheduler header view having each calendar as a column containing
+     * all it's "AllDay" events
+     * @param config
+     */
     constructor: function(config) {
-        
         Ext.apply(this, config);
         this.calendars = config.calendars;
         this.events = config.events;
