@@ -261,7 +261,10 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                 bodyHeight = ct ? ct.getHeight() - header.getHeight() : false,
                 headerTable = header.el.down('.ext-cal-schedulerview-allday'),
                 computedHeaderTableWidth = Ext.get(headerTable).down('tr').getWidth(), //computed value
-                minHeaderTableWidth = headerTable? me.header.calendarStore.data.items.length * this.minColumnWidth:false;
+                leftGutterWidth = header.el.down('.ext-cal-gutter').getWidth(),
+                rightGutterWidth = header.el.down('.ext-cal-gutter-rt').getWidth(),
+                //minHeaderTableWidth = headerTable? me.header.calendarStore.data.items.length * this.minColumnWidth:false;
+                minHeaderTableWidth = headerTable? me.header.calendarStore.getCount() * this.minColumnWidth: false;
 
             if (bodyHeight) {
                 if (bodyHeight < me.minBodyHeight) {
@@ -281,7 +284,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
 
 					tbh.select('th').setWidth(this.minColumnWidth);
 					tbb.select('td').setWidth(this.minColumnWidth);
-					me.el.down('#app-calendar-scheduler-hd').setWidth(minHeaderTableWidth);
+					me.el.down('#app-calendar-scheduler-hd').setWidth(minHeaderTableWidth+(leftGutterWidth+rightGutterWidth));
                     me.addCls('ext-cal-overflow-x');
                 } else {
                     me.removeCls('ext-cal-overflow-x');
