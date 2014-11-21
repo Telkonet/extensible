@@ -231,7 +231,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
 
         this.header = Ext.getCmp(this.id+'-hd');
         //this.body = Ext.getCmp(this.id+'-bd');
-
+        this.calendarStore.on('update',this.calendarStoreUpdated,this); //triggers refresh if a calendar is hidden from the menu
         this.header.on('eventsrendered', this.forceSize, this);
         //this.body.on('eventsrendered', this.forceSize, this);
         this.on('resize', this.onResize, this);
@@ -253,7 +253,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     forceSize: function() {
         var me = this;
-        
+
         // The defer call is mainly for good ol' IE, but it doesn't hurt in
         // general to make sure that the window resize is good and done first
         // so that we can properly calculate sizes.
@@ -265,8 +265,18 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                 computedHeaderTableWidth = Ext.get(headerTable).down('tr').getWidth(), //computed value
                 leftGutterWidth = header.el.down('.ext-cal-gutter').getWidth(),
                 rightGutterWidth = header.el.down('.ext-cal-gutter-rt').getWidth(),
+                calendars = me.calendarStore.getCount();
                 //minHeaderTableWidth = headerTable? me.header.calendarStore.data.items.length * this.minColumnWidth:false;
-                minHeaderTableWidth = headerTable? me.header.calendarStore.getCount() * this.minColumnWidth: false;
+
+            Ext.Object.each(this.calendarStore.data.items,
+                function(k, v){
+                    if (v.data.IsHidden == true) {
+                    calendars--;
+                    }
+                }
+            );
+
+            var minHeaderTableWidth = headerTable? calendars * this.minColumnWidth: false;
 
             if (bodyHeight) {
                 if (bodyHeight < me.minBodyHeight) {
@@ -463,5 +473,20 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         var msg = 'Event '+ rec.data[mappings.Title.name] +' was ' + action + ' to ' +
             this.calendarStore.data.items[calendarIdx].data.Title+' calendar';
         Ext.fly('app-msg').update(msg).removeCls('x-hidden');
+    },
+    /**
+     *
+     * @param store
+     * @param record
+     * @param operation
+     * @param modifiedFieldNames
+     * @param eOpts
+     */
+    calendarStoreUpdated:function(store, record, operation, modifiedFieldNames, eOpts){
+        if (modifiedFieldNames !== null) {
+            if (operation == "edit" && modifiedFieldNames.indexOf("IsHidden") !== -1) {
+                this.header.refresh(false);
+            }
+        }
     }
 });

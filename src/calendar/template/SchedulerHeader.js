@@ -18,30 +18,23 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
         // prepare calendars & events
         var calendars_array = [];
         var events_array = [];
-		
+
         for (var i=0; i < this.calendars.length; i++) {
-        	calendars_array.push(this.calendars[i].data);
-
+         //   if (this.calendars[i].data.IsHidden == true) continue;
         	var calendar_events = [];
+            this.calendars[i].data['eventscount'] = 0;
 
-        	// loop over events and assign events to calendar
             for (var j=0; j < this.events.length; j++) {
             	var event = this.events[j].data;
-
-				//TODO: check this date comparison, may be obsolete/redundant
-            	if (event.CalendarId == this.calendars[i].data.CalendarId && event.IsAllDay==true) {
-            		var de = new Date(event.StartDate);				
-					var ds = new Date(); //curent date time....
-	
-					de = Ext.Date.format(de,'U');
-					ds = Ext.Date.format(ds,'Y-m-d'); //obtain current date only, as string
-					ds = Ext.Date.parse(ds,'Y-m-d');
-
-					if ( de === Ext.Date.format(ds,'U') ) {
-            		calendar_events.push(event);
-                	}
-            	}
+            	if (event.CalendarId == this.calendars[i].data.CalendarId && event.IsAllDay == true) {
+                    var currentDate = new Date();
+                    if (Ext.Date.between(currentDate, this.events[j].data.StartDate, this.events[j].data.EndDate) === true) {
+                        calendar_events.push(event);
+                    }
+                    this.calendars[i].data.eventscount++
+                }
             }
+            calendars_array.push(this.calendars[i].data);
             events_array.push(calendar_events);
         }
 

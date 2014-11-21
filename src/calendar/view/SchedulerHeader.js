@@ -136,7 +136,12 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         Extensible.log('refresh (SchedulerHeaderView)');
         this.callParent(arguments);
         this.recalcHeaderBox();
+        //after renderItems was called in parent
         this.el.down('.ext-cal-schedulerview-allday').select('tr>td').each(function(td){
+            if (Ext.get(td).hasCls('schedulerview-empty-cell') == true){
+               Ext.get(td).clean();
+               Ext.get(td).setHeight(0.5);
+            }
             td.up('tr').applyStyles('height:'+(td.getHeight())+'px;');
             td.dom.removeAttribute('rowspan');
         });
@@ -229,9 +234,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 	onCalendarEndDrag: function(calIdx, onComplete) {
 		// set this flag for other event handlers that might conflict while we're waiting
 		this.dragPending = true;
-
-		var rec = {},
-			boundOnComplete = Ext.bind(this.onCalendarEndDragComplete, this, [onComplete]);
+		var boundOnComplete = Ext.bind(this.onCalendarEndDragComplete, this, [onComplete]);
 
 		var M = Extensible.calendar.data.EventMappings,
 			rec = new Extensible.calendar.data.EventModel();
@@ -362,7 +365,8 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
      */
     onClick: function(e, t) {
         var el = e.getTarget('td', 3);
-        var idxCal = 0;
+        var dt = Ext.Date.format(this.startDate, 'Ymd');
+        var idxCal = -1;
         if (el) {
             var parent = Ext.get(el).up('table').up('td');
             if (parent){
@@ -371,13 +375,13 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             }
 
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
-                var parts = el.id.split(this.dayElIdDelimiter),
-                    dt = parts[parts.length-1];
-
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
-                                this.calendarStore.data.items[idxCal]);
-                return;
+                var parts = el.id.split(this.dayElIdDelimiter);
+                dt = parts[parts.length-1];
             }
+            if (idxCal == -1) return; //clicked outside  a calendar cell.
+            this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
+                this.calendarStore.data.items[idxCal]);
+            return;
         }
         this.callParent(arguments);
     },
