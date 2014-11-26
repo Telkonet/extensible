@@ -22,7 +22,7 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
         for (var i=0; i < this.calendars.length; i++) {
          //   if (this.calendars[i].data.IsHidden == true) continue;
         	var calendar_events = [];
-            this.calendars[i].data['eventscount'] = 0;
+            this.calendars[i].data['eventscount'] = 0;// is computed inside the view's renderItems method but IE fails to see that it's updated outside
 
             for (var j=0; j < this.events.length; j++) {
             	var event = this.events[j].data;
@@ -31,7 +31,6 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
                     if (Ext.Date.between(currentDate, this.events[j].data.StartDate, this.events[j].data.EndDate) === true) {
                         calendar_events.push(event);
                     }
-                    this.calendars[i].data.eventscount++
                 }
             }
             calendars_array.push(this.calendars[i].data);
@@ -46,7 +45,7 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
                
         Extensible.calendar.template.SchedulerHeader.superclass.constructor.call(this,
             '<div class="ext-cal-hd-ct" >',
-                '<table class="ext-cal-hd-days-tbl ext-cal-day-we" cellspacing="0" cellpadding="0" style="width:auto;">',
+                '<table class="ext-cal-hd-days-tbl ext-cal-hd-days-tbl" cellspacing="0" cellpadding="0" style="width:auto;">',
                     '<tbody>',
                         '<tr>',
                             '<td class="ext-cal-gutter"></td>',

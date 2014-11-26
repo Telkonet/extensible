@@ -258,6 +258,7 @@
     zoom: 1
 }
 
+
 /* -----------------------------------------
  * Scheduler-specific styles
  */
@@ -275,7 +276,7 @@
 .ext-cal-schedulerview-header  td{
     border:1px solid #c2d3fd;
 }
-.ext-cal-schedulerview-header .thead{}
+.ext-cal-schedulerview-header .thead {}
 .ext-cal-schedulerview-header .thead td{
     text-align:center;
     padding:5px 10px;
@@ -288,8 +289,11 @@
 }
 .ext-cal-schedulerview-allday  td{
     background:#fff;
+    border-left:1px solid #c2d3fd;
 }
-
+.ext-cal-schedulerview-allday th{
+    border-left:1px solid #c2d3fd;
+}
 
 /* -----------------------------------------
  * Month-specific styles

@@ -25,8 +25,16 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
      */
     getTargetFromEvent: function(e) {
         var eventCell = Ext.get(e.getTarget()),
-            calendarIdx = eventCell.id.split(this.id)[1];
+            calendarIdx = eventCell.id.split(this.id)[1]; //empty cell
 
+        if (calendarIdx === undefined) { //may contain already an event, probing for data upper in the dom to get the proper id
+            if (eventCell.up('td') !== undefined) {
+                calendarIdx =  eventCell.up('td').id.split(this.id)[1];
+                if (calendarIdx === undefined ) {
+                    calendarIdx = eventCell.up('tr').up('td').id.split(this.id)[1];
+                }
+            }
+        }
         calendarIdx = calendarIdx === undefined ? null: calendarIdx.split('-')[0];
 
         return {

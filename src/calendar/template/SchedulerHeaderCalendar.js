@@ -14,9 +14,9 @@ Ext.define('Extensible.calendar.template.SchedulerHeaderCalendar', {
         this.calendars = config.calendars;
         this.events = config.events;
         Extensible.calendar.template.SchedulerHeaderCalendar.superclass.constructor.call(this,
-			'<table class="ext-cal-schedulerview-allday ext-cal-month-hd" cellpadding="0" cellspacing="0" style="height:100%;">',
+			'<table class="ext-cal-schedulerview-allday ext-cal-hd-days-tbl" cellpadding="0" cellspacing="0" style="height:100%;">',
                 '<tbody>',
-                    '<tr class="ext-cal-hd-day thead ext-cal-day-we">',
+                    '<tr class="ext-cal-hd-day thead">',
                         '<tpl for="calendars">',
                             '<tpl for=".">',
                                 '<tpl if="IsHidden &#61;&#61; 0">',
@@ -25,15 +25,32 @@ Ext.define('Extensible.calendar.template.SchedulerHeaderCalendar', {
                             '</tpl>',
                         '</tpl>',
                     '</tr>',
-                    '<tr>',
+                    '<tr style="height:100%;">',
+                        '{% var xxindex = 1; %}',
+                        '<tpl for="calendars">',
+                            '<tpl exec="values.cindex = xindex;"></tpl>',
+                            '<tpl for=".">',
+                                '<tpl if="IsHidden &#61;&#61; 0">',
+                                  //'<td class="ext-cal-hd-day{[values.xxindex==1 ? " ext-cal-day-first" : ""]}">{[values.xxindex==1 ? Ext.Date.format(this.viewStart,\'M j, Y\'):""]}</td>',
+                                 '<td id="{[this.id]}{[values.cindex-1]}-wk--0" class="ext-cal-dtitle {[xxindex==1 ? " ext-cal-dtitle-first" : ""]}">',
+                                    '<div id="{[this.id]}{[values.cindex-1]}-empty-{[xcount-1]}-day-{[Ext.Date.format(this.viewStart,\'Ymd\')]}">',
+                                        '{[xxindex==1 ? Ext.Date.format(this.viewStart,\'M j, Y\'):"&nbsp;"]}',
+                                    '</div>',
+                                 '</td>',
+                        '{% xxindex++; %}',
+                                '</tpl>',
+                            '</tpl>',
+                        '</tpl>',
+                    '</tr>',
+                    '<tr >',
                     '<tpl for="calendars">',
                         '<tpl if="IsHidden &#61;&#61; 0">',
                             '<td id="{[this.id]}{[xindex-1]}-wk-0">',
-                                    '<table class="ext-cal-evt-tbl ext-cal-hd-day" cellpadding="0" cellspacing="0" style="height:{[this.getRowHeight(this.events[xindex-1].length)]}%;padding:0px!important;border-top:1px solid  #c2d3fd;">',
+                                    '<table class="ext-cal-evt-tbl ext-cal-hd-day ext-cal-dayview" cellpadding="0" cellspacing="0" style="height:100%;padding:0px!important;border-top:1px solid  #c2d3fd;">',
                                     '<tpl for=".">',
                                         '<tpl if="eventscount  &#61;&#61; 0">',
-                                            '<tr >',
-                                                '<td class="schedulerview-empty-cell">&nbsp;</td>',
+                                            '<tr>',
+                                                '<td class="schedulerview-empty-cell" id="{[this.id]}{[xindex-1]}-empty-{[xcount-1]}-day-{[Ext.Date.format(this.viewStart,\'Ymd\')]}">&nbsp;</td>',
                                             '</tr>',
                                         '<tpl else>',
                                             '<tr style="display:none;">',
@@ -46,11 +63,7 @@ Ext.define('Extensible.calendar.template.SchedulerHeaderCalendar', {
                      '</tpl>',
                     '</tr>',
                 '</tbody>',
-            '</table>',{
-				getRowHeight: function(ln) {
-                   return 100/(ln==0?1:ln);
-                }
-			}
+            '</table>'
         );
     },
 

@@ -79,7 +79,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
     },
     // private
     afterRender: function() {
-    	
+
         if(!this.tpl) {
             this.tpl = Ext.create('Extensible.calendar.template.SchedulerHeader', {
                 id: this.id,
@@ -131,20 +131,26 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             this.evtMaxCount[weekIndex] = Math.min(max, maxEvtCount); 
         }
     },
+    //
+    getEventBodyMarkup: function() {
+        if(!this.eventBodyMarkup) {
+            this.eventBodyMarkup = ['{Title}',
+                '<tpl if="_isReminder">',
+                '<i class="ext-cal-ic ext-cal-ic-rem">&#160;</i>',
+                '</tpl>',
+                '<tpl if="_isRecurring">',
+                '<i class="ext-cal-ic ext-cal-ic-rcr">&#160;</i>',
+                '</tpl>'
+            ].join('');
+        }
+        return this.eventBodyMarkup;
+    },
+
     // private
     refresh: function(reloadData) {
         Extensible.log('refresh (SchedulerHeaderView)');
         this.callParent(arguments);
         this.recalcHeaderBox();
-        //after renderItems was called in parent
-        this.el.down('.ext-cal-schedulerview-allday').select('tr>td').each(function(td){
-            if (Ext.get(td).hasCls('schedulerview-empty-cell') == true){
-               Ext.get(td).clean();
-               Ext.get(td).setHeight(0.5);
-            }
-            td.up('tr').applyStyles('height:'+(td.getHeight())+'px;');
-            td.dom.removeAttribute('rowspan');
-        });
     },
     /**
      * Since all other views are using the same renderer  Extensible.calendar.util.WeekEventRenderer, in order to use
@@ -158,6 +164,8 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 		
         for (var i = 0; i < calendars.length; i++) {
             calEvts[0] = [];
+            calendars[i].data['eventscount'] = 0; // we need this in template to control the behaviour of the calendar column with no events
+
             for (var j = 0; j < events.length; j++) {
                 var eventRaw = events[j].data;
                 calEvts[0][0] = [];
@@ -174,6 +182,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 					}
 					if (calendars[i].data.CalendarId == evtCalId) {
 						calEvts[0][0].push(evtGrid[0][0][k]);
+                        calendars[i].data.eventscount++ ;
 					}
 				}
 		    }
@@ -191,7 +200,35 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 getMoreText: Ext.bind(this.getMoreText, this)
             });
         }
-    this.fireEvent('eventsrendered', this);
+
+        //after renderItems
+        var eventsDomLabel = this.el.down('.ext-cal-schedulerview-allday').down('tr').next('tr'),
+            eventsDomData = eventsDomLabel.next('tr'),
+            eventRowHeight = 16;
+
+        if (eventsDomLabel !== null) {
+            eventsDomLabel.select('td>div').each(function(div){
+               Ext.get(div).setHeight(eventRowHeight-1);
+               Ext.get(div).up('td').setHeight(eventRowHeight);
+            });
+        }
+        if (eventsDomData !== null) {
+            eventsDomData.select('td tr>td').each(function(td) {
+				if(td.down('div') !== null) td.down('div').setHeight(eventRowHeight-1);
+				if (!td.dom.hasAttribute('rowspan')) { //firefox and IE
+					td.setHeight(eventRowHeight);
+					td.up('tr').setHeight(eventRowHeight+1);
+				}
+
+                if (Ext.get(td).hasCls('schedulerview-empty-cell') == true) {
+                    Ext.get(td).clean().setHeight(0);
+                    if (td.up('tr').next('tr') != null) {
+                        Ext.get(td).up('tr').setHeight(0).setVisibilityMode(Ext.Element.DISPLAY).hide();
+                    }
+                }
+            });
+        }
+       this.fireEvent('eventsrendered', this);
     },
 	
     // private
@@ -365,24 +402,34 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
      */
     onClick: function(e, t) {
         var el = e.getTarget('td', 3);
-        var dt = Ext.Date.format(this.startDate, 'Ymd');
         var idxCal = -1;
+        var dt = Ext.Date.format(this.startDate,'Ymd');
         if (el) {
-            var parent = Ext.get(el).up('table').up('td');
-            if (parent){
+            var parent = Ext.get(el).up('table').up('td[id^='+this.id+']');
+
+            if (parent == null) {
+                if (Ext.get(el).id.indexOf(this.id) > -1) {
+                    parent = Ext.get(el);
+                    el = Ext.get(el).down('div');
+                }
+            }
+
+            if (parent) {
                 idxCal = parent.id.split('-wk-');
                 idxCal = idxCal[0].charAt(idxCal[0].length-1);
             }
+            if (idxCal === -1) return false; //clicked outside usable area....
 
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var parts = el.id.split(this.dayElIdDelimiter);
-                dt = parts[parts.length-1];
+                    dt = parts[parts.length-1];
+
+                // call here and will work for calendars with no events previously defined
+                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
+                    this.calendarStore.data.items[idxCal]);
+                return;
             }
-            if (idxCal == -1) return; //clicked outside  a calendar cell.
-            this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
-                this.calendarStore.data.items[idxCal]);
-            return;
-        }
+         }
         this.callParent(arguments);
     },
 	
