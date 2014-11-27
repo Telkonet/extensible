@@ -204,7 +204,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         //after renderItems
         var eventsDomLabel = this.el.down('.ext-cal-schedulerview-allday').down('tr').next('tr'),
             eventsDomData = eventsDomLabel.next('tr'),
-            eventRowHeight = 16;
+            eventRowHeight = 14;
 
         if (eventsDomLabel !== null) {
             eventsDomLabel.select('td>div').each(function(div){
@@ -214,7 +214,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         }
         if (eventsDomData !== null) {
             eventsDomData.select('td tr>td').each(function(td) {
-				if(td.down('div') !== null) td.down('div').setHeight(eventRowHeight-1);
+				if(td.down('div') !== null) td.down('div').setHeight(eventRowHeight);
 				if (!td.dom.hasAttribute('rowspan')) { //firefox and IE
 					td.setHeight(eventRowHeight);
 					td.up('tr').setHeight(eventRowHeight+1);
