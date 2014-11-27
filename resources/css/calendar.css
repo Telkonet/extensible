@@ -274,26 +274,29 @@
     border-collapse:collapse;
 }
 .ext-cal-schedulerview-header  td{
-    border:1px solid #c2d3fd;
+    /*  border:1px solid #c2d3fd;*/
 }
-.ext-cal-schedulerview-header .thead {}
-.ext-cal-schedulerview-header .thead td{
+/*.ext-cal-schedulerview-header .thead td{
     text-align:center;
     padding:5px 10px;
-}
+}*/
 
 .ext-cal-schedulerview-allday {
     width:100%;
     border:1px solid #c2d3fd;
     border-collapse:collapse;
 }
-.ext-cal-schedulerview-allday  td{
+.ext-cal-schedulerview-allday table tr td{
     background:#fff;
     border-left:1px solid #c2d3fd;
+    width:100%;
 }
-.ext-cal-schedulerview-allday th{
+.ext-cal-schedulerview-allday .ext-cal-dtitle{
+    background:#fff;
     border-left:1px solid #c2d3fd;
+    width:100%;
 }
+
 
 /* -----------------------------------------
  * Month-specific styles

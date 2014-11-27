@@ -45,7 +45,7 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
                
         Extensible.calendar.template.SchedulerHeader.superclass.constructor.call(this,
             '<div class="ext-cal-hd-ct" >',
-                '<table class="ext-cal-hd-days-tbl ext-cal-hd-days-tbl" cellspacing="0" cellpadding="0" style="width:auto;">',
+                '<table class="ext-cal-hd-days-tbl ext-cal-hd-days-tbl ext-cal-schedulerview-header" cellspacing="0" cellpadding="0" style="width:auto;">',
                     '<tbody>',
                         '<tr>',
                             '<td class="ext-cal-gutter"></td>',
