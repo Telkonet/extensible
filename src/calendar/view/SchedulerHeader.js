@@ -201,31 +201,42 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             });
         }
 
-        //after renderItems
+        //after renderItems method which uses the default rendering class, we need to be sure that
+        //everything looks good. basicly it's about resizing properly the cells and rows in which the event data resides
         var eventsDomLabel = this.el.down('.ext-cal-schedulerview-allday').down('tr').next('tr'),
             eventsDomData = eventsDomLabel.next('tr'),
             eventRowHeight = 14;
 
+        /*
+         //inner header row
         if (eventsDomLabel !== null) {
-            eventsDomLabel.select('td>div').each(function(div){
-               Ext.get(div).setHeight(eventRowHeight-1);
-               Ext.get(div).up('td').setHeight(eventRowHeight);
-            });
+             eventsDomLabel.select('td>div').each(function(div) { });
         }
+        */
+        //inner calendar data row of which each cell hosts a table in which reside all events of a calendar
         if (eventsDomData !== null) {
             eventsDomData.select('td tr>td').each(function(td) {
-				if(td.down('div') !== null) td.down('div').setHeight(eventRowHeight);
-				if (!td.dom.hasAttribute('rowspan')) { //firefox and IE
-					td.setHeight(eventRowHeight);
-					td.up('tr').setHeight(eventRowHeight+1);
-				}
-
+                td.applyStyles('vertical-align:top');
+				if(td.down('div') !== null) {
+                    td.down('div').setHeight(eventRowHeight);
+                    td.setHeight(eventRowHeight-1);
+                } else {
+                    if (td.dom.hasAttribute('rowspan')) {
+                        if (td.up('tr').up('table').up('td').getHeight() < td.up('tr').up('table').up('td').up('tr').getHeight()) {
+                            td.setHeight(eventRowHeight + (td.up('tr').up('table').up('td').up('tr').getHeight()-td.up('tr').up('table').up('td').getHeight())+1);
+                        } else {
+                            td.setHeight(td.dom.getAttribute('rowspan')*eventRowHeight);
+                        }
+                        td.dom.removeAttribute('rowspan');
+                    }
+                }
                 if (Ext.get(td).hasCls('schedulerview-empty-cell') == true) {
                     Ext.get(td).clean().setHeight(0);
                     if (td.up('tr').next('tr') != null) {
                         Ext.get(td).up('tr').setHeight(0).setVisibilityMode(Ext.Element.DISPLAY).hide();
                     }
                 }
+				td.up('tr').up('table').up('td').setHeight(td.up('tr').up('table').getHeight());
             });
         }
        this.fireEvent('eventsrendered', this);
