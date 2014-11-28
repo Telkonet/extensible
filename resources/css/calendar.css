@@ -296,7 +296,9 @@
     border-left:1px solid #c2d3fd;
     width:100%;
 }
-
+.ext-cal-schedulerview-allday th{
+    border-left:1px solid #c2d3fd;
+}
 
 /* -----------------------------------------
  * Month-specific styles
