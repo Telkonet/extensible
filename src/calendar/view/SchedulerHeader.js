@@ -214,6 +214,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         }
         */
         //inner calendar data row of which each cell hosts a table in which reside all events of a calendar
+
         if (eventsDomData !== null) {
             eventsDomData.select('td tr>td').each(function(td) {
                 td.applyStyles('vertical-align:top');
@@ -222,12 +223,18 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                     td.setHeight(eventRowHeight-1);
                 } else {
                     if (td.dom.hasAttribute('rowspan')) {
-                        if (td.up('tr').up('table').up('td').getHeight() < td.up('tr').up('table').up('td').up('tr').getHeight()) {
-                            td.setHeight(eventRowHeight + (td.up('tr').up('table').up('td').up('tr').getHeight()-td.up('tr').up('table').up('td').getHeight())+1);
-                        } else {
-                            td.setHeight(td.dom.getAttribute('rowspan')*eventRowHeight);
+                        //td.setHeight(td.dom.getAttribute('rowspan')*eventRowHeight);
+                        td.update('<div>&nbsp;</div>');
+                        if (td.up('tr').up('table').select('tr > td').getCount() == 1){
+                            td.down('div').setHeight((eventRowHeight*td.dom.getAttribute('rowspan'))-1);
                         }
-                        td.dom.removeAttribute('rowspan');
+                       td.dom.removeAttribute('rowspan');
+
+                    }else{
+                        td.update('<div>&nbsp;</div>');
+                        if (td.up('tr').up('table').select('tr > td').getCount() == 1){
+                            td.down('div').setHeight(eventRowHeight+10);
+                        }
                     }
                 }
                 if (Ext.get(td).hasCls('schedulerview-empty-cell') == true) {
@@ -236,7 +243,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                         Ext.get(td).up('tr').setHeight(0).setVisibilityMode(Ext.Element.DISPLAY).hide();
                     }
                 }
-				td.up('tr').up('table').up('td').setHeight(td.up('tr').up('table').getHeight());
+                td.up('tr').up('table').up('td').setHeight(td.up('tr').up('table').getHeight()+1);
             });
         }
        this.fireEvent('eventsrendered', this);
