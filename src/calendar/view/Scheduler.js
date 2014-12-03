@@ -136,7 +136,24 @@ Ext.define('Extensible.calendar.view.Scheduler', {
     // private
     isSchedulerView: true,
     isDayView: true, // remove this later
-    
+    /**
+     * @cfg {Array} tCalendars
+     * Stores the calendars data structure used in templates
+     * It is populated by the logic.
+     */
+    tCalendars: [],
+    /**
+     * @cfg {Array} tCEventsH
+     * Stores the events data structure used in header template
+     * It is populated by the logic.
+     */
+    tCEventsH: [],
+    /**
+     * Stores /events data structure used in body template
+     * It is populated by the logic.
+     */
+    tCEventsB: [],
+
     // private
     initComponent: function() {
         /**
@@ -166,7 +183,34 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         cfg.minColumnWidth = this.minColumnWidth;
 
         this.items = this.getItemConfig(cfg);
-        this.addCls('ext-cal-schedulerview ext-cal-ct');
+        this.addCls('ext-cal-schedulerview ext-cal-ct ext-cal-dayview');
+
+        //we prepare the custom data structures that will be used only for the custom template rendering
+        for (var i=0; i < this.calendarStore.data.items.length; i++) {
+            //   if (this.calendarStore.data.items[i].data.IsHidden == true) continue;
+            var calendar_eventsH = [],
+                calendar_eventsB = [];
+            this.calendarStore.data.items[i].data['eventscount'] = 0;// is computed inside the view's renderItems method but IE fails to see that it's updated outside
+
+            for (var j=0; j < this.store.data.items.length; j++) {
+                var event = this.store.data.items[j].data;
+                if (event.CalendarId == this.calendarStore.data.items[i].data.CalendarId) {
+                    var currentDate = new Date();
+                    if (event.IsAllDay == true) {
+                        if (Ext.Date.between(currentDate, this.store.data.items[j].data.StartDate, this.store.data.items[j].data.EndDate) === true) {
+                            calendar_eventsH.push(event);
+                        }
+                    }else{
+                        if (Ext.Date.between(currentDate, this.store.data.items[j].data.StartDate, this.store.data.items[j].data.EndDate) === true) {
+                            calendar_eventsB.push(event);
+                        }
+                    }
+                }
+            }
+            this.tCalendars.push(this.calendarStore.data.items[i].data);
+            this.tCEventsH.push(calendar_eventsH);
+            this.tCEventsB.push(calendar_eventsB);
+        }
 
         this.callParent(arguments);
         this.listeners = {
@@ -205,7 +249,9 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         var header = Ext.applyIf({
             xtype: 'extensible.schedulerheaderview',
             id: this.id+'-hd',
-            ownerCalendarPanel: this.ownerCalendarPanel
+            ownerCalendarPanel: this.ownerCalendarPanel,
+            tCalendars: this.tCalendars,
+            tCEventsH: this.tCEventsH
         }, cfg);
 
         var body = Ext.applyIf({
@@ -217,11 +263,13 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             scrollStartHour: this.scrollStartHour,
             hourHeight: this.hourHeight,
             id: this.id+'-bd',
-            ownerCalendarPanel: this.ownerCalendarPanel
+            ownerCalendarPanel: this.ownerCalendarPanel,
+            tCalendars: this.tCalendars,
+            tCEventsB: this.tCEventsB
             }, cfg);
 
-        //return [header, body];
-        return [header];
+        return [header, body];
+        //return [header];
 
     },
 
@@ -230,10 +278,10 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.callParent(arguments);
 
         this.header = Ext.getCmp(this.id+'-hd');
-        //this.body = Ext.getCmp(this.id+'-bd');
+        this.body  = Ext.getCmp(this.id+'-bd');
         this.calendarStore.on('update',this.calendarStoreUpdated,this); //triggers refresh if a calendar is hidden from the menu
         this.header.on('eventsrendered', this.forceSize, this);
-        //this.body.on('eventsrendered', this.forceSize, this);
+       // this.body.on('eventsrendered', this.forceSize, this);
         this.on('resize', this.onResize, this);
     },
     
@@ -244,7 +292,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             reloadData = false;
         }
         this.header.refresh(reloadData);
-       //this.body.refresh(reloadData);
+        this.body.refresh(reloadData);
     },
 
     /**
@@ -260,7 +308,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         Ext.defer(function() {
             var ct = me.el.up('.x-panel-body'),
                 header = me.el.down('.ext-cal-day-header'),
-                bodyHeight = ct ? ct.getHeight() - header.getHeight() : false,
                 headerTable = header.el.down('.ext-cal-schedulerview-allday'),
                 computedHeaderTableWidth = Ext.get(headerTable).down('tr').getWidth(), //computed value
                 leftGutterWidth = header.el.down('.ext-cal-gutter').getWidth(),
@@ -278,16 +325,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
 
             var minHeaderTableWidth = headerTable? calendars * this.minColumnWidth: false;
 
-            if (bodyHeight) {
-                if (bodyHeight < me.minBodyHeight) {
-                    bodyHeight = me.minBodyHeight;
-                    me.addCls('ext-cal-overflow-y');
-                } else {
-                    me.removeCls('ext-cal-overflow-y');
-                }
-                //me.el.down('.ext-cal-body-ct').setHeight(bodyHeight - 1);
-            }
-
             if (computedHeaderTableWidth) {
                 if (computedHeaderTableWidth < minHeaderTableWidth) {
                     //set columns width to each calendar column:
@@ -302,6 +339,16 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                     me.removeCls('ext-cal-overflow-x');
 					me.el.down('#app-calendar-scheduler-hd').setWidth('100%');
                 }
+            }
+                var   bodyHeight = ct ? ct.getHeight() - header.getHeight() : false;
+            if (bodyHeight) {
+                if (bodyHeight < me.minBodyHeight) {
+                    bodyHeight = me.minBodyHeight;
+                    me.addCls('ext-cal-overflow-y');
+                } else {
+                    me.removeCls('ext-cal-overflow-y');
+                }
+                me.el.down('.ext-cal-body-ct').setHeight(bodyHeight - 1);
             }
         }, Ext.isIE ? 1 : 0, me);
     },
@@ -318,7 +365,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     doHide: function() {
         this.header.doHide.apply(this, arguments);
-        //this.body.doHide.apply(this, arguments);
+        this.body.doHide.apply(this, arguments);
     },
     
     // private
@@ -343,13 +390,13 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     setStartDate: function(dt) {
         this.header.setStartDate(dt, false);
-        //this.body.setStartDate(dt, true);
+        this.body.setStartDate(dt, true);
     },
 
     // private
     renderItems: function() {
         this.header.renderItems();
-        //this.body.renderItems();
+        this.body.renderItems();
     },
     
     /**
@@ -367,7 +414,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveTo: function(dt) {
         dt = this.header.moveTo(dt, false);
-        //this.body.moveTo(dt, true);
+        this.body.moveTo(dt, true);
         this.forceSize();
         
         return dt;
@@ -379,7 +426,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveNext: function() {
         var dt = this.header.moveNext(false);
-        //this.body.moveNext(true);
+        this.body.moveNext(true);
         this.forceSize();
         
         return dt;
@@ -391,7 +438,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     movePrev: function(noRefresh) {
         var dt = this.header.movePrev(false);
-        //this.body.movePrev(true);
+        this.body.movePrev(true);
         this.forceSize();
         
         return dt;
@@ -404,7 +451,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveDays: function(value) {
         var dt = this.header.moveDays(value, false);
-        //this.body.moveDays(value, true);
+        this.body.moveDays(value, true);
         this.forceSize();
         
         return dt;
@@ -416,7 +463,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      */
     moveToday: function() {
         var dt = this.header.moveToday(false);
-        //this.body.moveToday(true);
+        this.body.moveToday(true);
         this.forceSize();
         
         return dt;
