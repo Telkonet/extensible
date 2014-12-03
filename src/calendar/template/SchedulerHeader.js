@@ -15,30 +15,9 @@ Ext.define('Extensible.calendar.template.SchedulerHeader', {
      */
     constructor: function(config) {
         Ext.apply(this, config);
-        // prepare calendars & events
-        var calendars_array = [];
-        var events_array = [];
 
-        for (var i=0; i < this.calendars.length; i++) {
-         //   if (this.calendars[i].data.IsHidden == true) continue;
-        	var calendar_events = [];
-            this.calendars[i].data['eventscount'] = 0;// is computed inside the view's renderItems method but IE fails to see that it's updated outside
-
-            for (var j=0; j < this.events.length; j++) {
-            	var event = this.events[j].data;
-            	if (event.CalendarId == this.calendars[i].data.CalendarId && event.IsAllDay == true) {
-                    var currentDate = new Date();
-                    if (Ext.Date.between(currentDate, this.events[j].data.StartDate, this.events[j].data.EndDate) === true) {
-                        calendar_events.push(event);
-                    }
-                }
-            }
-            calendars_array.push(this.calendars[i].data);
-            events_array.push(calendar_events);
-        }
-
-        config.calendars = calendars_array;
-        config.events = events_array;
+        config.calendars = this.calendars;
+        config.events = this.events;
 
         this.headerCalendarTpl = Ext.create('Extensible.calendar.template.SchedulerHeaderCalendar', config);
         this.headerCalendarTpl.compile();
