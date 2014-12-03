@@ -268,7 +268,9 @@
 .ext-cal-schedulerview .ext-cal-gutter-rt {
     width:16px;
 }
-
+.ext-cal-schedulerview .ext-cal-hd-ct {
+    height: auto;
+}
 .ext-cal-schedulerview-header {
     width:100%;
     border-collapse:collapse;
