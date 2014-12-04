@@ -11,7 +11,7 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
     constructor: function(config) {
         
         Ext.apply(this, config);
-        
+
         Extensible.calendar.template.SchedulerBody.superclass.constructor.call(this,
             '<table class="ext-cal-bg-tbl" cellspacing="0" cellpadding="0" style="height:{dayHeight}px;">',
                 '<tbody>',
@@ -40,7 +40,16 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
                         '<tpl for="days">',
                             '<td class="ext-cal-day-col">',
                                 '<div class="ext-cal-day-col-inner">',
-                                    '<div id="{[this.id]}-day-col-{.:date("Ymd")}" class="ext-cal-day-col-gutter" style="height:{parent.dayHeight}px;"></div>',
+                                '<tpl exec="values.dayHeight = parent.dayHeight; values.calWidth = (100/parent.calendars.length)+\'%\';"></tpl>',
+                              //'<div id="{[this.id]}-day-col-0-{.:date("Ymd")}" class="ext-cal-day-col-gutter" style="height:{parent.dayHeight}px;width:200px;"></div>',
+                                '<tpl for="parent.calendars">', //calendar object
+                                '<tpl exec="values.day = parent;"></tpl>',
+                                    '<tpl if="IsHidden &#61;&#61; 0">',
+                                    //'{[console.log(values)]}',
+                                      '<div id="{[this.id]}-day-col-{[values.CalendarId]}-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-gutter" ' +
+                                      'style="height:{[values.day.dayHeight]}px;width:{[values.day.calWidth]};float:left;margin-right:0;border-right:1px solid #c2d3fd;"></div>',
+                                    '</tpl>',
+                                '</tpl>',
                                 '</div>',
                             '</td>',
                         '</tpl>',
@@ -85,7 +94,9 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
             hourHeight: this.hourHeight,
             hourSeparatorCls: this.showHourSeparator ? '' : 'no-sep', // the class suppresses the default separator
             dayHeight: dayHeight,
-            hourSeparatorHeight: (this.hourHeight / 2)
+            hourSeparatorHeight: (this.hourHeight / 2),
+            calendars: this.calendars,
+            events: this.events
         };
          
         if (Ext.getVersion().isLessThan('4.1')) {
