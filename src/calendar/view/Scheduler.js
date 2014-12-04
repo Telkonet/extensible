@@ -201,9 +201,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                             calendar_eventsH.push(event);
                         }
                     }else{
-                        if (Ext.Date.between(currentDate, this.store.data.items[j].data.StartDate, this.store.data.items[j].data.EndDate) === true) {
                             calendar_eventsB.push(event);
-                        }
                     }
                 }
             }
