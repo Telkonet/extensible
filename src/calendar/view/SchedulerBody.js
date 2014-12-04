@@ -154,7 +154,8 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 viewStartHour: this.viewStartHour,
                 viewEndHour: this.viewEndHour,
                 hourIncrement: this.hourIncrement,
-                calendars: this.calendarStore.data.items,
+                calendars: this.tCalendars,
+                events: this.tCEventsB,
                 hourHeight: this.hourHeight
             });
         }
@@ -472,12 +473,15 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 evt2 = evts[j].data;
                 if(this.isOverlapping(evt, evt2)) {
                     evt._overlap = evt._overlap === undefined ? 1 : evt._overlap+1;
-                    if(i<j) {
-                        if (evt._overcol === undefined) {
-                            evt._overcol = 0;
+                    if (evt.CalendarId == evt2.CalendarId) {
+                        if(i < j) {
+                            overlapCols[dt] = (overlapCols[dt] === undefined ? [] : overlapCols[dt]);
+                            if (evt._overcol === undefined) {
+                                evt._overcol = 0;
+                            }
+                            evt2._overcol = evt._overcol+1;
+                            overlapCols[dt][evt.CalendarId] = overlapCols[dt][evt.CalendarId] ? Math.max(overlapCols[dt][evt.CalendarId], evt2._overcol) : evt2._overcol;
                         }
-                        evt2._overcol = evt._overcol+1;
-                        overlapCols[dt] = overlapCols[dt] ? Math.max(overlapCols[dt], evt2._overcol) : evt2._overcol;
                     }
                 }
             }
@@ -489,19 +493,42 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
 
             if(evt._overlap !== undefined) {
-                var colWidth = 100 / (overlapCols[dt]+1),
+                var colWidth = 100 / (overlapCols[dt][evt.CalendarId]+1),
                     evtWidth = 100 - (colWidth * evt._overlap);
 
                 evt._width = colWidth;
                 evt._left = colWidth * evt._overcol;
             }
+
             var markup = this.getEventTemplate().apply(evt),
-                target = this.id + '-day-col-' + Ext.Date.format(evts[i].date, 'Ymd');
-            
+                target = this.id + '-day-col-'+evt.CalendarId+'-' + Ext.Date.format(evts[i].date, 'Ymd');
             Ext.DomHelper.append(target, markup);
         }
-
         this.fireEvent('eventsrendered', this);
+    },
+    //private
+    isOverlapping: function(evt1, evt2) {
+        var ev1 = evt1.data ? evt1.data : evt1,
+            ev2 = evt2.data ? evt2.data : evt2,
+            M = Extensible.calendar.data.EventMappings,
+            start1 = ev1[M.StartDate.name].getTime(),
+            end1 = Extensible.Date.add(ev1[M.EndDate.name], {seconds: -1}).getTime(),
+            start2 = ev2[M.StartDate.name].getTime(),
+            end2 = Extensible.Date.add(ev2[M.EndDate.name], {seconds: -1}).getTime(),
+            startDiff = Extensible.Date.diff(ev1[M.StartDate.name], ev2[M.StartDate.name], 'm');
+
+        if (end1<start1) {
+            end1 = start1;
+        }
+        if (end2<start2) {
+            end2 = start2;
+        }
+
+        var evtsOverlap = Extensible.Date.rangesOverlap(start1, end1, start2, end2),
+            minimumMinutes = this.minEventDisplayMinutes || 0, // applies in day/week body view only for vertical overlap
+            ev1MinHeightOverlapsEv2 = minimumMinutes > 0 && (startDiff > -minimumMinutes && startDiff < minimumMinutes);
+
+        return ((evtsOverlap  || ev1MinHeightOverlapsEv2) && (evt1.CalendarId == evt2.CalendarId));
     },
 
     // private
@@ -557,7 +584,30 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             }
         };
     },
+    /**
+     * Handles what's happening when the user clicks on an event inside the calendar; the name of the method
+     * is correct since it is inherited from superclass.
+     * The event edit window display method is invoked with the current event data passed as parameter
+     * @param dt
+     * @param ad
+     * @param el
+     * @param cal
+     */
+    /*onDayClick: function(dt, ad, el, cal) {
+        if (this.readOnly === true) {
+            return;
+        }
+        if (this.fireEvent('dayclick', this, Ext.Date.clone(dt), ad, el) !== false) {
+            var M = Extensible.calendar.data.EventMappings,
+                rec = new Extensible.calendar.data.EventModel();
 
+            rec.data[M.StartDate.name] = dt;
+            rec.data[M.IsAllDay.name] = ad;
+            rec.data[M.CalendarId.name] = cal;
+
+            this.showEventEditor(rec, el);
+        }
+    },*/
     // private
     onClick: function(e, t) {
         if(this.dragPending || Extensible.calendar.view.SchedulerBody.superclass.onClick.apply(this, arguments)) {
