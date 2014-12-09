@@ -55,8 +55,19 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
      */
     onNodeOver: function(n, dd, e, data) {
         var eventDragText = (e.ctrlKey || e.altKey) ? this.copyText: this.moveText;
-           if (n.calIdx !== null) {
-                this.shim(n);
+        var box = {};
+            if (n.calIdx !== null) {
+               var boxRegion = Ext.select('[id^='+this.id+n.calIdx+'-wk'+']');
+               boxRegion.each(function(el,all,idx){
+                    var tmp = el.getBox();
+                    if (idx == 0){
+                        box = tmp;
+                    } else {
+                        box.height += tmp.height;
+                    }
+               });
+
+               this.shim(n,box);
                 data.proxy.updateMsg(Ext.String.format(data.type === 'eventdrag' ? eventDragText :
                     this.createText, this.view.calendarStore.data.items[n.calIdx].data.Title));
                 return this.dropAllowed;
@@ -67,7 +78,7 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
      * This creates and sets-up the layer that is displayed over the current cell that is dragged and dropped
      * @param n
      */
-    shim: function(n) {
+    shim: function(n,box) {
         var calIdx,
             shim;
 
@@ -86,7 +97,7 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
                 shim = this.createShim(calIdx);
                 this.shims[calIdx] = shim;
             }
-            shim.boxInfo = n.el.getBox();
+            shim.boxInfo = box;
             shim.isActive = true;
         }
         Ext.each(this.shims, function(shim) {
@@ -94,7 +105,6 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
                 if (shim.isActive) {
                     shim.show();
                     shim.setBox(shim.boxInfo);
-                    //Ext.get(shim).applyStyles('z-index:0');
                 } else if (shim.isVisible()) {
                     shim.hide();
                 }
@@ -127,7 +137,7 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
 
         return Ext.create('Ext.Layer', {
             shadow: false, 
-            useDisplay: true, 
+            useDisplay: true,
             constrain: false
         }, el);
     },
