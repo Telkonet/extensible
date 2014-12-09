@@ -257,7 +257,6 @@
 .x-ie6 .ext-cal-day-col-gutter {
     zoom: 1
 }
-
 /* -----------------------------------------
  * Scheduler-specific styles
  */
@@ -269,42 +268,49 @@
 }
 .ext-cal-schedulerview .ext-cal-hd-ct {
     height: auto;
-
 }
 .ext-cal-schedulerview-header {
     width:100%;
     border-collapse:collapse;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl{
+    border:none;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl .ext-cal-bg-tbl-hd td{
+    height:24px;
+    background-color:#CDDCEF;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl  td{
+    border-left: 1px solid #A1AEFF!important;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl td:first-child {
+    border:none!important;
 }
 .ext-cal-schedulerview-header table:nth-child(2){
     background:none;
 }
 .ext-cal-schedulerview-allday {
     width:100%;
-    border:1px solid #c2d3fd;
+    border-top:1px solid #A1AEFF/*#c2d3fd*/;
+    border-bottom:1px solid #A1AEFF;
     border-collapse:collapse;
     position: relative;
     top: 0;
     overflow:visible!important;
 }
 .ext-cal-schedulerview-allday table tr td{
-    /* background:#fff;
-     border-left:1px solid #c2d3fd;*/
     width:100%;
 }
 .ext-cal-schedulerview-allday .ext-cal-dtitle{
-    /*background:#fff;
-    border-left:1px solid #c2d3fd;*/
     width:100%;
 }
 .ext-cal-schedulerview-allday .thead th{
-    background-color:#CDDCEF;
-    border-left:1px solid #c2d3fd;
     height:16px;
 }
 .ext-cal-schedulerview-allday table .ext-cal-hd-daytext{
     height:20px;
 }
-.ext-cal-schedulerview-allday  .ext-cal-evt-tbl{
+.ext-cal-schedulerview-allday .ext-cal-evt-tbl{
     height:100%;padding:0px!important;
 }
 
