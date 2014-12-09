@@ -205,7 +205,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         //everything looks good. basicly it's about resizing properly the cells and rows in which the event data resides
         var eventsDomLabel = this.el.down('.ext-cal-schedulerview-allday').down('tr').next('tr'),
             eventsDomData = eventsDomLabel.next('tr'),
-            eventRowHeight = 14;
+            eventRowHeight = 16;
 
         /*
          //inner header row
