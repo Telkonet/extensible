@@ -278,34 +278,34 @@
 .ext-cal-schedulerview-header table:nth-child(2){
     background:none;
 }
-.ext-cal-schedulerview-header  td{
-    /*  border:1px solid #c2d3fd;*/
-}
-/*.ext-cal-schedulerview-header .thead td{
-    text-align:center;
-    padding:5px 10px;
-}*/
-
 .ext-cal-schedulerview-allday {
     width:100%;
     border:1px solid #c2d3fd;
     border-collapse:collapse;
     position: relative;
     top: 0;
+    overflow:visible!important;
 }
 .ext-cal-schedulerview-allday table tr td{
-    /* background:#fff;*/
-    border-left:1px solid #c2d3fd;
+    /* background:#fff;
+     border-left:1px solid #c2d3fd;*/
     width:100%;
 }
 .ext-cal-schedulerview-allday .ext-cal-dtitle{
-    /*background:#fff;*/
-    border-left:1px solid #c2d3fd;
+    /*background:#fff;
+    border-left:1px solid #c2d3fd;*/
     width:100%;
 }
-.ext-cal-schedulerview-allday th{
+.ext-cal-schedulerview-allday .thead th{
     background-color:#CDDCEF;
     border-left:1px solid #c2d3fd;
+    height:16px;
+}
+.ext-cal-schedulerview-allday table .ext-cal-hd-daytext{
+    height:20px;
+}
+.ext-cal-schedulerview-allday  .ext-cal-evt-tbl{
+    height:100%;padding:0px!important;
 }
 
 /* -----------------------------------------
