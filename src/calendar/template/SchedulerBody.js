@@ -40,14 +40,13 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
                         '<tpl for="days">',
                             '<td class="ext-cal-day-col">',
                                 '<div class="ext-cal-day-col-inner">',
-                                '<tpl exec="values.dayHeight = parent.dayHeight; values.calWidth = (100/parent.calendars.length)+\'%\';"></tpl>',
-                              //'<div id="{[this.id]}-day-col-0-{.:date("Ymd")}" class="ext-cal-day-col-gutter" style="height:{parent.dayHeight}px;width:200px;"></div>',
+                                '<tpl exec="values.dayHeight = parent.dayHeight; values.calWidth = (100/this.visibleCalendars)+\'%\';"></tpl>',
                                 '<tpl for="parent.calendars">', //calendar object
-                                '<tpl exec="values.day = parent;"></tpl>',
-                                    '<tpl if="IsHidden &#61;&#61; 0">',
-                                    //'{[console.log(values)]}',
+                                    '<tpl exec="values.day = parent;"></tpl>',
+                                    '<tpl if="values.IsHidden &#61;&#61; 0">',
+                                   // '{[console.log(values)]}',
                                       '<div id="{[this.id]}-day-col-{[values.CalendarId]}-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-gutter" ' +
-                                      'style="height:{[values.day.dayHeight]}px;width:{[values.day.calWidth]};float:left;margin-right:0;border-right:1px solid #c2d3fd;"></div>',
+                                      'style="height:{[values.day.dayHeight]}px;width:{[values.day.calWidth]};float:left;margin-right:0;border-right:1px solid #A1AEFF;"></div>',
                                     '</tpl>',
                                 '</tpl>',
                                 '</div>',
@@ -63,7 +62,7 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
     applyTemplate: function(o) {
         this.today = Extensible.Date.today();
         this.dayCount = this.dayCount || 1;
-        
+
         var i = 0, days = [],
             dt = Ext.Date.clone(o.viewStart);
             
@@ -86,6 +85,14 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
             times.push(Ext.Date.format(dt, fmt));
             dt = Extensible.Date.add(dt, {minutes: mins});
         }
+
+        var tl =this.calendars.length;
+        Ext.each(this.calendars, function(c) {
+            if (c.IsHidden == true) {
+                tl--;
+            }
+        });
+        this.visibleCalendars = tl;
 
         templateConfig = {
             days: days,
