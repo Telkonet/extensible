@@ -29,7 +29,7 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
 
         if (calendarIdx === undefined) { //may contain already an event, probing for data upper in the dom to get the proper id
             if (eventCell.up('td') !== undefined) {
-                calendarIdx =  eventCell.up('td').id.split(this.id)[1];
+                calendarIdx = eventCell.up('td')==undefined ? undefined : eventCell.up('td').id.split(this.id)[1];
                 if (calendarIdx === undefined ) {
                     calendarIdx = eventCell.up('tr').up('td').id.split(this.id)[1];
                 }
