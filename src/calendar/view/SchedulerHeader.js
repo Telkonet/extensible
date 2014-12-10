@@ -122,9 +122,10 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 			}			
 			maxEvtCountPerCalendar.push(z);
 		}
-		
+
         var max = (this.maxEventsPerDay + 1) || 999;
-        maxEvtCount = Ext.Array.max(maxEvtCountPerCalendar)+1;
+
+        maxEvtCount = Ext.Array.max(maxEvtCountPerCalendar);
 
         this.evtMaxCount[weekIndex] = this.evtMaxCount[weekIndex] || 0;
         if (maxEvtCount && this.evtMaxCount[weekIndex] < maxEvtCount) {
@@ -164,7 +165,6 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 		
         for (var i = 0; i < calendars.length; i++) {
             calEvts[0] = [];
-            calendars[i].data['eventscount'] = 0; // we need this in template to control the behaviour of the calendar column with no events
 
             for (var j = 0; j < events.length; j++) {
                 var eventRaw = events[j].data;
@@ -182,7 +182,6 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 					}
 					if (calendars[i].data.CalendarId == evtCalId) {
 						calEvts[0][0].push(evtGrid[0][0][k]);
-                        calendars[i].data.eventscount++ ;
 					}
 				}
 		    }
@@ -202,48 +201,25 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         }
 
         //after renderItems method which uses the default rendering class, we need to be sure that
-        //everything looks good. basicly it's about resizing properly the cells and rows in which the event data resides
+        //everything looks good. basically it's about fixing height of the last event row...
         var eventsDomLabel = this.el.down('.ext-cal-schedulerview-allday').down('tr').next('tr'),
             eventsDomData = eventsDomLabel.next('tr'),
             eventRowHeight = 16;
 
-        /*
-         //inner header row
-        if (eventsDomLabel !== null) {
-             eventsDomLabel.select('td>div').each(function(div) { });
-        }
-        */
-        //inner calendar data row of which each cell hosts a table in which reside all events of a calendar
-
         if (eventsDomData !== null) {
-            eventsDomData.select('td tr>td').each(function(td) {
-                td.applyStyles('vertical-align:top');
-				if(td.down('div') !== null) {
-                    td.down('div').setHeight(eventRowHeight);
-                    td.setHeight(eventRowHeight-1);
-                } else {
-                    if (td.dom.hasAttribute('rowspan')) {
-                        //td.setHeight(td.dom.getAttribute('rowspan')*eventRowHeight);
-                        td.update('<div>&nbsp;</div>');
-                        if (td.up('tr').up('table').select('tr > td').getCount() == 1){
-                            td.down('div').setHeight((eventRowHeight*td.dom.getAttribute('rowspan'))-1);
-                        }
-                       td.dom.removeAttribute('rowspan');
-
-                    }else{
-                        td.update('<div>&nbsp;</div>');
-                        if (td.up('tr').up('table').select('tr > td').getCount() == 1){
-                            td.down('div').setHeight(eventRowHeight+10);
-                        }
+            eventsDomData.select('td > table').each(function(el,col,idx) {
+            //el - current iterated event table
+            //col - all the event tables from all calendars
+            //idx -  current iteration index
+            var parent_cell = el.up('td');
+            //var parent_row =  parent_cell.up('tr');
+            var last_event_cell = el.select('td:last');
+                if (last_event_cell !== undefined) {
+                    last_event_cell = last_event_cell.elements[0];
+                    if (last_event_cell !== undefined && last_event_cell.hasAttribute('rowspan')) {
+                       Ext.get(last_event_cell).setHeight(last_event_cell.getAttribute('rowspan') * eventRowHeight+2);
                     }
                 }
-                if (Ext.get(td).hasCls('schedulerview-empty-cell') == true) {
-                    Ext.get(td).clean().setHeight(0);
-                    if (td.up('tr').next('tr') != null) {
-                        Ext.get(td).up('tr').setHeight(0).setVisibilityMode(Ext.Element.DISPLAY).hide();
-                    }
-                }
-                td.up('tr').up('table').up('td').setHeight(td.up('tr').up('table').getHeight()+1);
             });
         }
        this.fireEvent('eventsrendered', this);
