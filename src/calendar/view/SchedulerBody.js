@@ -142,7 +142,6 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
 
     // private
     afterRender: function() {
-
         if(!this.tpl) {
             this.tpl = Ext.create('Extensible.calendar.template.SchedulerBody', {
                 id: this.id,
@@ -156,7 +155,8 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 hourIncrement: this.hourIncrement,
                 calendars: this.tCalendars,
                 events: this.tCEventsB,
-                hourHeight: this.hourHeight
+                hourHeight: this.hourHeight,
+                visibleCalendars:0
             });
         }
         this.tpl.compile();
