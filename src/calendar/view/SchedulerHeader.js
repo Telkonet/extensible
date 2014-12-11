@@ -412,7 +412,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 idxCal = parent.id.split('-wk-');
                 idxCal = idxCal[0].charAt(idxCal[0].length-1);
             }
-            if (idxCal === -1) return false; //clicked outside usable area....
+            if (idxCal === -1 || el == null) return false; //clicked outside usable area....
 
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var parts = el.id.split(this.dayElIdDelimiter);
