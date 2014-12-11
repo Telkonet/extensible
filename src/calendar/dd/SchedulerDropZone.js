@@ -27,13 +27,17 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
         var eventCell = Ext.get(e.getTarget()),
             calendarIdx = eventCell.id.split(this.id)[1]; //empty cell
 
-        if (calendarIdx === undefined) { //may contain already an event, probing for data upper in the dom to get the proper id
-            if (eventCell.up('td') !== undefined) {
-                calendarIdx = eventCell.up('td')==undefined ? undefined : eventCell.up('td').id.split(this.id)[1];
-                if (calendarIdx === undefined ) {
-                    calendarIdx = eventCell.up('tr').up('td').id.split(this.id)[1];
+        try {
+            if (calendarIdx === undefined) { //may contain already an event, probing for data upper in the dom to get the proper id
+                if (eventCell.up('td') !== undefined) {
+                    calendarIdx = eventCell.up('td').id.split(this.id)[1];
+                    if (calendarIdx === undefined ) {
+                        calendarIdx = eventCell.up('tr').up('td').id.split(this.id)[1];
+                    }
                 }
             }
+        }
+        catch(ex) {
         }
         calendarIdx = calendarIdx === undefined ? null: calendarIdx.split('-')[0];
 
@@ -58,7 +62,7 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
         var box = {};
             if (n.calIdx !== null) {
                var boxRegion = Ext.select('[id^='+this.id+n.calIdx+'-wk'+']');
-               boxRegion.each(function(el,all,idx){
+               boxRegion.each(function(el,all,idx) {
                     var tmp = el.getBox();
                     if (idx == 0){
                         box = tmp;
@@ -121,17 +125,17 @@ Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
         var cal_owner = Ext.get(this.view.id);
 
         if (!this.shimCt) {
-            this.shimCt = Ext.get('ext-dd-shim-ct-'+cal_owner.id);
+            this.shimCt = Ext.get('ext-dd-shim-ct-' + cal_owner.id);
             if (!this.shimCt) {
                 this.shimCt = document.createElement('div');
-                this.shimCt.id = 'ext-dd-shim-ct-'+cal_owner.id;
+                this.shimCt.id = 'ext-dd-shim-ct-' + cal_owner.id;
                 owner.getEl().parent().appendChild(this.shimCt);
             }
         }
         var el = document.createElement('div');
 
         el.className = 'ext-dd-shim';
-        el.id =  el.id+'-'+cal_owner.id+calIdx+'-';
+        el.id =  el.id+'-'+cal_owner.id + calIdx+'-';
 
         this.shimCt.appendChild(el);
 

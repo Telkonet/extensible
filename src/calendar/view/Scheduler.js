@@ -132,7 +132,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      * space available to the view) is less  than the value of parameter minColumnWidth, then the column width is set to
      * minColumnWidth and horizontal scrollbars are introduced.
      */
-    minColumnWidth:80,
+    minColumnWidth: 80,
     // private
     isSchedulerView: true,
     isDayView: true, // remove this later
@@ -199,7 +199,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                         if (Ext.Date.between(currentDate, this.store.data.items[j].data.StartDate, this.store.data.items[j].data.EndDate) === true) {
                             calendar_eventsH.push(event);
                         }
-                    }else{
+                    } else {
                             calendar_eventsB.push(event);
                     }
                 }
@@ -220,7 +220,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                  *
                  */
                 eventcopytocalendar: {
-                    fn: function(vw, rec){
+                    fn: function(vw, rec) {
                         this.onEventCalendarCopyOrMove(rec, 'copy');
                     },
                     scope:this
@@ -233,7 +233,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                  * for the event that was moved with updated calendar data
                  */
                 eventmovetocalendar: {
-                    fn: function(vw, rec){
+                    fn: function(vw, rec) {
                         this.onEventCalendarCopyOrMove(rec, 'move');
                     },
                     scope:this
@@ -274,11 +274,12 @@ Ext.define('Extensible.calendar.view.Scheduler', {
     afterRender: function() {
         this.callParent(arguments);
 
-        this.header = Ext.getCmp(this.id+'-hd');
-        this.body  = Ext.getCmp(this.id+'-bd');
+        this.header = Ext.getCmp(this.id + '-hd');
+        this.body  = Ext.getCmp(this.id + '-bd');
         this.calendarStore.on('update',this.calendarStoreUpdated,this); //triggers refresh if a calendar is hidden from the menu
+        this.header.on('eventsrendered', this.forceSize, this);
         this.body.on('eventsrendered', this.forceSize, this);
-        //this.on('resize', this.onResize, this); //obsolete since it also calls this.forceSize method
+        this.on('resize', this.onResize, this); //obsolete since it also calls this.forceSize method
     },
     
     // private
@@ -307,9 +308,9 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                 header = me.el.down('#app-calendar-scheduler-hd'),
                 body = me.el.down('#app-calendar-scheduler-bd'),
                 headerTable = header.el.down('.ext-cal-schedulerview-allday'),
-                computedHeaderTableWidth = Ext.get(headerTable).getWidth(),
                 leftGutterWidth = header.el.down('.ext-cal-gutter').getWidth(),
                 rightGutterWidth = header.el.down('.ext-cal-gutter-rt').getWidth(),
+                computedHeaderTableWidth = ct.getWidth() - (leftGutterWidth + rightGutterWidth),
                 calendars = me.calendarStore.getCount();
 
             Ext.Object.each(this.calendarStore.data.items,
@@ -331,9 +332,10 @@ Ext.define('Extensible.calendar.view.Scheduler', {
 					tbh.select('th').setWidth(me.minColumnWidth);
 					tbd.select('div').setWidth(me.minColumnWidth);
                     tbb.select('td td').setWidth(me.minColumnWidth);
-                    Ext.get(body).down('table td.ext-cal-day-col > div').select('div[id^='+this.body.id+']').setWidth(me.minColumnWidth);
-					header.setWidth(minHeaderTableWidth+(leftGutterWidth+rightGutterWidth));
-                    body.setWidth(minHeaderTableWidth+(leftGutterWidth+rightGutterWidth));
+
+                    Ext.get(body).down('table td.ext-cal-day-col > div').select('div[id^=' + this.body.id + ']').setWidth(me.minColumnWidth);
+					header.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
+                    body.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
                     me.addCls('ext-cal-overflow-x');
                 } else {
                     me.removeCls('ext-cal-overflow-x');
@@ -341,7 +343,8 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                     body.setWidth('100%');
                 }
             }
-                var  bodyHeight = ct ? ct.getHeight() - header.getHeight() : false;
+
+            var  bodyHeight = ct ? ct.getHeight() - header.getHeight() : false;
             if (bodyHeight) {
                 if (bodyHeight < me.minBodyHeight) {
                     bodyHeight = me.minBodyHeight;

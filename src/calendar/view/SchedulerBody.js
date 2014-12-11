@@ -156,7 +156,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 calendars: this.tCalendars,
                 events: this.tCEventsB,
                 hourHeight: this.hourHeight,
-                visibleCalendars:0
+                visibleCalendars: 0
             });
         }
         this.tpl.compile();
@@ -493,7 +493,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
 
             if(evt._overlap !== undefined) {
-                var colWidth = 100 / (overlapCols[dt][evt.CalendarId]+1),
+                var colWidth = 100 / (overlapCols[dt][evt.CalendarId] + 1),
                     evtWidth = 100 - (colWidth * evt._overlap);
 
                 evt._width = colWidth;

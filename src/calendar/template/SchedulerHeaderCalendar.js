@@ -95,12 +95,10 @@ Ext.define('Extensible.calendar.template.SchedulerHeaderCalendar', {
         isWeekend = dt.getDay() % 6 === 0;
 
         this.titleCls = 'ext-cal-dtitle ' + (isToday ? ' ext-cal-dtitle-today' : '') +
-        //(w === 0 ? ' ext-cal-dtitle-first' : '') +
         (prevMonth ? ' ext-cal-dtitle-prev' : '') +
         (nextMonth ? ' ext-cal-dtitle-next' : ''),
 
         this.cellCls = 'ext-cal-day ' + (isToday ? ' ' + this.todayCls : '') +
-        //(d === 0 ? ' ext-cal-day-first' : '') +
         (prevMonth ? ' ' + this.prevMonthCls : '') +
         (nextMonth ? ' ' + this.nextMonthCls : '') +
         (isWeekend && this.weekendCls ? ' ' + this.weekendCls : '');

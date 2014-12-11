@@ -40,7 +40,7 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
                         '<tpl for="days">',
                             '<td class="ext-cal-day-col">',
                                 '<div class="ext-cal-day-col-inner">',
-                                '<tpl exec="values.dayHeight = parent.dayHeight; values.calWidth = (100/this.visibleCalendars)+\'%\';"></tpl>',
+                                '<tpl exec="values.dayHeight = parent.dayHeight; values.calWidth = (100 / this.visibleCalendars) + \'%\';"></tpl>',
                                 '<tpl for="parent.calendars">', //calendar object
                                     '<tpl exec="values.day = parent;"></tpl>',
                                     '<tpl if="values.IsHidden &#61;&#61; 0">',

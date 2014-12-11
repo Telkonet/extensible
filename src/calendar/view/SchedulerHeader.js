@@ -106,14 +106,14 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 		var maxEvtCount = maxEventsForDay.length;
 		var calendars =  this.calendarStore.data.items;
     
-		var maxEvtCountPerCalendar =[]; // counting max events per calendar and only for current day.
+		var maxEvtCountPerCalendar = []; // counting max events per calendar and only for current day.
 		for (var i = 0; i < calendars.length; i++){
 			if (calendars[i].data.IsHidden == true){ // ignore hidden calendars
 				continue;
 			}
 			var z = 0;
 			for (var j = 0; j < this.store.data.items.length; j++){
-				if (this.store.data.items[j].data.CalendarId==calendars[i].data.CalendarId && this.store.data.items[j].data.IsAllDay === true) {
+				if (this.store.data.items[j].data.CalendarId == calendars[i].data.CalendarId && this.store.data.items[j].data.IsAllDay === true) {
 					var currentDate = Ext.Date.clone(this.viewStart);
 					if (Ext.Date.between(currentDate,this.store.data.items[j].data.StartDate,this.store.data.items[j].data.EndDate) === true) {
 						z++;
@@ -229,11 +229,11 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
     recalcHeaderBox: function() {
         var tbl = this.el.down('.ext-cal-schedulerview-allday'),
             h = tbl.getHeight();
-        this.el.setHeight(h+5);
+        this.el.setHeight(h + 5);
         // These should be auto-height, but since that does not work reliably
         // across browser / doc type, we have to size them manually
-        this.el.down('.ext-cal-hd-ad-inner').setHeight(h+5);
-       //this.el.down('.ext-cal-bg-tbl').setHeight(h+5);
+        this.el.down('.ext-cal-hd-ad-inner').setHeight(h + 5);
+       //this.el.down('.ext-cal-bg-tbl').setHeight(h + 5);
     },
 
     // private
@@ -416,7 +416,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var parts = el.id.split(this.dayElIdDelimiter);
-                    dt = parts[parts.length-1];
+                    dt = parts[parts.length - 1];
 
                 // call here and will work for calendars with no events previously defined
                 this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
