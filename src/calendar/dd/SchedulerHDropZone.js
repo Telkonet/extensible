@@ -1,6 +1,6 @@
 /**
  * Internal drop zone implementation for the calendar components. This provides base functionality
- * and is primarily for the scheduler view -- SchedulerDD adds calendar column view-specific functionality.
+ * and is primarily for the scheduler view (header section) -- SchedulerHeaderDD adds calendar column view-specific functionality.
  * @private
  */
 Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
@@ -11,7 +11,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         'Extensible.calendar.data.EventMappings'
     ],
     
-    ddGroup: 'SchedulerDD',
+    ddGroup: 'SchedulerHeaderDD',
     eventSelector: '.ext-cal-evt',
     dateRangeFormat: '{0}-{1}',
     dateFormat: 'n/j',
