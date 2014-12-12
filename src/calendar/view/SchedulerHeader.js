@@ -14,8 +14,8 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
     
     requires: [
         'Extensible.calendar.template.SchedulerHeader',
-        'Extensible.calendar.dd.SchedulerDragZone',
-        'Extensible.calendar.dd.SchedulerDropZone'
+        'Extensible.calendar.dd.SchedulerHDragZone',
+        'Extensible.calendar.dd.SchedulerHDropZone'
     ],
     
     // private configs
@@ -64,10 +64,10 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             createText: this.ddCreateEventText,
             copyText: this.ddCopyEventText,
             moveText: this.ddMoveEventText,
-            ddGroup: this.ddGroup || this.id+'-SchedulerViewDD'
+            ddGroup: this.ddGroup || this.id+'-SchedulerHeaderDD'
         };
-        this.dragZone = Ext.create('Extensible.calendar.dd.SchedulerDragZone', this.el, cfg);
-        this.dropZone = Ext.create('Extensible.calendar.dd.SchedulerDropZone', this.el, cfg);
+        this.dragZone = Ext.create('Extensible.calendar.dd.SchedulerHDragZone', this.el, cfg);
+        this.dropZone = Ext.create('Extensible.calendar.dd.SchedulerHDropZone', this.el, cfg);
     },
 
     onDestroy: function() {
