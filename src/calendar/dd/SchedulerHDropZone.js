@@ -3,7 +3,7 @@
  * and is primarily for the scheduler view -- SchedulerDD adds calendar column view-specific functionality.
  * @private
  */
-Ext.define('Extensible.calendar.dd.SchedulerDropZone', {
+Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
     extend: 'Ext.dd.DropZone',
     
     requires: [
