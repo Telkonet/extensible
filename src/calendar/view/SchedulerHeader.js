@@ -248,7 +248,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 
     //private
     /**
-     * Called from Extensible.calendar.dd.SchedulerDropZone it triggers the private method that handles the behaviour when
+     * Called from Extensible.calendar.dd.SchedulerHDropZone it triggers the private method that handles the behaviour when
      * the event is dropped in the view
      * @param rec Event data record
      * @param calIdx Index of the current calendar item in the calendar store - from the current cell under the mouse's pointer
@@ -258,7 +258,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         this[(mode || 'move') + 'Event'](rec, calIdx); // instead of moveEvent from the abstract class we reffer to our own method
     },
     /**
-     * Called from Extensible.calendar.dd.SchedulerDropZone if the drag/drop is made on an empty calendar cell.
+     * Called from Extensible.calendar.dd.SchedulerHDropZone if the drag/drop is made on an empty calendar cell.
      * @param calIdx Index of the current calendar item in the calendar store - from the current cell under the mouse's pointer
      * @param onComplete callback function that can be passed to be executed at the end of this method
      */
