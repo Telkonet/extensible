@@ -12,8 +12,8 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
         'Ext.XTemplate',
         'Extensible.calendar.template.SchedulerBody',
         'Extensible.calendar.data.EventMappings',
-        'Extensible.calendar.dd.DayDragZone',
-        'Extensible.calendar.dd.DayDropZone'
+        'Extensible.calendar.dd.SchedulerBDragZone',
+        'Extensible.calendar.dd.SchedulerBDropZone'
     ],
 
     //private
@@ -77,7 +77,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             moveText: this.ddMoveEventText,
             resizeText: this.ddResizeEventText,
             ddIncrement: this.ddIncrement,
-            ddGroup: this.ddGroup || this.id+'-DayViewDD'
+            ddGroup: this.ddGroup || this.id+'-SchedulerBodyDDD'
         };
 
         this.el.ddScrollConfig = {
@@ -87,15 +87,15 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             hthresh: -1,
             frequency: 50,
             increment: 100,
-            ddGroup: this.ddGroup || this.id+'-DayViewDD'
+            ddGroup: this.ddGroup || this.id+'-SchedulerBodyDD'
         };
 
-        this.dragZone = Ext.create('Extensible.calendar.dd.DayDragZone', this.el, Ext.apply({
+        this.dragZone = Ext.create('Extensible.calendar.dd.SchedulerBDragZone', this.el, Ext.apply({
             // disabled for now because of bugs in Ext 4 ScrollManager:
             //containerScroll: true
         }, cfg));
 
-        this.dropZone = Ext.create('Extensible.calendar.dd.DayDropZone', this.el, cfg);
+        this.dropZone = Ext.create('Extensible.calendar.dd.SchedulerBDropZone', this.el, cfg);
     },
 
     //private
@@ -177,7 +177,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
     // private
     forceSize: Ext.emptyFn,
 
-    // private -- called from DayViewDropZone
+    // private -- called from SchedulerBDropZone
     onEventResize: function(rec, data) {
         var me = this,
             EventMappings = Extensible.calendar.data.EventMappings,
@@ -532,30 +532,39 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
     },
 
     // private
-    getDayEl: function(dt) {
-        return Ext.get(this.getDayId(dt));
+    getDayEl: function(dt,calDomId) {
+        return Ext.get(this.getDayId(dt,calDomId));
     },
 
     // private
-    getDayId: function(dt) {
+    getDayId: function(dt,calDomId) {
         if(Ext.isDate(dt)) {
             dt = Ext.Date.format(dt, 'Ymd');
         }
+        if (calDomId != undefined || calDomId != '') {
+            return calDomId;
+        }
         return this.id + this.dayColumnElIdDelimiter + dt;
+
     },
 
     // private
-    getDaySize: function() {
-        var box = this.el.down('.ext-cal-day-col-inner').getBox();
+    getDaySize: function(calDomId) {
+        var box = {};
+        if (calDomId != undefined) {
+            box =  this.el.down('[id='+calDomId+']');
+        }else{
+            box = this.el.down('.ext-cal-day-col-inner').getBox();
+        }
         return {height: box.height, width: box.width};
     },
 
     // private
-    getDayAt: function(x, y) {
+    getDayAt: function(x, y, calDomId) {
         var sel = '.ext-cal-body-ct',
             xoffset = this.el.down('.ext-cal-day-times').getWidth(),
             viewBox = this.el.getBox(),
-            daySize = this.getDaySize(false),
+            daySize = this.getDaySize(calDomId),
             relX = x - viewBox.x - xoffset,
             dayIndex = Math.floor(relX / daySize.width), // clicked col index
             scroll = this.el.getScroll(),
@@ -565,13 +574,12 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             rowIndex = Math.max(0, Math.ceil(relY / rowH)),
             mins = rowIndex * (this.hourIncrement / this.incrementsPerHour),
             dt = Extensible.Date.add(this.viewStart, {days: dayIndex, minutes: mins, hours: this.viewStartHour}),
-            el = this.getDayEl(dt),
+            el = this.getDayEl(dt, calDomId),
             timeX = x;
 
         if(el) {
             timeX = el.getLeft();
         }
-
         return {
             date: dt,
             el: el,
@@ -593,7 +601,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
      * @param el
      * @param cal
      */
-    /*onDayClick: function(dt, ad, el, cal) {
+    onDayClick: function(dt, ad, el, cal) {
         if (this.readOnly === true) {
             return;
         }
@@ -607,7 +615,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
 
             this.showEventEditor(rec, el);
         }
-    },*/
+    },
     // private
     onClick: function(e, t) {
         if(this.dragPending || Extensible.calendar.view.SchedulerBody.superclass.onClick.apply(this, arguments)) {
@@ -619,19 +627,57 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             return;
         }
         var el = e.getTarget('td', 3);
+
         if(el) {
             if(el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
-                var dt = this.getDateFromId(el.id, this.dayElIdDelimiter);
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt)));
+                var calIdDate = this.getDateFromId(el.id, this.dayElIdDelimiter); // not returning date anymore but a string like: col-{calendarId}-{date}
+                var parts = calIdDate.split('-');
+                this.onDayClick(Ext.Date.parseDate(parts[2], 'Ymd'), true, Ext.get(this.getDayId(parts[2],parts[1])),parts[1]);
                 return;
             }
         }
-        var day = this.getDayAt(e.getX(), e.getY());
-        if(day && day.date) {
-            this.onDayClick(day.date, false, null);
+
+        var el = e.getTarget('div', 6);
+        var day = this.getDayAt(e.getX(), e.getY(), el.id);
+
+        if(day && day.date && day.el) {
+            var calendar = day.el.id.replace(this.id,'');
+            var parts = calendar.split('-');
+            this.onDayClick(day.date, false, null, parts[3]);
         }
     },
+    /**
+     * Called from Extensible.calendar.dd.SchedulerBDropZone if the drag/drop is made on an empty calendar cell.
+     * @param start event's start date
+     * @param end event's end date
+     * @param calId current calendar item's Id - from the current area under the mouse's pointer
+     * @param onComplete callback function that can be passed to be executed at the end of this method
+     */
+    onCalendarEndDrag: function(start, end, calId, onComplete) {
+        // set this flag for other event handlers that might conflict while we're waiting
+        this.dragPending = true;
+        var boundOnComplete = Ext.bind(this.onCalendarEndDragComplete, this, [onComplete]);
 
+        var M = Extensible.calendar.data.EventMappings,
+            rec = new Extensible.calendar.data.EventModel();
+        rec.data[M.StartDate.name] = start;
+        rec.data[M.EndDate.name] = end;
+        rec.data[M.CalendarId.name] = calId;
+
+        if (this.fireEvent('rangeselect', this, rec, boundOnComplete) !== false) {
+            this.showEventEditor(rec, null);
+
+            if (this.editWin) {
+                this.editWin.on('hide', boundOnComplete, this, {single:true});
+            } else {
+                boundOnComplete();
+            }
+        }
+        else {
+            // client code canceled the selection so clean up immediately
+            this.onCalendarEndDragComplete(boundOnComplete);
+        }
+    },
     // inherited docs
     isActiveView: function() {
         var calendarPanel = this.ownerCalendarPanel;
