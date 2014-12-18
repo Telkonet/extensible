@@ -551,10 +551,15 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
     // private
     getDaySize: function(calDomId) {
         var box = {};
-        if (calDomId != undefined) {
-            box =  this.el.down('[id='+calDomId+']');
-        }else{
-            box = this.el.down('.ext-cal-day-col-inner').getBox();
+
+        try{
+            if (calDomId !== undefined || calDomId !== '') {
+                box =  this.el.down('[id='+calDomId+']').getBox();
+            } else {
+                box = this.el.down('.ext-cal-day-col-inner').getBox();
+            }
+        }catch(ex){
+            return {height:0,width:0};
         }
         return {height: box.height, width: box.width};
     },
@@ -566,7 +571,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             viewBox = this.el.getBox(),
             daySize = this.getDaySize(calDomId),
             relX = x - viewBox.x - xoffset,
-            dayIndex = Math.floor(relX / daySize.width), // clicked col index
+            dayIndex = Math.floor(relX / daySize.x), // clicked col index
             scroll = this.el.getScroll(),
             row = this.el.down('.ext-cal-bg-row'), // first avail row, just to calc size
             rowH = row.getHeight() / this.incrementsPerHour,
@@ -610,6 +615,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 rec = new Extensible.calendar.data.EventModel();
 
             rec.data[M.StartDate.name] = dt;
+            rec.data[M.EndDate.name] = Ext.Date.add(dt,Ext.Date.MINUTE, this.hourIncrement);
             rec.data[M.IsAllDay.name] = ad;
             rec.data[M.CalendarId.name] = cal;
 
@@ -640,7 +646,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
         var el = e.getTarget('div', 6);
         var day = this.getDayAt(e.getX(), e.getY(), el.id);
 
-        if(day && day.date && day.el) {
+        if(day && day.date && day.el && el.id) {
             var calendar = day.el.id.replace(this.id,'');
             var parts = calendar.split('-');
             this.onDayClick(day.date, false, null, parts[3]);
@@ -681,6 +687,6 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
     // inherited docs
     isActiveView: function() {
         var calendarPanel = this.ownerCalendarPanel;
-        return (calendarPanel && calendarPanel.getActiveView().isDayView);
+        return (calendarPanel && calendarPanel.getActiveView().isSchedulerView);
     }
 });
