@@ -71,6 +71,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
             }
             var endDt;
             box = this.dragStartMarker.getBox();
+            box.x= n.el.getX();
             box.width = n.el.getWidth();
             box.height = Math.ceil(Math.abs(e.getY() - box.y) / n.timeBox.height) * n.timeBox.height;
             
