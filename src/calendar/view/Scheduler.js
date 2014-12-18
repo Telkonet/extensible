@@ -333,7 +333,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
 					tbd.select('div').setWidth(me.minColumnWidth);
                     tbb.select('td td').setWidth(me.minColumnWidth);
 
-                    Ext.get(body).down('table td.ext-cal-day-col > div').select('div[id^=' + this.body.id + ']').setWidth(me.minColumnWidth);
+                    Ext.get(body).down('table td.ext-cal-day-col > div').select('div[id^=' + this.body.id + this.body.dayColumnElIdDelimiter + '-outer]').setWidth(me.minColumnWidth);
 					header.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
                     body.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
                     me.addCls('ext-cal-overflow-x');

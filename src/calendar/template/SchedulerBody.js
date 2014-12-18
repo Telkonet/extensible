@@ -45,8 +45,10 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
                                     '<tpl exec="values.day = parent;"></tpl>',
                                     '<tpl if="values.IsHidden &#61;&#61; 0">',
                                    // '{[console.log(values)]}',
-                                      '<div id="{[this.id]}-day-col-{[values.CalendarId]}-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-gutter" ' +
-                                      'style="height:{[values.day.dayHeight]}px;width:{[values.day.calWidth]};float:left;margin-right:0;border-right:1px solid #A1AEFF;"></div>',
+                                      '<div id="{[this.id]}-day-col-{[values.CalendarId]}-outer-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-inner" ' +
+                                      'style="height:{[values.day.dayHeight]}px;width:{[values.day.calWidth]};float:left;margin-right:0;border-right:1px solid #BBCCFF;">',
+                                        '<div id="{[this.id]}-day-col-{[values.CalendarId]}-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-gutter" ' +
+                                        'style="height:{[values.day.dayHeight]}px;width:auto;margin-right:15px;"></div></div>',
                                     '</tpl>',
                                 '</tpl>',
                                 '</div>',
