@@ -551,14 +551,13 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
     // private
     getDaySize: function(calDomId) {
         var box = {};
-
-        try{
+        try {
             if (calDomId !== undefined || calDomId !== '') {
                 box =  this.el.down('[id='+calDomId+']').getBox();
             } else {
                 box = this.el.down('.ext-cal-day-col-inner').getBox();
             }
-        }catch(ex){
+        } catch(ex) {
             return {height:0,width:0};
         }
         return {height: box.height, width: box.width};
@@ -613,9 +612,8 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
         if (this.fireEvent('dayclick', this, Ext.Date.clone(dt), ad, el) !== false) {
             var M = Extensible.calendar.data.EventMappings,
                 rec = new Extensible.calendar.data.EventModel();
-
             rec.data[M.StartDate.name] = dt;
-            rec.data[M.EndDate.name] = Ext.Date.add(dt,Ext.Date.MINUTE, this.hourIncrement);
+            rec.data[M.EndDate.name] = Ext.Date.add(dt, Ext.Date.MINUTE, this.hourIncrement);
             rec.data[M.IsAllDay.name] = ad;
             rec.data[M.CalendarId.name] = cal;
 
@@ -666,9 +664,9 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
 
         var M = Extensible.calendar.data.EventMappings,
             rec = new Extensible.calendar.data.EventModel();
-        rec.data[M.StartDate.name] = start;
-        rec.data[M.EndDate.name] = end;
-        rec.data[M.CalendarId.name] = calId;
+            rec.data[M.StartDate.name] = start;
+            rec.data[M.EndDate.name] = end;
+            rec.data[M.CalendarId.name] = calId;
 
         if (this.fireEvent('rangeselect', this, rec, boundOnComplete) !== false) {
             this.showEventEditor(rec, null);

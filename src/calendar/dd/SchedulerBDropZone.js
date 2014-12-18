@@ -231,7 +231,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
                 if (rec.data.CalendarId != n.calendarId) {
                     rec.data.CalendarId = n.calendarId;
                 }
-                rec.data.StartDate = Ext.Date.add(n.date,Ext.Date.SECOND,2);
+                rec.data.StartDate = Ext.Date.add(n.date, Ext.Date.SECOND, 2);
                 this.view.onEventDrop(rec, n.date, (e.ctrlKey || e.altKey) ? 'copy' : 'move');
                 this.onCalendarDragComplete();
                 delete this.dragOffset;
