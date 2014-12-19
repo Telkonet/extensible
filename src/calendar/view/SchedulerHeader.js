@@ -125,7 +125,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 
         var max = (this.maxEventsPerDay + 1) || 999;
 
-        maxEvtCount = Ext.Array.max(maxEvtCountPerCalendar);
+        maxEvtCount = Ext.Array.max(maxEvtCountPerCalendar)+1;
 
         this.evtMaxCount[weekIndex] = this.evtMaxCount[weekIndex] || 0;
         if (maxEvtCount && this.evtMaxCount[weekIndex] < maxEvtCount) {
@@ -211,7 +211,10 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 if (last_event_cell !== undefined) {
                     last_event_cell = last_event_cell.elements[0];
                     if (last_event_cell !== undefined && last_event_cell.hasAttribute('rowspan')) {
-                       Ext.get(last_event_cell).setHeight(last_event_cell.getAttribute('rowspan') * eventRowHeight+2);
+                       Ext.get(last_event_cell).setHeight((last_event_cell.getAttribute('rowspan')-1) * eventRowHeight+2);
+                    }else if (last_event_cell !== undefined && !last_event_cell.hasAttribute('rowspan')){
+                        Ext.get(last_event_cell).update('');
+                        Ext.get(last_event_cell).setHeight(eventRowHeight/4);
                     }
                 }
             });
@@ -225,9 +228,9 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             h = tbl.getHeight();
         // These should be auto-height, but since that does not work reliably
         // across browser / doc type, we have to size them manually
-        this.el.setHeight(h + 6);
-        this.el.down('.ext-cal-hd-ad-inner').setHeight(h + 4);
-        this.el.down('.ext-cal-bg-tbl').setHeight(h + 5);
+        this.el.setHeight(h + 2);
+        this.el.down('.ext-cal-hd-ad-inner').setHeight(h + 1);
+        this.el.down('.ext-cal-bg-tbl').setHeight(h + 1);
     },
 
     // private
