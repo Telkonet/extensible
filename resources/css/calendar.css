@@ -330,6 +330,16 @@
     padding:0px!important;
 }
 
+.ext-cal-schedulerview .ext-cal-day-col .ext-cal-day-col-inner{
+    float:left;
+    margin-right:0;
+    border-right:1px solid #BBCCFF;
+}
+.ext-cal-schedulerview .ext-cal-day-col .ext-cal-day-col-gutter{
+    width:auto;
+    margin-right:15px;
+}
+
 /* -----------------------------------------
  * Month-specific styles
  */
