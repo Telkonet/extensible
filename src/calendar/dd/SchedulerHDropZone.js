@@ -61,17 +61,17 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         var eventDragText = (e.ctrlKey || e.altKey) ? this.copyText: this.moveText;
         var box = {};
             if (n.calIdx !== null) {
-               var boxRegion = Ext.select('[id^='+this.id+n.calIdx+'-wk'+']');
+               var boxRegion = Ext.select('[id^=' + this.id + n.calIdx + '-wk]');
                boxRegion.each(function(el,all,idx) {
                     var tmp = el.getBox();
-                    if (idx == 0){
+                    if (idx == 0) {
                         box = tmp;
                     } else {
                         box.height += tmp.height;
                     }
                });
 
-               this.shim(n,box);
+                this.shim(n, box);
                 data.proxy.updateMsg(Ext.String.format(data.type === 'eventdrag' ? eventDragText :
                     this.createText, this.view.calendarStore.data.items[n.calIdx].data.Title));
                 return this.dropAllowed;
@@ -82,7 +82,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
      * This creates and sets-up the layer that is displayed over the current cell that is dragged and dropped
      * @param n
      */
-    shim: function(n,box) {
+    shim: function(n, box) {
         var calIdx,
             shim;
 
@@ -135,7 +135,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         var el = document.createElement('div');
 
         el.className = 'ext-dd-shim';
-        el.id =  el.id+'-'+cal_owner.id + calIdx+'-';
+        el.id =  el.id + '-' + cal_owner.id + calIdx + '-';
 
         this.shimCt.appendChild(el);
 

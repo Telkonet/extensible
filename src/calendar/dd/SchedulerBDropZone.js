@@ -38,7 +38,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
         }
     },
     getCalendarIdFromDomElId:function(domElement) {
-        var calendar = domElement.replace(this.view.id,'');
+        var calendar = domElement.replace(this.view.id, '');
         var parts = calendar.split(this.view.dayColumnElIdDelimiter);
         if (parts.length == 1) return null;
         parts = parts[1].split('-');
@@ -108,7 +108,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
                     // that first detected within the drop zone's getTargetFromEvent method (which is
                     // where n.timeBox comes from). to avoid a bad offset we calculate the
                     // timeBox based on the initial drag xy, not the current target xy.
-                    var initialTimeBox = this.view.getDayAt(data.xy[0], data.xy[1],dayCol.id).timeBox;
+                    var initialTimeBox = this.view.getDayAt(data.xy[0], data.xy[1], dayCol.id).timeBox;
                     this.dragOffset = initialTimeBox.y - box.y;
                 } else {
                     box.y = n.timeBox.y;
@@ -187,7 +187,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
     },
     createShim: function(calId) {
        var owner_parent = this.view.ownerCalendarPanel ? this.view.ownerCalendarPanel: this.view;
-        var owner = Ext.query('*[id ^='+this.view.id+this.view.dayColumnElIdDelimiter+calId+']');
+        var owner = Ext.query('*[id^='+ this.view.id + this.view.dayColumnElIdDelimiter + calId + '-outer]');
             owner = Ext.get(owner[0]);
 
         if (!this.shimCt) {
@@ -227,7 +227,6 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
 
             if(data.type === 'eventdrag') {
                 rec = this.view.getEventRecordFromEl(data.ddel);
-
                 if (rec.data.CalendarId != n.calendarId) {
                     rec.data.CalendarId = n.calendarId;
                 }
