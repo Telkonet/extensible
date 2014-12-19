@@ -229,8 +229,11 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
                 rec = this.view.getEventRecordFromEl(data.ddel);
                 if (rec.data.CalendarId != n.calendarId) {
                     rec.data.CalendarId = n.calendarId;
+                    if (Ext.Date.isEqual(rec.data.StartDate, n.date)) {
+                        rec.data.StartDate = Ext.Date.add(n.date, Ext.Date.SECOND, 59);
+                        rec.data.EndDate = Ext.Date.subtract(rec.data.EndDate, Ext.Date.SECOND, 59);
+                    }
                 }
-                rec.data.StartDate = Ext.Date.add(n.date, Ext.Date.SECOND, 2);
                 this.view.onEventDrop(rec, n.date, (e.ctrlKey || e.altKey) ? 'copy' : 'move');
                 this.onCalendarDragComplete();
                 delete this.dragOffset;
