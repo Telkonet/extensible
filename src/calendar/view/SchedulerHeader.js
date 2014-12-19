@@ -64,7 +64,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             createText: this.ddCreateEventText,
             copyText: this.ddCopyEventText,
             moveText: this.ddMoveEventText,
-            ddGroup: this.ddGroup || this.id+'-SchedulerHeaderDD'
+            ddGroup: this.ddGroup || this.id + '-SchedulerHeaderDD'
         };
         this.dragZone = Ext.create('Extensible.calendar.dd.SchedulerHDragZone', this.el, cfg);
         this.dropZone = Ext.create('Extensible.calendar.dd.SchedulerHDropZone', this.el, cfg);
@@ -86,8 +86,8 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 showTodayText: this.showTodayText,
                 todayText: this.todayText,
                 showTime: this.showTime,
-                calendars: this.tCalendars,
-                events: this.tCEventsH,
+                calendars: this.templateCalendars,
+                events: this.templateCalendarEventsForHeader,
                 minColumnWidth: this.minColumnWidth
             });
         }
@@ -167,7 +167,6 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             calEvts[0] = [];
 
             for (var j = 0; j < events.length; j++) {
-                var eventRaw = events[j].data;
                 calEvts[0][0] = [];
 			}
 			//first level is week, second level is days... in our case is 1 week 1 day.
@@ -191,7 +190,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 viewStart: this.viewStart,
                 tpl: this.getEventTemplate(),
                 maxEventsPerDay: this.maxEventsPerDay,
-                viewId: this.id+i,
+                viewId: this.id + i,
                 templateDataFn: Ext.bind(this.getTemplateEventData, this),
                 evtMaxCount: this.evtMaxCount, //adds the empty row
                 weekCount: this.weekCount,
@@ -207,12 +206,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             eventRowHeight = 16;
 
         if (eventsDomData !== null) {
-            eventsDomData.select('td > table').each(function(el,col,idx) {
-            //el - current iterated event table
-            //col - all the event tables from all calendars
-            //idx -  current iteration index
-            var parent_cell = el.up('td');
-            //var parent_row =  parent_cell.up('tr');
+            eventsDomData.select('td > table').each(function(el) {
             var last_event_cell = el.select('td:last');
                 if (last_event_cell !== undefined) {
                     last_event_cell = last_event_cell.elements[0];
@@ -270,10 +264,10 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 		var M = Extensible.calendar.data.EventMappings,
 			rec = new Extensible.calendar.data.EventModel();
 
-        rec.data[M.StartDate.name] = this.startDate;
-        rec.data[M.EndDate.name] = this.endDate;
-        rec.data[M.IsAllDay.name] = true;
-        rec.data[M.CalendarId.name] = this.calendarStore.data.items[calIdx].data.CalendarId;
+            rec.data[M.StartDate.name] = this.startDate;
+            rec.data[M.EndDate.name] = this.endDate;
+            rec.data[M.IsAllDay.name] = true;
+            rec.data[M.CalendarId.name] = this.calendarStore.data.items[calIdx].data.CalendarId;
 
 		if (this.fireEvent('rangeselect', this, rec, boundOnComplete) !== false) {
 			this.showEventEditor(rec, null);
@@ -399,7 +393,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         var idxCal = -1;
         var dt = Ext.Date.format(this.startDate,'Ymd');
         if (el) {
-            var parent = Ext.get(el).up('table').up('td[id^='+this.id+']');
+            var parent = Ext.get(el).up('table').up('td[id^=' + this.id + ']');
 
             if (parent == null) {
                 if (Ext.get(el).id.indexOf(this.id) > -1) {

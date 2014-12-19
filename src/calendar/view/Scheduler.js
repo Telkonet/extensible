@@ -135,24 +135,23 @@ Ext.define('Extensible.calendar.view.Scheduler', {
     minColumnWidth: 80,
     // private
     isSchedulerView: true,
-    isDayView: true, // remove this later
     /**
-     * @cfg {Array} tCalendars
+     * @cfg {Array} templateCalendars
      * Stores the calendars data structure used in templates
      * It is populated by the logic.
      */
-    tCalendars: [],
+    templateCalendars: [],
     /**
-     * @cfg {Array} tCEventsH
+     * @cfg {Array} templateCalendarEventsForHeader
      * Stores the events data structure used in header template
      * It is populated by the logic.
      */
-    tCEventsH: [],
+    templateCalendarEventsForHeader: [],
     /**
      * Stores /events data structure used in body template
      * It is populated by the logic.
      */
-    tCEventsB: [],
+    templateCalendarEventsForBody: [],
 
     // private
     initComponent: function() {
@@ -188,8 +187,8 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         //we prepare the custom data structures that will be used only for the custom template rendering
         for (var i=0; i < this.calendarStore.data.items.length; i++) {
             //   if (this.calendarStore.data.items[i].data.IsHidden == true) continue;
-            var calendar_eventsH = [],
-                calendar_eventsB = [];
+            var calendarEventsHeader = [],
+                calendarEventsBody = [];
 
             for (var j=0; j < this.store.data.items.length; j++) {
                 var event = this.store.data.items[j].data;
@@ -197,16 +196,16 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                     var currentDate = new Date();
                     if (event.IsAllDay == true) {
                         if (Ext.Date.between(currentDate, this.store.data.items[j].data.StartDate, this.store.data.items[j].data.EndDate) === true) {
-                            calendar_eventsH.push(event);
+                            calendarEventsHeader.push(event);
                         }
                     } else {
-                            calendar_eventsB.push(event);
+                            calendarEventsBody.push(event);
                     }
                 }
             }
-            this.tCalendars.push(this.calendarStore.data.items[i].data);
-            this.tCEventsH.push(calendar_eventsH);
-            this.tCEventsB.push(calendar_eventsB);
+            this.templateCalendars.push(this.calendarStore.data.items[i].data);
+            this.templateCalendarEventsForHeader.push(calendarEventsHeader);
+            this.templateCalendarEventsForBody.push(calendarEventsBody);
         }
 
         this.callParent(arguments);
@@ -247,8 +246,8 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             xtype: 'extensible.schedulerheaderview',
             id: this.id+'-hd',
             ownerCalendarPanel: this.ownerCalendarPanel,
-            tCalendars: this.tCalendars,
-            tCEventsH: this.tCEventsH
+            templateCalendars: this.templateCalendars,
+            templateCalendarEventsForHeader: this.templateCalendarEventsForHeader
         }, cfg);
 
         var body = Ext.applyIf({
@@ -261,13 +260,11 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             hourHeight: this.hourHeight,
             id: this.id+'-bd',
             ownerCalendarPanel: this.ownerCalendarPanel,
-            tCalendars: this.tCalendars,
-            tCEventsB: this.tCEventsB
+            templateCalendars: this.templateCalendars,
+            templateCalendarEventsForBody: this.templateCalendarEventsForBody
             }, cfg);
 
         return [header, body];
-        //return [header];
-
     },
 
     // private
@@ -284,7 +281,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
     
     // private
     refresh: function(reloadData) {
-        Extensible.log('refresh (DayView)');
+        Extensible.log('refresh (SchedulerView)');
         if (reloadData === undefined) {
             reloadData = false;
         }
@@ -521,8 +518,8 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                             }
                         );
 
-        var msg = 'Event '+ rec.data[mappings.Title.name] +' was ' + action + ' to ' +
-            this.calendarStore.data.items[calendarIdx].data.Title+' calendar';
+        var msg = 'Event ' + rec.data[mappings.Title.name] + ' was ' + action + ' to ' +
+            this.calendarStore.data.items[calendarIdx].data.Title + ' calendar';
         Ext.fly('app-msg').update(msg).removeCls('x-hidden');
     },
     /**

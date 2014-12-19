@@ -77,7 +77,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             moveText: this.ddMoveEventText,
             resizeText: this.ddResizeEventText,
             ddIncrement: this.ddIncrement,
-            ddGroup: this.ddGroup || this.id+'-SchedulerBodyDDD'
+            ddGroup: this.ddGroup || this.id + '-SchedulerBodyDDD'
         };
 
         this.el.ddScrollConfig = {
@@ -87,7 +87,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             hthresh: -1,
             frequency: 50,
             increment: 100,
-            ddGroup: this.ddGroup || this.id+'-SchedulerBodyDD'
+            ddGroup: this.ddGroup || this.id + '-SchedulerBodyDD'
         };
 
         this.dragZone = Ext.create('Extensible.calendar.dd.SchedulerBDragZone', this.el, Ext.apply({
@@ -153,8 +153,8 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 viewStartHour: this.viewStartHour,
                 viewEndHour: this.viewEndHour,
                 hourIncrement: this.hourIncrement,
-                calendars: this.tCalendars,
-                events: this.tCEventsB,
+                calendars: this.templateCalendars,
+                events: this.templateCalendarEventsForBody,
                 hourHeight: this.hourHeight,
                 visibleCalendars: 0
             });
@@ -517,10 +517,10 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             end2 = Extensible.Date.add(ev2[M.EndDate.name], {seconds: -1}).getTime(),
             startDiff = Extensible.Date.diff(ev1[M.StartDate.name], ev2[M.StartDate.name], 'm');
 
-        if (end1<start1) {
+        if (end1 < start1) {
             end1 = start1;
         }
-        if (end2<start2) {
+        if (end2 < start2) {
             end2 = start2;
         }
 
@@ -553,9 +553,9 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
         var box = {};
         try {
             if (calDomId !== undefined || calDomId !== '') {
-                box =  this.el.down('[id='+calDomId+']').getBox();
+                box =  this.el.down('[id=' + calDomId + ']').getBox();
             } else {
-                box = this.el.down('.ext-cal-day-col-inner').getBox();
+                box = this.el.down('.ext-cal-day-col-content').getBox();
             }
         } catch(ex) {
             return {height:0,width:0};
@@ -636,7 +636,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
             if(el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var calIdDate = this.getDateFromId(el.id, this.dayElIdDelimiter); // not returning date anymore but a string like: col-{calendarId}-{date}
                 var parts = calIdDate.split('-');
-                this.onDayClick(Ext.Date.parseDate(parts[2], 'Ymd'), true, Ext.get(this.getDayId(parts[2],parts[1])),parts[1]);
+                this.onDayClick(Ext.Date.parseDate(parts[2], 'Ymd'), true, Ext.get(this.getDayId(parts[2], parts[1])), parts[1]);
                 return;
             }
         }
@@ -645,7 +645,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
         var day = this.getDayAt(e.getX(), e.getY(), el.id);
 
         if(day && day.date && day.el && el.id) {
-            var calendar = day.el.id.replace(this.id,'');
+            var calendar = day.el.id.replace(this.id, '');
             var parts = calendar.split('-');
             this.onDayClick(day.date, false, null, parts[3]);
         }
