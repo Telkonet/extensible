@@ -39,16 +39,17 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
                         '</td>',
                         '<tpl for="days">',
                             '<td class="ext-cal-day-col">',
-                                '<div class="ext-cal-day-col-inner">',
+                                '<div class="ext-cal-day-col-content">',
                                 '<tpl exec="values.dayHeight = parent.dayHeight; values.calWidth = (100 / this.visibleCalendars) + \'%\';"></tpl>',
                                 '<tpl for="parent.calendars">', //calendar object
                                     '<tpl exec="values.day = parent;"></tpl>',
-                                    '<tpl if="values.IsHidden &#61;&#61; 0">',
-                                   // '{[console.log(values)]}',
+                                    '<tpl if="values.IsHidden &#61;&#61; 0">',//'{[console.log(values)]}',
                                       '<div id="{[this.id]}-day-col-{[values.CalendarId]}-outer-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-inner" ' +
-                                      'style="height:{[values.day.dayHeight]}px;width:{[values.day.calWidth]};float:left;margin-right:0;border-right:1px solid #BBCCFF;">',
-                                        '<div id="{[this.id]}-day-col-{[values.CalendarId]}-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-gutter" ' +
-                                        'style="height:{[values.day.dayHeight]}px;width:auto;margin-right:15px;"></div></div>',
+                                        'style="height:{[values.day.dayHeight]}px;width:{[values.day.calWidth]};">',
+                                            '<div id="{[this.id]}-day-col-{[values.CalendarId]}-{[Ext.Date.format(values.day,\'Ymd\')]}" class="ext-cal-day-col-gutter" ' +
+                                            'style="height:{[values.day.dayHeight]}px;">',
+                                        '</div>',
+                                      '</div>',
                                     '</tpl>',
                                 '</tpl>',
                                 '</div>',
