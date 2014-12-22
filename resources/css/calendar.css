@@ -272,7 +272,7 @@
     height: auto;
 }
 .ext-cal-schedulerview-header {
-    width:100%;
+    width:100%!important;
     border-collapse:collapse;
 }
 .ext-cal-schedulerview-header .ext-cal-bg-tbl {
