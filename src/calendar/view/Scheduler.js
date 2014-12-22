@@ -318,8 +318,8 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                 }
             );
             var minHeaderTableWidth = headerTable? calendars * me.minColumnWidth: false;
-
-            if (computedHeaderTableWidth) {
+             // TEMPORARY DISABLED - it will be refactored!
+            /*if (computedHeaderTableWidth) {
                 if (computedHeaderTableWidth < minHeaderTableWidth) {
                     //set columns width to each calendar column:
                     var tbh = Ext.get(headerTable).down('tr'),
@@ -340,7 +340,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                     body.setWidth('100%');
                 }
             }
-
+*/
             var  bodyHeight = ct ? ct.getHeight() - header.getHeight() : false;
             if (bodyHeight) {
                 if (bodyHeight < me.minBodyHeight) {
