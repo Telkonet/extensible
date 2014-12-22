@@ -317,7 +317,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                     }
                 }
             );
-
             var minHeaderTableWidth = headerTable? calendars * me.minColumnWidth: false;
 
             if (computedHeaderTableWidth) {
@@ -331,11 +330,12 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                     tbb.select('td td').setWidth(me.minColumnWidth);
 
                     Ext.get(body).down('table td.ext-cal-day-col > div').select('div[id^=' + this.body.id + this.body.dayColumnElIdDelimiter + '-outer]').setWidth(me.minColumnWidth);
-					header.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
+                    header.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
                     body.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
                     me.addCls('ext-cal-overflow-x');
                 } else {
                     me.removeCls('ext-cal-overflow-x');
+                    header.down('div').down('div').setWidth(header.getWidth() - (leftGutterWidth + rightGutterWidth)); //Safari needs to have specified the width in px
 					header.setWidth('100%');
                     body.setWidth('100%');
                 }
