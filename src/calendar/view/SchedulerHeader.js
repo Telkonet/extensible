@@ -211,10 +211,14 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 if (last_event_cell !== undefined) {
                     last_event_cell = last_event_cell.elements[0];
                     if (last_event_cell !== undefined && last_event_cell.hasAttribute('rowspan')) {
-                       Ext.get(last_event_cell).setHeight((last_event_cell.getAttribute('rowspan')-1) * eventRowHeight+2);
-                    }else if (last_event_cell !== undefined && !last_event_cell.hasAttribute('rowspan')){
+                        Ext.get(last_event_cell).setHeight((last_event_cell.getAttribute('rowspan')-1) * (eventRowHeight+2));
+                    } else if (last_event_cell !== undefined && !last_event_cell.hasAttribute('rowspan')) {
                         Ext.get(last_event_cell).update('');
-                        Ext.get(last_event_cell).setHeight(eventRowHeight/4);
+                        if (Ext.get(last_event_cell).up('tr').up('table').select('tr').elements.length == 2) {
+                            Ext.get(last_event_cell).setHeight(eventRowHeight+3);
+                        } else {
+                            Ext.get(last_event_cell).setHeight(eventRowHeight/4);
+                        }
                     }
                 }
             });
