@@ -43,36 +43,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
 
         this.addCls('ext-cal-schedulerview');
         this.callParent(arguments);
-
-        this.listeners = {
-                /**
-                 * @event eventcopytocalendar
-                 * Fires after an event has been duplicated by the user via the "copy event" command.
-                 * @param {Extensible.calendar.view.AbstractCalendar} this
-                 * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
-             * record} for the event that was copied (with updated calendar data)
-                 *
-                 */
-                eventcopytocalendar: {
-                    fn: function(vw, rec) {
-                        this.onEventCalendarCopyOrMove(rec, 'copy');
-                    },
-                    scope:this
-                },
-                /**
-                 * @event eventmovetocalendar
-                 * Fires after an event element has been moved to a new calendar and its data updated.
-                 * @param {Extensible.calendar.view.AbstractCalendar} this
-                 * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
-                 * for the event that was moved with updated calendar data
-                 */
-                eventmovetocalendar: {
-                    fn: function(vw, rec) {
-                        this.onEventCalendarCopyOrMove(rec, 'move');
-                    },
-                    scope:this
-                }
-        };
     },
 
     getItemConfig: function(cfg) {
@@ -186,35 +156,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
                 me.el.down('.ext-cal-body-ct').setHeight(bodyHeight - 1);
             }
         }, Ext.isIE ? 1 : 0, me);
-    },
-
-    // handle event move or copy between calendars
-    /**
-     * This is method is called by the eventmovetocalendar and eventcopytocalendar
-     * @param rec Event record to be moved/copied
-     * @param mode
-     */
-    onEventCalendarCopyOrMove: function(rec, mode) {
-        var mappings = Extensible.calendar.data.EventMappings,
-            time = rec.data[mappings.IsAllDay.name] ? '' : ' \\a\\t g:i a',
-            action = mode === 'copy' ? 'copied' : 'moved';
-
-            rec.commit();
-
-        var calendarId = rec.data[mappings.CalendarId.name];
-        var calendarIdx = -1;
-
-        Ext.Object.each(this.calendarStore.data.items,
-                            function(k, v){
-                                if (v.data.CalendarId === calendarId) {
-                                    calendarIdx = k; return false;
-                                }
-                            }
-                        );
-
-        var msg = 'Event ' + rec.data[mappings.Title.name] + ' was ' + action + ' to ' +
-            this.calendarStore.data.items[calendarIdx].data.Title + ' calendar';
-        Ext.fly('app-msg').update(msg).removeCls('x-hidden');
     },
 
     /**
