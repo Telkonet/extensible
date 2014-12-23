@@ -154,7 +154,6 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 viewEndHour: this.viewEndHour,
                 hourIncrement: this.hourIncrement,
                 calendars: this.templateCalendars,
-                events: this.templateCalendarEventsForBody,
                 hourHeight: this.hourHeight,
                 visibleCalendars: 0
             });
