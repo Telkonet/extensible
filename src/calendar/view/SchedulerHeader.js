@@ -87,7 +87,6 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 todayText: this.todayText,
                 showTime: this.showTime,
                 calendars: this.templateCalendars,
-                events: this.templateCalendarEventsForHeader,
                 minColumnWidth: this.minColumnWidth
             });
         }
@@ -204,7 +203,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         var eventsDomLabel = this.el.down('.ext-cal-schedulerview-allday').down('tr').next('tr'),
             eventsDomData = eventsDomLabel.next('tr'),
             eventRowHeight = 16;
-
+        var currentDate =this.viewStart;
         if (eventsDomData !== null) {
             eventsDomData.select('td > table').each(function(el) {
             var last_event_cell = el.select('td:last');
@@ -216,11 +215,12 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                         if (Ext.get(last_event_cell).child('div') == null) {
                             Ext.get(last_event_cell).update('');
                         }
-                        if (Ext.get(last_event_cell).up('tr').up('table').select('tr').elements.length == 2) {
-                           Ext.get(last_event_cell).setHeight(eventRowHeight+3);
+                        if (Ext.get(last_event_cell).up('tr').up('table').select('tr').elements.length > 2) {
+                            Ext.get(last_event_cell).setHeight(eventRowHeight/4);
                         } else {
-                           Ext.get(last_event_cell).setHeight(eventRowHeight/4);
+                            Ext.get(last_event_cell).setHeight(eventRowHeight+3);
                         }
+                        Ext.get(last_event_cell).parent().show();
                     }
                 }
             });
