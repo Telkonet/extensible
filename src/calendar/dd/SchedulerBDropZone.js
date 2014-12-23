@@ -237,7 +237,9 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
                     }
                 }
                 this.view.onEventDrop(rec, n.date, (e.ctrlKey || e.altKey) ? 'copy' : 'move');
-
+                //since we may have "n" calendar columns, we must ensure that the default Ctrl+Drag mechanism is overridden
+                //the default mechanism is cloning the current record and is moving it to the new position;
+                // but because of the calendar colums, both the events are moved so we have to move back one of them to the original position
                 if ((e.ctrlKey || e.altKey) && oldCalId !== n.calendarId) {
                     rec.data.CalendarId = oldCalId;
                     rec.data.StartDate = Ext.Date.add(oldStartDate, Ext.Date.SECOND, 59);
