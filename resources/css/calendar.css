@@ -316,7 +316,11 @@
     padding: 2px 0;
     border-bottom: 1px solid #BBCCFF!important;
 }
-
+.ext-cal-schedulerview-allday .thead th > div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .ext-cal-schedulerview-allday .thead th:first-child{
     border-left: 1px solid #BBCCFF!important;
 }
