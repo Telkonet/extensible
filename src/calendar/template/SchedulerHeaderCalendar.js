@@ -46,7 +46,7 @@ Ext.define('Extensible.calendar.template.SchedulerHeaderCalendar', {
                             '<tpl for="calendars">',
                                 '<tpl for=".">',
                                     '<tpl if="IsHidden &#61;&#61; 0">',
-                                        '<th class="ext-cal-hd-day">{Title}</th>',
+                                        '<th class="ext-cal-hd-day" title="{Title}">{Title}</th>',
                                     '<tpl else>',
                                         '<td style="display:none;"></td>',
                                    '</tpl>',
