@@ -292,7 +292,6 @@
 .ext-cal-schedulerview-header table:nth-child(2) {
     background:none;
 }
-
 .ext-cal-schedulerview-allday {
     width:100%;
     border-top:1px solid #BBCCFF/*#c2d3fd*/;
@@ -315,11 +314,10 @@
     height:14px;
     padding: 2px 0;
     border-bottom: 1px solid #BBCCFF!important;
-}
-.ext-cal-schedulerview-allday .thead th > div {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding-left:2px;
 }
 .ext-cal-schedulerview-allday .thead th:first-child{
     border-left: 1px solid #BBCCFF!important;
