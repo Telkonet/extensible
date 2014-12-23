@@ -12,7 +12,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         'Extensible.calendar.view.SchedulerHeader',
         'Extensible.calendar.view.SchedulerBody'
     ],
-    
+
     /**
      * @cfg {String} todayText
      * The text to display in the current day's box in the calendar when {@link #showTodayText} is true (defaults to 'Today')
@@ -141,17 +141,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
      * It is populated by the logic.
      */
     templateCalendars: [],
-    /**
-     * @cfg {Array} templateCalendarEventsForHeader
-     * Stores the events data structure used in header template
-     * It is populated by the logic.
-     */
-    templateCalendarEventsForHeader: [],
-    /**
-     * Stores /events data structure used in body template
-     * It is populated by the logic.
-     */
-    templateCalendarEventsForBody: [],
 
     // private
     initComponent: function() {
@@ -184,28 +173,10 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.items = this.getItemConfig(cfg);
         this.addCls('ext-cal-schedulerview ext-cal-ct ext-cal-dayview');
 
-        //we prepare the custom data structures that will be used only for the custom template rendering
+        //we prepare the custom data structure that will be used only for the custom template rendering
         for (var i=0; i < this.calendarStore.data.items.length; i++) {
-            //   if (this.calendarStore.data.items[i].data.IsHidden == true) continue;
-            var calendarEventsHeader = [],
-                calendarEventsBody = [];
-
-            for (var j=0; j < this.store.data.items.length; j++) {
-                var event = this.store.data.items[j].data;
-                if (event.CalendarId == this.calendarStore.data.items[i].data.CalendarId) {
-                    var currentDate = new Date();
-                    if (event.IsAllDay == true) {
-                        if (Ext.Date.between(currentDate, this.store.data.items[j].data.StartDate, this.store.data.items[j].data.EndDate) === true) {
-                            calendarEventsHeader.push(event);
-                        }
-                    } else {
-                            calendarEventsBody.push(event);
-                    }
-                }
-            }
+            //  if (this.calendarStore.data.items[i].data.IsHidden == true) continue;
             this.templateCalendars.push(this.calendarStore.data.items[i].data);
-            this.templateCalendarEventsForHeader.push(calendarEventsHeader);
-            this.templateCalendarEventsForBody.push(calendarEventsBody);
         }
 
         this.callParent(arguments);
@@ -246,8 +217,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             xtype: 'extensible.schedulerheaderview',
             id: this.id+'-hd',
             ownerCalendarPanel: this.ownerCalendarPanel,
-            templateCalendars: this.templateCalendars,
-            templateCalendarEventsForHeader: this.templateCalendarEventsForHeader
+            templateCalendars: this.templateCalendars
         }, cfg);
 
         var body = Ext.applyIf({
@@ -260,8 +230,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             hourHeight: this.hourHeight,
             id: this.id+'-bd',
             ownerCalendarPanel: this.ownerCalendarPanel,
-            templateCalendars: this.templateCalendars,
-            templateCalendarEventsForBody: this.templateCalendarEventsForBody
+            templateCalendars: this.templateCalendars
             }, cfg);
 
         return [header, body];
