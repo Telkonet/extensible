@@ -105,8 +105,7 @@ Ext.define('Extensible.calendar.template.SchedulerBody', {
             hourSeparatorCls: this.showHourSeparator ? '' : 'no-sep', // the class suppresses the default separator
             dayHeight: dayHeight,
             hourSeparatorHeight: (this.hourHeight / 2),
-            calendars: this.calendars,
-            events: this.events
+            calendars: this.calendars
         };
          
         if (Ext.getVersion().isLessThan('4.1')) {
