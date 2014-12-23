@@ -36,28 +36,11 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
      * SchedulerHeaderView always return true for this param.
      * @param {Ext.Element} el The Element that was clicked on
      */
+
     initComponent:function(){
         this.callParent(arguments);
-        this.addEvents({
-            /**
-             * @event eventcopytocalendar
-             * Fires after an event has been duplicated by the user via the "copy event" command.
-             * @param {Extensible.calendar.view.AbstractCalendar} this
-             * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
-             * record} for the event that was copied (with updated calendar data)
-             *
-             */
-            eventcopytocalendar: true,
-            /**
-             * @event eventmovetocalendar
-             * Fires after an event element has been moved to a new calendar and its data updated.
-             * @param {Extensible.calendar.view.AbstractCalendar} this
-             * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
-             * for the event that was moved with updated calendar data
-             */
-            eventmovetocalendar: true
-        });
     },
+
     initDD: function() {
         var cfg = {
             view: this,
