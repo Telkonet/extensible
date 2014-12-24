@@ -12,15 +12,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         'Extensible.calendar.view.SchedulerBody'
     ],
 
-    /**
-     * @cfg {Number} minColumnWidth
-     * Defines the minimum width in pixels of a column.
-     * If the calculated column width (which is equal and it is calculated such that all columns together fill the
-     * space available to the view) is less  than the value of parameter minColumnWidth, then the column width is set to
-     * minColumnWidth and horizontal scrollbars are introduced.
-     */
-    minColumnWidth: 80,
-
     // private
     isDayView: false,
     isSchedulerView: true,
@@ -82,7 +73,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.body.on('eventsrendered', this.forceSize, this);
         this.on('resize', this.onResize, this); //obsolete since it also calls this.forceSize method
     },
-    
+
     // private
     refresh: function(reloadData) {
         Extensible.log('refresh (SchedulerView)');
@@ -91,71 +82,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         }
         this.header.refresh(reloadData);
         this.body.refresh(reloadData);
-    },
-
-    /**
-     * This method is redrawing the body and the header section of the view. Here is also the place where we ensure that the
-     * width of each calendar column is computed using minColumnWidth parameter.
-     */
-    forceSize: function() {
-        var me = this;
-
-        // The defer call is mainly for good ol' IE, but it doesn't hurt in
-        // general to make sure that the window resize is good and done first
-        // so that we can properly calculate sizes.
-        Ext.defer(function() {
-            var ct = me.el.up('.x-panel-body'),
-                //header = me.el.down('.ext-cal-day-header'),
-                header = me.el.down('#app-calendar-scheduler-hd'),
-                body = me.el.down('#app-calendar-scheduler-bd'),
-                headerTable = header.el.down('.ext-cal-schedulerview-allday'),
-                leftGutterWidth = header.el.down('.ext-cal-gutter').getWidth(),
-                rightGutterWidth = header.el.down('.ext-cal-gutter-rt').getWidth(),
-                computedHeaderTableWidth = ct.getWidth() - (leftGutterWidth + rightGutterWidth),
-                calendars = me.calendarStore.getCount();
-
-            Ext.Object.each(this.calendarStore.data.items,
-                function(k, v){
-                    if (v.data.IsHidden == true) {
-                    calendars--;
-                    }
-                }
-            );
-            var minHeaderTableWidth = headerTable? calendars * me.minColumnWidth: false;
-             // TEMPORARY DISABLED - it will be refactored!
-            /*if (computedHeaderTableWidth) {
-                if (computedHeaderTableWidth < minHeaderTableWidth) {
-                    //set columns width to each calendar column:
-                    var tbh = Ext.get(headerTable).down('tr'),
-						tbd = tbh.next('tr'),
-                        tbb = tbd.next('tr');
-					tbh.select('th').setWidth(me.minColumnWidth);
-					tbd.select('div').setWidth(me.minColumnWidth);
-                    tbb.select('td td').setWidth(me.minColumnWidth);
-
-                    Ext.get(body).down('table td.ext-cal-day-col > div').select('div[id^=' + this.body.id + this.body.dayColumnElIdDelimiter + '-outer]').setWidth(me.minColumnWidth);
-                    header.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
-                    body.setWidth(minHeaderTableWidth + (leftGutterWidth + rightGutterWidth));
-                    me.addCls('ext-cal-overflow-x');
-                } else {
-                    me.removeCls('ext-cal-overflow-x');
-                    header.down('div').down('div').setWidth(header.getWidth() - (leftGutterWidth + rightGutterWidth)); //Safari needs to have specified the width in px
-					header.setWidth('100%');
-                    body.setWidth('100%');
-                }
-            }
-*/
-            var  bodyHeight = ct ? ct.getHeight() - header.getHeight() : false;
-            if (bodyHeight) {
-                if (bodyHeight < me.minBodyHeight) {
-                    bodyHeight = me.minBodyHeight;
-                    me.addCls('ext-cal-overflow-y');
-                } else {
-                    me.removeCls('ext-cal-overflow-y');
-                }
-                me.el.down('.ext-cal-body-ct').setHeight(bodyHeight - 1);
-            }
-        }, Ext.isIE ? 1 : 0, me);
     },
 
     /**
