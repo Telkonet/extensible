@@ -161,6 +161,7 @@ Ext.define('Extensible.calendar.view.Day', {
         cfg.readOnly = this.readOnly;
         cfg.ddIncrement = this.ddIncrement;
         cfg.minEventDisplayMinutes = this.minEventDisplayMinutes;
+        cfg.ownerCalendarPanel = this.ownerCalendarPanel;
 
         this.items = this.getItemConfig(cfg);
         this.addCls('ext-cal-dayview ext-cal-ct');
@@ -172,8 +173,7 @@ Ext.define('Extensible.calendar.view.Day', {
 
         var header = Ext.applyIf({
             xtype: 'extensible.dayheaderview',
-            id: this.id+'-hd',
-            ownerCalendarPanel: this.ownerCalendarPanel
+            id: this.id+'-hd'
         }, cfg);
 
         var body = Ext.applyIf({
@@ -184,8 +184,7 @@ Ext.define('Extensible.calendar.view.Day', {
             viewEndHour: this.viewEndHour,
             scrollStartHour: this.scrollStartHour,
             hourHeight: this.hourHeight,
-            id: this.id+'-bd',
-            ownerCalendarPanel: this.ownerCalendarPanel
+            id: this.id+'-bd'
         }, cfg);
 
         return [header, body];
