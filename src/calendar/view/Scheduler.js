@@ -15,22 +15,10 @@ Ext.define('Extensible.calendar.view.Scheduler', {
     // private
     isDayView: false,
     isSchedulerView: true,
-    /**
-     * @cfg {Array} templateCalendars
-     * Stores the calendars data structure used in templates
-     * It is populated by the logic.
-     */
-    templateCalendars: [],
 
     // private
     initComponent: function() {
         this.dayCount = 1;
-
-        //we prepare the custom data structure that will be used only for the custom template rendering
-        for (var i=0; i < this.calendarStore.data.items.length; i++) {
-            //  if (this.calendarStore.data.items[i].data.IsHidden == true) continue;
-            this.templateCalendars.push(this.calendarStore.data.items[i].data);
-        }
 
         this.addCls('ext-cal-schedulerview');
         this.callParent(arguments);
@@ -41,8 +29,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         var header = Ext.applyIf({
             xtype: 'extensible.schedulerheaderview',
             id: this.id+'-hd',
-            ownerCalendarPanel: this.ownerCalendarPanel,
-            templateCalendars: this.templateCalendars
+            ownerCalendarPanel: this.ownerCalendarPanel
         }, cfg);
 
         var body = Ext.applyIf({
@@ -54,8 +41,7 @@ Ext.define('Extensible.calendar.view.Scheduler', {
             scrollStartHour: this.scrollStartHour,
             hourHeight: this.hourHeight,
             id: this.id+'-bd',
-            ownerCalendarPanel: this.ownerCalendarPanel,
-            templateCalendars: this.templateCalendars
+            ownerCalendarPanel: this.ownerCalendarPanel
             }, cfg);
 
         return [header, body];

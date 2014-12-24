@@ -69,7 +69,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 showTodayText: this.showTodayText,
                 todayText: this.todayText,
                 showTime: this.showTime,
-                calendars: this.templateCalendars,
+                calendars: this.calendarStore.data.items,
                 minColumnWidth: this.minColumnWidth
             });
         }
