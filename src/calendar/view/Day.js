@@ -202,7 +202,7 @@ Ext.define('Extensible.calendar.view.Day', {
     },
 
     refresh: function(reloadData) {
-        Extensible.log('refresh (DayView)');
+        Extensible.log('refresh (' + Ext.getClassName(this) + '), reload = ' + reloadData);
         if (reloadData === undefined) {
             reloadData = false;
         }

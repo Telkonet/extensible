@@ -74,16 +74,6 @@ Ext.define('Extensible.calendar.view.Scheduler', {
         this.on('resize', this.onResize, this); //obsolete since it also calls this.forceSize method
     },
 
-    // private
-    refresh: function(reloadData) {
-        Extensible.log('refresh (SchedulerView)');
-        if (reloadData === undefined) {
-            reloadData = false;
-        }
-        this.header.refresh(reloadData);
-        this.body.refresh(reloadData);
-    },
-
     /**
      * @param store
      * @param record
