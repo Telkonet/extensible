@@ -12,7 +12,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
     requires: [
         'Ext.XTemplate',
         'Extensible.calendar.template.SchedulerBody',
-        'Extensible.calendar.dd.SchedulerBDragZone',
+        'Extensible.calendar.dd.DayDragZone',
         'Extensible.calendar.dd.SchedulerBDropZone'
     ],
 
@@ -20,7 +20,7 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
      * @cfg {String} dragZoneClass
      * Class to be used as the view's drag zone implementation.
      */
-    dragZoneClass: 'Extensible.calendar.dd.SchedulerBDragZone',
+    dragZoneClass: 'Extensible.calendar.dd.DayDragZone',
 
     /**
      * @cfg {String} dropZoneClass
