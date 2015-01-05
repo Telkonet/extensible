@@ -276,6 +276,23 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 			this.onCalendarEndDragComplete(boundOnComplete);
 		}
 	},
+
+    /**
+     * Create a copy of the event with new CalendarId preserving the other data of the event.
+     * @param {Object} rec The original event {@link Extensible.calendar.data.EventModel record}
+     * @param {Object} calIdx The new calendar index that represents the position of the calendar record in the calendar
+     * store from which we take the CalendarId
+     */
+    copyEvent: function(rec, calIdx) {
+        this.modifyEvent(rec, calIdx, 'copy');
+    },
+
+    /**
+     * Move the event by setting a new CalendarId preserving the other data of the event.
+     * @param {Object} rec The original event {@link Extensible.calendar.data.EventModel record}
+     * @param {Object} calIdx The new calendar index that represents the position of the calendar record in the calendar
+     * store from which we take the CalendarId
+     */
     moveEvent: function(rec, calIdx) {
         this.modifyEvent(rec, calIdx, 'move');
     },
