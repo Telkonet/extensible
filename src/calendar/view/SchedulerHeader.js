@@ -400,7 +400,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         var dt = Ext.Date.format(this.startDate,'Ymd');
         if (el) {
             idxCal = el.id.split('calendar')[2];
-            if (idxCal===undefined){
+            if (idxCal===undefined && Ext.get(el).up('table').up('td')!==null){
                 idxCal = Ext.get(el).up('table').up('td').id.split('calendar')[2];
             }
             idxCal = idxCal === undefined ? -1: idxCal.split('-')[1];
