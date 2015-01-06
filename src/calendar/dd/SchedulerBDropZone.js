@@ -5,9 +5,6 @@
 Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
     extend: 'Extensible.calendar.dd.DropZone',
 
-    ddGroup: 'SchedulerBodyDD',
-    dateRangeFormat: '{0}-{1}',
-    dateFormat: 'n/j',
     shims:[],
     /**
      * This is the point where we are retrieving the cell on which the event is about to be dropped.
@@ -37,6 +34,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
             return null;
         }
     },
+
     getCalendarIdFromDomElId:function(domElement) {
         var calendar = domElement.replace(this.view.id, '');
         var parts = calendar.split(this.view.dayColumnElIdDelimiter);
@@ -44,6 +42,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
         parts = parts[1].split('-');
         return parts[0];
     },
+
     onNodeOver: function(n, dd, e, data) {
         var dt,
             box,
@@ -185,6 +184,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
         });
 
     },
+
     createShim: function(calId) {
        var owner_parent = this.view.ownerCalendarPanel ? this.view.ownerCalendarPanel: this.view;
         var owner = Ext.query('*[id^='+ this.view.id + this.view.dayColumnElIdDelimiter + calId + '-outer]');
@@ -210,17 +210,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
             constrain: false
         }, el);
     },
-    clearShims: function() {
-        Ext.each(this.shims, function(shim) {
-            if (shim) {
-                shim.hide();
-            }
-        });
-        this.DDMInstance.notifyOccluded = false;
-    },
-    onCalendarDragComplete: function() {
-        this.clearShims();
-    },
+
     onNodeDrop: function(n, dd, e, data) {
         if(n && data) {
             var rec;
@@ -269,16 +259,5 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
         }
         this.onCalendarDragComplete();
         return false;
-    },
-    destroy: function() {
-        Ext.each(this.shims, function(shim) {
-            if (shim) {
-                Ext.destroy(shim);
-            }
-        });
-
-        Ext.removeNode(this.shimCt);
-        delete this.shimCt;
-        this.shims.length = 0;
     }
 });
