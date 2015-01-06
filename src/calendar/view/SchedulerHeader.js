@@ -2,8 +2,8 @@
  * @class Extensible.calendar.view.SchedulerHeader
  * @extends Extensible.calendar.view.Month
  * <p>This is the header area container within the day and week views where all-day events are displayed.
- * Normally you should not need to use this class directly -- instead you should use {@link Extensible.calendar.view.Day DayView}
- * which aggregates this class and the {@link Extensible.calendar.view.DayBody DayBodyView} into the single unified view
+ * Normally you should not need to use this class directly -- instead you should use {@link Extensible.calendar.view.Scheduler}
+ * which aggregates this class and the {@link Extensible.calendar.view.SchedulerBody} into the single unified view
  * presented by {@link Extensible.calendar.CalendarPanel CalendarPanel}.</p>
  * @constructor
  * @param {Object} config The config object
@@ -97,8 +97,8 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 			var z = 0;
 			for (var j = 0; j < this.store.data.items.length; j++) {
 				if (this.store.data.items[j].data.CalendarId == calendars[i].data.CalendarId && this.store.data.items[j].data.IsAllDay === true) {
-					var currentDate = Ext.Date.clone(this.viewStart);
-					if (Ext.Date.between(currentDate,this.store.data.items[j].data.StartDate,this.store.data.items[j].data.EndDate) === true) {
+                    var currentDate = Ext.Date.clone(this.viewStart);
+                    if (Ext.Date.between(currentDate, this.store.data.items[j].data.StartDate, this.store.data.items[j].data.EndDate) === true) {
 						z++;
 					}
 				}
@@ -115,7 +115,8 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             this.evtMaxCount[weekIndex] = Math.min(max, maxEvtCount); 
         }
     },
-    //
+
+    //private
     getEventBodyMarkup: function() {
         if(!this.eventBodyMarkup) {
             this.eventBodyMarkup = ['{Title}',
@@ -136,6 +137,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         this.callParent(arguments);
         this.recalcHeaderBox();
     },
+
     /**
      * Since all other views are using the same renderer  Extensible.calendar.util.WeekEventRenderer, in order to use
      * mostly the same logic, we call it with a custom data structure that contains all calendar and their associated events
@@ -173,7 +175,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 viewStart: this.viewStart,
                 tpl: this.getEventTemplate(),
                 maxEventsPerDay: this.maxEventsPerDay,
-                viewId: this.id + i,
+                viewId: this.id + '-calendar-' + i,
                 templateDataFn: Ext.bind(this.getTemplateEventData, this),
                 evtMaxCount: this.evtMaxCount, //adds the empty row
                 weekCount: this.weekCount,
@@ -223,27 +225,19 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         this.el.down('.ext-cal-bg-tbl').setHeight(h + 1);
     },
 
-    // private
-    moveNext: function() {
-        return this.moveDays(this.dayCount, false);
-    },
-
-    // private
-    movePrev: function() {
-        return this.moveDays(-this.dayCount, false);
-    },
-
     //private
     /**
-     * Called from Extensible.calendar.dd.SchedulerHDropZone it triggers the private method that handles the behaviour when
-     * the event is dropped in the view
+     * Called from Extensible.calendar.dd.SchedulerHDropZone it triggers the private method that handles the behaviour
+     * when the event is dropped in the view
      * @param rec Event data record
      * @param calIdx Index of the current calendar item in the calendar store - from the current cell under the mouse's pointer
      * @param mode
      */
     onEventDrop: function(rec, calIdx, mode) {
-        this[(mode || 'move') + 'Event'](rec, calIdx); // instead of moveEvent from the abstract class we reffer to our own method
+        // instead of moveEvent from the abstract class we reffer to our own method
+        this[(mode || 'move') + 'Event'](rec, calIdx);
     },
+
     /**
      * Called from Extensible.calendar.dd.SchedulerHDropZone if the drag/drop is made on an empty calendar cell.
      * @param calIdx Index of the current calendar item in the calendar store - from the current cell under the mouse's pointer
@@ -336,6 +330,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             }
         }
     },
+
     onRecurrenceEditModeSelected: function(editMode, rec, calId, moveOrCopy) {
         var EventMappings = Extensible.calendar.data.EventMappings;
         if (editMode) {
@@ -393,6 +388,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             this.showEventEditor(rec, el);
         }
     },
+
     /**
      * This method is preparing the handling of the user's click on an event
      * @param e
@@ -403,34 +399,25 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         var idxCal = -1;
         var dt = Ext.Date.format(this.startDate,'Ymd');
         if (el) {
-            var parent = Ext.get(el).up('table').up('td[id^=' + this.id + ']');
-
-            if (parent == null) {
-                if (Ext.get(el).id.indexOf(this.id) > -1) {
-                    parent = Ext.get(el);
-                    el = Ext.get(el).down('div');
-                }
+            idxCal = el.id.split('calendar')[2];
+            if (idxCal===undefined){
+                idxCal = Ext.get(el).up('table').up('td').id.split('calendar')[2];
             }
-
-            if (parent) {
-                idxCal = parent.id.split('-wk-');
-                idxCal = idxCal[0].charAt(idxCal[0].length-1);
-            }
+            idxCal = idxCal === undefined ? -1: idxCal.split('-')[1];
             if (idxCal === -1 || el == null) return false; //clicked outside usable area....
 
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var parts = el.id.split(this.dayElIdDelimiter);
-                    dt = parts[parts.length - 1];
+                dt = parts[parts.length - 1];
 
-                // call here and will work for calendars with no events previously defined
                 this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
                     this.calendarStore.data.items[idxCal]);
                 return;
             }
-         }
+        }
         this.callParent(arguments);
     },
-	
+
     // inherited docs
     isActiveView: function() {
         var calendarPanel = this.ownerCalendarPanel;
