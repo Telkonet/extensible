@@ -4,18 +4,13 @@
  * @private
  */
 Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
-    extend: 'Ext.dd.DropZone',
-    
+    extend: 'Extensible.calendar.dd.DropZone',
+
     requires: [
         'Ext.Layer',
         'Extensible.calendar.data.EventMappings'
     ],
-    
-    ddGroup: 'SchedulerHeaderDD',
-    eventSelector: '.ext-cal-evt',
-    dateRangeFormat: '{0}-{1}',
-    dateFormat: 'n/j',
-    
+
     shims: [],
     /**
      * This is the point where we are retrieving the cell on which the event is about to be dropped.
@@ -47,6 +42,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
             calIdx: calendarIdx
             };
     },
+
     /**
      *
      * @param n The custom data associated with the drop node (this is the same value returned from getTargetFromEvent
@@ -78,6 +74,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
            }
         return this.dropNotAllowed;
     },
+
     /**
      * This creates and sets-up the layer that is displayed over the current cell that is dragged and dropped
      * @param n
@@ -114,12 +111,13 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
                 }
             }
         });
-    },
-    /**
-     *
-     * @param calIdx Index of the current calendar item in the calendar store.
-     * @returns {Ext.Layer} Layer element that will be set overlapped on the current drag/dropped cell
-     */
+   },
+
+   /**
+    *
+    * @param calIdx Index of the current calendar item in the calendar store.
+    * @returns {Ext.Layer} Layer element that will be set overlapped on the current drag/dropped cell
+    */
    createShim: function(calIdx) {
         var owner = this.view.ownerCalendarPanel ? this.view.ownerCalendarPanel: this.view;
         var cal_owner = Ext.get(this.view.id);
@@ -144,23 +142,12 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
             useDisplay: true,
             constrain: false
         }, el);
-    },
-   clearShims: function() {
-        Ext.each(this.shims, function(shim) {
-            if (shim) {
-                shim.hide();
-            }
-        });
-        this.DDMInstance.notifyOccluded = false;
    },
-    
-    onContainerOver: function(dd, e, data) {
-        return this.dropAllowed;
-    },
-    
-    onCalendarDragComplete: function() {
+
+   onCalendarDragComplete: function() {
         this.clearShims();
-    },
+   },
+
     /**
      * Depending on the user behaviour, we can have two possibilities: dragging an event cell, or dragging an empty calendar cell
      * @param n The custom data associated with the drop node (this is the same value returned from getTargetFromEvent
@@ -189,23 +176,6 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
             }
         }
         return false;
-    },
-    
-    onContainerDrop: function(dd, e, data) {
-        this.onCalendarDragComplete();
-        return false;
-    },
-    
-    destroy: function() {
-        Ext.each(this.shims, function(shim) {
-            if (shim) {
-                Ext.destroy(shim);
-            }
-        });
-        
-        Ext.removeNode(this.shimCt);
-        delete this.shimCt;
-        this.shims.length = 0;
     }
 });
 
