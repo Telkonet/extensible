@@ -20,21 +20,16 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
      */
     getTargetFromEvent: function(e) {
         var eventCell = Ext.get(e.getTarget()),
-            calendarIdx = eventCell.id.split(this.id)[1]; //empty cell
-
+            calendarIdx = eventCell.id.split('calendar')[2]; //empty cell
         try {
-            if (calendarIdx === undefined) { //may contain already an event, probing for data upper in the dom to get the proper id
-                if (eventCell.up('td') !== undefined) {
-                    calendarIdx = eventCell.up('td').id.split(this.id)[1];
-                    if (calendarIdx === undefined ) {
-                        calendarIdx = eventCell.up('tr').up('td').id.split(this.id)[1];
-                    }
-                }
+            if (calendarIdx === undefined){
+                calendarIdx = eventCell.up('table').up('td').id.split('calendar')[2];
             }
         }
         catch(ex) {
         }
-        calendarIdx = calendarIdx === undefined ? null: calendarIdx.split('-')[0];
+
+        calendarIdx = calendarIdx === undefined ? null: calendarIdx.split('-')[1];
 
         return {
             date: this.view.viewStart,
@@ -57,7 +52,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         var eventDragText = (e.ctrlKey || e.altKey) ? this.copyText: this.moveText;
         var box = {};
             if (n.calIdx !== null) {
-               var boxRegion = Ext.select('[id^=' + this.id + n.calIdx + '-wk]');
+               var boxRegion = Ext.select('[id^=' + this.id +'-calendar-'+ n.calIdx + '-wk]');
                boxRegion.each(function(el,all,idx) {
                     var tmp = el.getBox();
                     if (idx == 0) {
@@ -120,20 +115,20 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
     */
    createShim: function(calIdx) {
         var owner = this.view.ownerCalendarPanel ? this.view.ownerCalendarPanel: this.view;
-        var cal_owner = Ext.get(this.view.id);
+        var cal_owner = Ext.get(this.view.id).id + '-calendar-';
 
         if (!this.shimCt) {
-            this.shimCt = Ext.get('ext-dd-shim-ct-' + cal_owner.id);
+            this.shimCt = Ext.get('ext-dd-shim-ct-' + cal_owner);
             if (!this.shimCt) {
                 this.shimCt = document.createElement('div');
-                this.shimCt.id = 'ext-dd-shim-ct-' + cal_owner.id;
+                this.shimCt.id = 'ext-dd-shim-ct-' + cal_owner;
                 owner.getEl().parent().appendChild(this.shimCt);
             }
         }
         var el = document.createElement('div');
 
         el.className = 'ext-dd-shim';
-        el.id =  el.id + '-' + cal_owner.id + calIdx + '-';
+        el.id =  el.id + cal_owner + calIdx + '-';
 
         this.shimCt.appendChild(el);
 
