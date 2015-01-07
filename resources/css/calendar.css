@@ -270,6 +270,7 @@
 }
 .ext-cal-schedulerview .ext-cal-hd-ct {
     height: auto;
+    border-bottom:none;
 }
 .ext-cal-schedulerview-header {
     width:100%!important;
