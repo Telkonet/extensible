@@ -12,29 +12,29 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
     ],
 
     shims: [],
+
     /**
      * This is the point where we are retrieving the cell on which the event is about to be dropped.
      * @param e
-     * @returns {{date: *, el: *, calIdx: *}} the object containing the current day, calendar grid cell and target
+     * @returns {{date: *, el: *, calendarId: *}} the object containing the current day, calendar grid cell and target
      * calendar index
      */
     getTargetFromEvent: function(e) {
         var eventCell = Ext.get(e.getTarget()),
-            calendarIdx = eventCell.id.split('calendar')[2]; //empty cell
+            calendarId = eventCell.id.split(this.view.columnElIdDelimiter)[2]; //empty cell
         try {
-            if (calendarIdx === undefined){
-                calendarIdx = eventCell.up('table').up('td').id.split('calendar')[2];
+            if (calendarId === undefined) {
+                calendarId = eventCell.up('table').up('td').id.split(this.view.columnElIdDelimiter)[2];
             }
         }
         catch(ex) {
         }
-
-        calendarIdx = calendarIdx === undefined ? null: calendarIdx.split('-')[1];
+        calendarId = (calendarId === undefined ? null: calendarId.split('-')[0]);
 
         return {
             date: this.view.viewStart,
             el: eventCell,
-            calIdx: calendarIdx
+            calendarId: calendarId
             };
     },
 
@@ -51,23 +51,15 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
     onNodeOver: function(n, dd, e, data) {
         var eventDragText = (e.ctrlKey || e.altKey) ? this.copyText: this.moveText;
         var box = {};
-            if (n.calIdx !== null) {
-               var boxRegion = Ext.select('[id^=' + this.id +'-calendar-'+ n.calIdx + '-wk]');
-               boxRegion.each(function(el,all,idx) {
-                    var tmp = el.getBox();
-                    if (idx == 0) {
-                        box = tmp;
-                    } else {
-                        box.height += tmp.height;
-                    }
-               });
-
-                this.shim(n, box);
-                data.proxy.updateMsg(Ext.String.format(data.type === 'eventdrag' ? eventDragText :
-                    this.createText, this.view.calendarStore.data.items[n.calIdx].data.Title));
-                return this.dropAllowed;
+            if (n.calendarId !== null) {
+               //we use the background table
+               var boxRegion = Ext.select('[id^=' + this.id + this.view.columnElIdDelimiter + n.calendarId + '-wk]:first');
+                box = Ext.get(boxRegion.elements[0]).getBox();
+            this.shim(n, box);
+            data.proxy.updateMsg(Ext.String.format(data.type === 'eventdrag' ? eventDragText :
+               this.createText, this.view.calendarStore.findRecord('CalendarId',n.calendarId).data.Title));
+            return this.dropAllowed;
            }
-        return this.dropNotAllowed;
     },
 
     /**
@@ -75,8 +67,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
      * @param n
      */
     shim: function(n, box) {
-        var calIdx,
-            shim;
+        var shim;
 
         this.DDMInstance.notifyOccluded = true;
 
@@ -86,12 +77,11 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
             }
         });
         
-        calIdx = n.calIdx;
-        if (calIdx !== null) {
-            shim = this.shims[calIdx];
+        if (n.calendarId !== null) {
+            shim = this.shims[n.calendarId];
             if (!shim) {
-                shim = this.createShim(calIdx);
-                this.shims[calIdx] = shim;
+                shim = this.createShim(n.calendarId);
+                this.shims[n.calendarId] = shim;
             }
             shim.boxInfo = box;
             shim.isActive = true;
@@ -110,12 +100,12 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
 
    /**
     *
-    * @param calIdx Index of the current calendar item in the calendar store.
+    * @param calendarId Index of the current calendar item in the calendar store.
     * @returns {Ext.Layer} Layer element that will be set overlapped on the current drag/dropped cell
     */
-   createShim: function(calIdx) {
+   createShim: function(calendarId) {
         var owner = this.view.ownerCalendarPanel ? this.view.ownerCalendarPanel: this.view;
-        var cal_owner = Ext.get(this.view.id).id + '-calendar-';
+        var cal_owner = this.view.id + this.view.columnElIdDelimiter;
 
         if (!this.shimCt) {
             this.shimCt = Ext.get('ext-dd-shim-ct-' + cal_owner);
@@ -128,7 +118,7 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         var el = document.createElement('div');
 
         el.className = 'ext-dd-shim';
-        el.id =  el.id + cal_owner + calIdx + '-';
+        el.id =  el.id + cal_owner + calendarId + '-';
 
         this.shimCt.appendChild(el);
 
@@ -156,15 +146,15 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         if (n && data) {
             if (data.type === 'eventdrag') {
                 var rec = this.view.getEventRecordFromEl(data.ddel);
-                if (n.calIdx !== null) {
-                    this.view.onEventDrop(rec, n.calIdx, (e.ctrlKey || e.altKey) ? 'copy': 'move');
+                if (n.calendarId !== null) {
+                    this.view.onEventDrop(rec, n.calendarId, (e.ctrlKey || e.altKey) ? 'copy': 'move');
                     this.onCalendarDragComplete();
                     return true;
                 }
                 return false;
             }
-            if (data.type === 'caldrag' && n.calIdx !== null) {
-                this.view.onCalendarEndDrag(n.calIdx, Ext.bind(this.onCalendarDragComplete, this));
+            if (data.type === 'caldrag' && n.calendarId !== null) {
+                this.view.onCalendarEndDrag(n.calendarId, Ext.bind(this.onCalendarDragComplete, this));
                 //shims are NOT cleared here -- they stay visible until the handling
                 //code calls the onCalendarDragComplete callback which hides them.
                 return true;
@@ -173,4 +163,3 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         return false;
     }
 });
-
