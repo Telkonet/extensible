@@ -21,12 +21,12 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
      * Class to be used as the view's drag zone implementation.
      */
     dragZoneClass: 'Extensible.calendar.dd.DayDragZone',
-
     /**
      * @cfg {String} dropZoneClass
      * Class to be used as the view's drop zone implementation.
      */
     dropZoneClass: 'Extensible.calendar.dd.SchedulerBDropZone',
+    dayColumnElIdDelimiter: '-day-calendar-',
 
     // private
     afterRender: function() {
@@ -42,7 +42,8 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 viewEndHour: this.viewEndHour,
                 hourIncrement: this.hourIncrement,
                 calendars: this.calendarStore.data.items,
-                hourHeight: this.hourHeight
+                hourHeight: this.hourHeight,
+                dayColumnElIdDelimiter: this.dayColumnElIdDelimiter
             });
         }
         this.callParent(arguments);
@@ -135,12 +136,13 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
                 evt._left = colWidth * evt._overcol;
             }
             var markup = this.getEventTemplate().apply(evt),
-                target = this.id + '-day-col-'+evt.CalendarId+'-' + Ext.Date.format(evts[i].date, 'Ymd');
+                target = this.id + this.dayColumnElIdDelimiter + evt.CalendarId+ '-' + Ext.Date.format(evts[i].date, 'Ymd');
 
             Ext.DomHelper.append(target, markup);
         }
         this.fireEvent('eventsrendered', this);
     },
+
     //private
     isOverlapping: function(evt1, evt2) {
         var ev1 = evt1.data ? evt1.data : evt1,
@@ -269,18 +271,6 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
         if(e.getTarget('.ext-cal-day-times', 3) !== null) {
             // Ignore clicks on the times-of-day gutter
             return;
-        }
-
-        // What case is this handling?
-        var el = e.getTarget('td', 3);
-        if(el) {
-            if(el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
-                alert('SchedulerBody.onClick unknown case!!');
-                var calIdDate = this.getDateFromId(el.id, this.dayElIdDelimiter); // not returning date anymore but a string like: col-{calendarId}-{date}
-                var parts = calIdDate.split('-');
-                this.onDayClick(Ext.Date.parseDate(parts[2], 'Ymd'), true, Ext.get(this.getDayId(parts[2], parts[1])), parts[1]);
-                return;
-            }
         }
 
         // Handle click on the body background. Open event editor to create a new event.
