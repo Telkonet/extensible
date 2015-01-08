@@ -165,11 +165,8 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
             }
         });
 
-        var shim = this.shims[calendarId];
-        if(!shim) {
-            shim = this.createShim(calendarId);
-            this.shims[calendarId] = shim;
-        }
+        var shim = this.createShim(calendarId);
+        this.shims[calendarId] = shim;
         shim.boxInfo = box;
         shim.isActive = true;
         Ext.each(this.shims, function(shim) {
