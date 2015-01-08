@@ -216,7 +216,7 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
                 rec = this.view.getEventRecordFromEl(data.ddel);
                 var oldCalId = rec.data.CalendarId;
                 var oldStartDate = rec.data.StartDate;
-                if (rec.data.CalendarId != n.calendarId) {
+                if (oldCalId != n.calendarId) {
                     rec.data.CalendarId = n.calendarId;
                     if (Ext.Date.isEqual(rec.data.StartDate, n.date)) {
                         rec.data.StartDate = Ext.Date.add(n.date, Ext.Date.SECOND, 59);
@@ -224,15 +224,16 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
                     }
                 }
                 this.view.onEventDrop(rec, n.date, (e.ctrlKey || e.altKey) ? 'copy' : 'move');
+                if (oldCalId != n.calendarId) this.view.fireEvent('eventmove', this, rec, n.calendarId);
                 //since we may have "n" calendar columns, we must ensure that the default Ctrl+Drag mechanism is overridden
                 //the default mechanism is cloning the current record and is moving it to the new position;
                 // but because of the calendar colums, both the events are moved so we have to move back one of them to the original position
-
                 if ((e.ctrlKey || e.altKey) && oldCalId !== n.calendarId) {
                     rec.data.CalendarId = oldCalId;
                     rec.data.StartDate = Ext.Date.add(oldStartDate, Ext.Date.SECOND, 59);
                     this.view.onEventDrop(rec, oldStartDate, 'move');
-                    this.view.fireEvent('eventcopy', this.view, rec);
+                    //this.view.fireEvent('eventcopy', this.view, rec);
+                    this.view.fireEvent('eventcopy', this, rec, n.calendarId);
                 }
                 this.onCalendarDragComplete();
                 delete this.dragOffset;
