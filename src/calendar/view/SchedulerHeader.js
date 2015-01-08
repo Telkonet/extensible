@@ -350,22 +350,22 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
      */
     onClick: function(e, t) {
         var el = e.getTarget('td', 3);
-        var idxCal = -1;
+        var idCalendar = -1;
         var dt = Ext.Date.format(this.startDate,'Ymd');
         if (el) {
-            idxCal = el.id.split('calendar')[2];
-            if (idxCal === undefined && Ext.get(el).up('table').up('td') !== null){
-                idxCal = Ext.get(el).up('table').up('td').id.split('calendar')[2];
+            idCalendar = el.id.split('calendar')[2];
+            if (idCalendar === undefined && Ext.get(el).up('table').up('td') !== null){
+                idCalendar = Ext.get(el).up('table').up('td').id.split('calendar')[2];
             }
-            idxCal = (idxCal === undefined ? -1: idxCal.split('-')[1]);
-            if (idxCal === -1 || el == null) return false; //clicked outside usable area....
+            idCalendar = (idCalendar === undefined ? -1: idCalendar.split('-')[1]);
+            if (idCalendar === -1 || el == null) return false; //clicked outside usable area....
 
             if (el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 var parts = el.id.split(this.dayElIdDelimiter);
                 dt = parts[parts.length - 1];
 
                 this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, el,
-                    this.calendarStore.findRecord('CalendarId',idxCal));
+                    this.calendarStore.findRecord('CalendarId',idCalendar));
                 return;
             }
         }
