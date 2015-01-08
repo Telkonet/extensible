@@ -364,7 +364,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
                 var parts = el.id.split(this.dayElIdDelimiter);
                 dt = parts[parts.length - 1];
 
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt, true)),
+                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, el,
                     this.calendarStore.findRecord('CalendarId',idxCal));
                 return;
             }
