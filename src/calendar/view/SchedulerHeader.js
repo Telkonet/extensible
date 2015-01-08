@@ -316,6 +316,7 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
         }
         this.save();
       //  this.ownerCt.fireEvent('event' + moveOrCopy + 'tocalendar', this, rec);
+        this.fireEvent('event' + moveOrCopy, this, rec, calendarId);
     },
 
     /**
