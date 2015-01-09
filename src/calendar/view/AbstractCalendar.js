@@ -458,6 +458,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * @param {Extensible.calendar.view.AbstractCalendar} this
              * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
              * for the event that was moved with updated start and end dates
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             eventmove: true,
             /**
@@ -466,7 +467,6 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * @param {Extensible.calendar.view.AbstractCalendar} this
              * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
              * record} for the event that was moved (with updated start and end dates)
-             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             initdrag: true,
             /**
