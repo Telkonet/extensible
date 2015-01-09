@@ -288,16 +288,44 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
 
         if (moveOrCopy === 'move') {
             if (rec.data.CalendarId === calendarId) {
-                // No changes, so we aren't actually moving. Copying to the same date is OK.
+                // No changes, so we aren't actually moving. Copying to the same calendar is OK.
                 return;
             }
             newRec = rec;
         } else {
             newRec = rec.clone();
         }
-        me.doModifyEvent(newRec, calendarId, moveOrCopy);
+        if (me.fireEvent('beforeevent' + moveOrCopy, me, newRec, Ext.Date.clone(this.startDate), calendarId) !== false) {
+            if (newRec.isRecurring()) {
+                //if (me.recurrenceOptions.editSingleOnDrag) {
+                me.onRecurrenceEditModeSelected('single', newRec, calendarId, moveOrCopy);
+                //}
+                // else {
+                // Extensible.form.recurrence.RangeEditWindow.prompt({
+                // callback: Ext.bind(me.onRecurrenceEditModeSelected, me, [newRec, calendarId, moveOrCopy], true),
+                // editModes: ['single', 'future'],
+                // scope: me
+                // });
+                // }
+            }
+            else {
+              me.doModifyEvent(rec, calendarId, moveOrCopy);
+            }
+        }
     },
 
+    onRecurrenceEditModeSelected: function(editMode, rec, calendarId, moveOrCopy) {
+        var EventMappings = Extensible.calendar.data.EventMappings;
+        if (editMode) {
+            if (moveOrCopy === 'copy') {
+                rec.clearRecurrence();
+            }
+            rec.data[EventMappings.REditMode.name] = editMode;
+            rec.data[EventMappings.RInstanceStartDate.name] = rec.getStartDate();
+            this.doModifyEvent(rec, calendarId, moveOrCopy);
+        }
+        // else user canceled
+    },
     /**
      * This method is our custom implementation of the doShiftEvent method from the AbstractCalendar class.
      * It's preparing the store for saving the event data changes
@@ -315,7 +343,6 @@ Ext.define('Extensible.calendar.view.SchedulerHeader', {
             this.store.add(rec);
         }
         this.save();
-      //  this.ownerCt.fireEvent('event' + moveOrCopy + 'tocalendar', this, rec);
         this.fireEvent('event' + moveOrCopy, this, rec, calendarId);
     },
 
