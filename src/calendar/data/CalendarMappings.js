@@ -93,5 +93,12 @@ Extensible.calendar.data.CalendarMappings = {
         name:    'IsHidden',
         mapping: 'hidden',
         type:    'boolean'
+    },
+    // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
+    // Add read-only field to calendar.
+    IsReadOnly: {
+        name:    'IsReadOnly',
+        mapping: 'readonly',
+        type:    'boolean'
     }
 };

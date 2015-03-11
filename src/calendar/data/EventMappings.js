@@ -95,13 +95,15 @@ Extensible.calendar.data.EventMappings = {
         name:       'StartDate',
         mapping:    'start',
         type:       'date',
-        dateFormat: 'c'
+        dateFormat: 'c' // ISO 8601 Format. Includes TZ info since EXT JS 4.1.1, for example 2012-07-25T05:00:00+02:00
+        // dateFormat: 'Y-m-d\\TH:i:s' // ISO 8601 format without timezone information.
     },
     EndDate: {
         name:       'EndDate',
         mapping:    'end',
         type:       'date',
-        dateFormat: 'c'
+        dateFormat: 'c' // ISO 8601 Format. Includes TZ info since EXT JS 4.1.1, for example 2012-07-25T05:00:00+02:00
+        // dateFormat: 'Y-m-d\\TH:i:s' // ISO 8601 format without timezone information.
     },
     Location: {
         name:    'Location',
@@ -113,11 +115,15 @@ Extensible.calendar.data.EventMappings = {
         mapping: 'notes',
         type:    'string'
     },
-    Url: {
+    // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
+    // URLs are currently not supported.
+    /*
+     Url: {
         name:    'Url',
         mapping: 'url',
         type:    'string'
     },
+    */
     IsAllDay: {
         name:    'IsAllDay',
         mapping: 'ad',
@@ -128,7 +134,31 @@ Extensible.calendar.data.EventMappings = {
         mapping: 'rem',
         type:    'string'
     },
-    
+    // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
+    // Introduced new field 'Who'
+    Who:  {
+    name: 'Who',
+    mapping: 'who',
+    type: 'string'
+    },
+
+    // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
+    // Introduced new field 'IsReadOnly'
+    IsReadOnly: {
+        name: 'IsReadOnly',
+        mapping: 'readonly',
+        type: 'boolean'
+    },
+
+    // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
+    // Introduced new field 'Version'
+    Version:  {
+        name: 'Version',
+        mapping: 'version',
+        type: 'string'
+    },
+
+
 // ----- Recurrence properties -----
 
     // NOTE: Only RRule and Duration need to be persisted. The other properties
@@ -165,19 +195,24 @@ Extensible.calendar.data.EventMappings = {
         useNull:      true, // Without this, the null returned from the server is coerced to 0
         type:         'int'
     },
-    
+
     // This is used to associate recurring event instances back to their
     // original master events when sending edit requests to the server. This
     // is required since each individual event instance will have a unique id
     // (required by Ext stores) which is not guaranteed to be a real PK since
     // typically these will be generated from the RRULE pattern, not real events
     // that exist in the DB.
+
+    // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
+    // This field is not needed. In Teamup Calendar the original event id is encoded into the event id.
+    /*
     OriginalEventId: {
         name:    'OriginalEventId',
         mapping: 'origid',
         type:    'string',
         useNull: true
     },
+    */
     
     // The start date for the recurring series.
     RSeriesStartDate: {
