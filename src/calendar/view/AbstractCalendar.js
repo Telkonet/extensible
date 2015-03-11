@@ -584,7 +584,9 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         });
 
         // currently the context menu only contains CRUD actions so do not show it if read-only
-        if (this.enableContextMenus && this.readOnly !== true) {
+        // OVERRIDE for Teamup Calendar: July 7, 2013, sidler@teamup.com
+        // Teamup Calendar added functionality to the context menu. Do not disable it for read-only calendars.
+        if (this.enableContextMenus) {
             this.el.on('contextmenu', this.onContextMenu, this);
         }
 
