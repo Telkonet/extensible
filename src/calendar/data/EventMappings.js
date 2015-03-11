@@ -154,7 +154,7 @@ Extensible.calendar.data.EventMappings = {
     // Introduced new field 'Version'
     Version:  {
         name: 'Version',
-        mapping: 'version',
+        mapping: 'ver',
         type: 'string'
     },
 
