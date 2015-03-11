@@ -934,6 +934,13 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         var dates = {},
             boundOnComplete = Ext.bind(this.onCalendarEndDragComplete, this, [onComplete]);
 
+        // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+        // If end time is midnight, subtract 1 minute so that event does not become a multi-day event.
+        if (Extensible.Date.isMidnight(end)) {
+            end = Extensible.Date.add(end, {minutes: -1});
+        }
+        // End of override
+
         dates[Extensible.calendar.data.EventMappings.StartDate.name] = start;
         dates[Extensible.calendar.data.EventMappings.EndDate.name] = end;
 
@@ -1701,7 +1708,9 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         this.editWin = this.editWin || Ext.WindowMgr.get('ext-cal-editwin');
 
         if (!this.editWin) {
-            this.editWin = Ext.create('Extensible.calendar.form.EventWindow', {
+            // OVERRIDE for Teamup Calendar, May 9, 2014, sidler@teamup.com
+            // Call Teamup event editor instead of the default Extensible event editor.
+            this.editWin = Ext.create('Teamup.calendar.editor.EventEditor', {
                 id: 'ext-cal-editwin',
                 calendarStore: this.calendarStore,
                 modal: this.editModal,
@@ -1859,22 +1868,35 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         }
     },
 
+    // OVERRIDE for Teamup Calendar, May 9, 2014, sidler@teamup.com
+    // - Added onPrintEvent handler.
+    onPrintEvent: function(menu, rec, el) {
+        var eventId;
+        if (rec && !rec.phantom) {
+            Teamup.calendar.editor.EventViewer.getInstance().showPreview(rec, el);
+        }
+        this.menuActive = false;
+    },
+
     showEventMenu: function(el, xy) {
         var me = this;
 
+        // OVERRIDE for Teamup Calendar, May 9, 2014, sidler@teamup.com
+        // - Modified function to show Teamup context menu instead of the Extensible context menu.
+        // - Added handler for print event.
         if (!me.eventMenu) {
-            me.eventMenu = Ext.create('Extensible.calendar.menu.Event', {
+            me.eventMenu = Ext.create('Teamup.calendar.menu.ContextMenu', {
                 startDay: me.startDay,
                 ownerCalendarPanel: me,
                 listeners: {
                     'editdetails': Ext.bind(me.onEditDetails, me),
+                    'eventprint' : Ext.bind(me.onPrintEvent, me),
                     'eventdelete': Ext.bind(me.onDeleteEvent, me),
                     'eventmove'  : Ext.bind(me.onMoveEvent, me),
                     'eventcopy'  : Ext.bind(me.onCopyEvent, me)
                 }
             });
         }
-
         me.eventMenu.showForEvent(me.getEventRecordFromEl(el), el, xy);
         me.menuActive = true;
     },
@@ -1950,7 +1972,13 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
                 rec.clearRecurrence();
             }
             rec.data[EventMappings.REditMode.name] = editMode;
-            rec.data[EventMappings.RInstanceStartDate.name] = rec.getStartDate();
+
+            // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+            // Disabled updating field RInstanceStartDate with the event start date.
+            // This is important because the event start date is specified in local
+            // time and the RInstanceStartDate is specified in UTC.
+            // rec.data[EventMappings.RInstanceStartDate.name] = rec.getStartDate();
+
             this.doShiftEvent(rec, newStartDate, moveOrCopy);
         }
         // else user canceled
@@ -1964,6 +1992,13 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         updateData[EventMappings.StartDate.name] = newStartDate;
         updateData[EventMappings.EndDate.name] = Extensible.Date.add(rec.getEndDate(), {millis: diff});
 
+        // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+        // If end time is midnight, subtract 1 minute so that event does not become a multi-day event.
+        if (Extensible.Date.isMidnight(updateData[EventMappings.EndDate.name])) {
+            updateData[EventMappings.EndDate.name] = Extensible.Date.add(updateData[EventMappings.EndDate.name], {minutes: -1});
+        }
+        // End of override
+
         rec.set(updateData);
 
         if (rec.phantom) {
@@ -1975,7 +2010,9 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
     },
 
     onEditDetails: function(menu, rec, el) {
-        this.fireEvent('editdetails', this, rec, el);
+        // OVERRIDE for Teamup Calendar, May 9, 2014, sidler@teamup.com
+        // - Instead of showing the event form, show the event editor popup window
+        this.getEventEditor().show(rec, el, this);
         this.menuActive = false;
     },
 
@@ -2021,7 +2058,13 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
     onRecurrenceDeleteModeSelected: function(editMode, rec, el) {
         if (editMode) {
             rec.data[Extensible.calendar.data.EventMappings.REditMode.name] = editMode;
-            rec.data[Extensible.calendar.data.EventMappings.RInstanceStartDate.name] = rec.getStartDate();
+
+            // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+            // Disabled updating field RInstanceStartDate with the event start date.
+            // This is important because the event start date is specified in local
+            // time and the RInstanceStartDate is specified in UTC.
+            // rec.data[Extensible.calendar.data.EventMappings.RInstanceStartDate.name] = rec.getStartDate();
+
             this.doDeleteEvent(rec, el);
         }
         // else user canceled
