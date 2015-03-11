@@ -106,15 +106,15 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
             showToday: false,
             width: me.endDateWidth,
             format: me.endDateFormat || Ext.form.field.Date.prototype.format,
+            altFormats: 'n/j|n/d|n/j/Y|n/m/Y|m/d/y|m/j/y|m/d/Y|n.j|n.d|n.j.Y|n.m.Y|m.d.y|m.j.y|m.d.Y',
             startDay: this.startDay,
             maxValue: me.maxEndDate,
             allowBlank: false,
             hidden: true,
             minValue: Ext.Date.add(startDate, Ext.Date.DAY, me.minDateOffset),
             value: me.getDefaultEndDate(startDate),
-            
             listeners: {
-                'change': Ext.bind(me.onEndDateChange, me)
+                change: Ext.bind(me.onEndDateChange, me)
             }
         };
     },
