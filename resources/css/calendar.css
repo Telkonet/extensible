@@ -30,6 +30,10 @@
 .ext-cal-overflow-y {
     overflow-y: scroll !important;
 }
+.ext-cal-overflow-x {
+    overflow-x:scroll!important;
+    overflow-y:hidden;
+}
 .ext-cal-ct {
     position: relative;
     font-family: helvetica, arial, sans-serif;
@@ -253,6 +257,88 @@
 }
 .x-ie6 .ext-cal-day-col-gutter {
     zoom: 1
+}
+
+/* -----------------------------------------
+ * Scheduler-specific styles
+ */
+.ext-cal-schedulerview .ext-cal-gutter {
+    width:50px;
+}
+.ext-cal-schedulerview .ext-cal-gutter-rt {
+    width:16px;
+}
+.ext-cal-schedulerview .ext-cal-hd-ct {
+    height: auto;
+    border-bottom:none;
+}
+.ext-cal-schedulerview-header {
+    width:100%!important;
+    border-collapse:collapse;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl {
+    border:none;
+    border-bottom:1px solid #BBCCFF;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl .ext-cal-bg-tbl-hd td {
+    height:20px;
+    background-color:#CDDCEF;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl  td {
+    border-left: 1px solid #BBCCFF!important;
+}
+.ext-cal-schedulerview-header .ext-cal-bg-tbl td:first-child {
+    border:none!important;
+}
+.ext-cal-schedulerview-header table:nth-child(2) {
+    background:none;
+}
+.ext-cal-schedulerview-allday {
+    width:100%;
+    border-top:1px solid #BBCCFF/*#c2d3fd*/;
+    border-collapse:collapse;
+    position: relative;
+    top: 0;
+    overflow:visible!important;
+    height:auto!important;
+}
+.ext-cal-schedulerview-allday tr td {
+    vertical-align:top;
+}
+.ext-cal-schedulerview-allday table tr td {
+    width:100%;
+}
+.ext-cal-schedulerview-allday .ext-cal-dtitle {
+    width:100%;
+}
+.ext-cal-schedulerview-allday .thead th {
+    height:14px;
+    padding: 2px 0;
+    border-bottom: 1px solid #BBCCFF!important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left:2px;
+}
+.ext-cal-schedulerview-allday .thead th:first-child{
+    border-left: 1px solid #BBCCFF!important;
+}
+.ext-cal-schedulerview-allday .thead th:last-child {
+    border-right: 1px solid #BBCCFF!important;
+}
+
+.ext-cal-schedulerview-allday .ext-cal-evt-tbl {
+    padding:0px!important;
+}
+
+.ext-cal-schedulerview .ext-cal-day-col .ext-cal-day-col-inner{
+    float:left;
+    margin-right:0;
+    border-right:1px solid #BBCCFF;
+}
+.ext-cal-schedulerview .ext-cal-day-col .ext-cal-day-col-gutter{
+    width:auto;
+    margin-right:15px;
 }
 
 /* -----------------------------------------
@@ -755,6 +841,66 @@ td.ext-cal-dtitle-today div {
     display: none;
 }
 
+/* -----------------------------------------
+ * Agenda view specific styles
+ */
+.ext-cal-agenda {
+    border-top: 1px solid #99BBE8;
+}
+
+.ext-cal-agenda-hd {
+    border-bottom: 1px solid #99BBE8;
+}
+
+.ext-cal-agenda-hd .x-panel-body {
+    background-color: #F0F4FA !important;
+}
+.ext-cal-agenda-hd .x-toolbar {
+    background-color: #F0F4FA !important;
+    background-image: none !important;
+}
+
+.ext-cal-icon-evt-add {
+    background-image: url(../images/default/ext/add.gif) !important;
+}
+
+.ext-cal-agenda-bd .ext-cal-evt-agenda td {
+    padding: 2px 10px;
+    font-size: 12px;
+    vertical-align: top;
+}
+
+.ext-cal-agenda-bd .ext-cal-evt-agenda-details td {
+    padding: 1px 10px 1px 0;
+}
+
+.ext-cal-agenda-bd .ext-cal-day-link {
+    cursor: pointer;
+}
+
+.ext-cal-agenda-bd hr {
+    margin:10px 0;
+    color: #CCC;
+    background-color:#CCC;
+    height:1px;
+    border:0;
+}
+
+/* new styles, adjust for white skin */
+.ext-cal-agenda-bd td.ext-cal-agenda-group-header {
+    color: #A7C6DF;
+    font-size: 16px;
+    line-height: 14px;
+    font-weight: bold;
+    padding-top: 10px;
+    padding-bottom: 0px;
+}
+
+.ext-cal-agenda-bd .ext-cal-evt-agenda td.ext-cal-evt-hours {
+    padding: 2px 2px;
+}
+
+
 /*******************************************
  * 
  * Calendar navigation picker styles
@@ -969,9 +1115,11 @@ td.ext-cal-dtitle-today div {
 .extensible-cal-icon-cal-show {
     background-image:url(../images/default/silk/calendar_view_month.png) !important;
 }
+/* Brian: Image color_wheel.png does not exist. Can this style be removed?
 .extensible-cal-icon-cal-colors {
     background-image:url(../images/default/silk/color_wheel.png) !important;
 }
+*/
 
 /*******************************************
  * 

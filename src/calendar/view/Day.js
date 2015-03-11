@@ -161,13 +161,21 @@ Ext.define('Extensible.calendar.view.Day', {
         cfg.readOnly = this.readOnly;
         cfg.ddIncrement = this.ddIncrement;
         cfg.minEventDisplayMinutes = this.minEventDisplayMinutes;
+        cfg.ownerCalendarPanel = this.ownerCalendarPanel;
+
+        this.items = this.getItemConfig(cfg);
+        this.addCls('ext-cal-dayview ext-cal-ct');
         
+        this.callParent(arguments);
+    },
+
+    getItemConfig: function(cfg) {
+
         var header = Ext.applyIf({
             xtype: 'extensible.dayheaderview',
-            id: this.id+'-hd',
-            ownerCalendarPanel: this.ownerCalendarPanel
+            id: this.id+'-hd'
         }, cfg);
-        
+
         var body = Ext.applyIf({
             xtype: 'extensible.daybodyview',
             enableEventResize: this.enableEventResize,
@@ -176,14 +184,10 @@ Ext.define('Extensible.calendar.view.Day', {
             viewEndHour: this.viewEndHour,
             scrollStartHour: this.scrollStartHour,
             hourHeight: this.hourHeight,
-            id: this.id+'-bd',
-            ownerCalendarPanel: this.ownerCalendarPanel
+            id: this.id+'-bd'
         }, cfg);
-        
-        this.items = [header, body];
-        this.addCls('ext-cal-dayview ext-cal-ct');
-        
-        this.callParent(arguments);
+
+        return [header, body];
     },
 
     afterRender: function() {
@@ -197,7 +201,7 @@ Ext.define('Extensible.calendar.view.Day', {
     },
 
     refresh: function(reloadData) {
-        Extensible.log('refresh (DayView)');
+        Extensible.log('refresh (' + Ext.getClassName(this) + '), reload = ' + reloadData);
         if (reloadData === undefined) {
             reloadData = false;
         }

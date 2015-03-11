@@ -20,6 +20,18 @@ Ext.define('Extensible.calendar.view.DayBody', {
     dayColumnElIdDelimiter: '-day-col-',
     hourIncrement: 60,
 
+    /**
+     * @cfg {String} dragZoneClass
+     * Class to be used as the view's drag zone implementation.
+     */
+    dragZoneClass: 'Extensible.calendar.dd.DayDragZone',
+
+    /**
+     * @cfg {String} dropZoneClass
+     * Class to be used as the view's drop zone implementation.
+     */
+    dropZoneClass: 'Extensible.calendar.dd.DayDropZone',
+
     initComponent: function() {
         this.callParent(arguments);
 
@@ -75,7 +87,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
             moveText: this.ddMoveEventText,
             resizeText: this.ddResizeEventText,
             ddIncrement: this.ddIncrement,
-            ddGroup: this.ddGroup || this.id+'-DayViewDD'
+            ddGroup: this.ddGroup || this.id + '-ddGroup'
         };
 
         this.el.ddScrollConfig = {
@@ -85,19 +97,19 @@ Ext.define('Extensible.calendar.view.DayBody', {
             hthresh: -1,
             frequency: 50,
             increment: 100,
-            ddGroup: this.ddGroup || this.id+'-DayViewDD'
+            ddGroup: this.ddGroup || this.id + '-ddGroup'
         };
 
-        this.dragZone = Ext.create('Extensible.calendar.dd.DayDragZone', this.el, Ext.apply({
+        this.dragZone = Ext.create(this.dragZoneClass, this.el, Ext.apply({
             // disabled for now because of bugs in Ext 4 ScrollManager:
             //containerScroll: true
         }, cfg));
 
-        this.dropZone = Ext.create('Extensible.calendar.dd.DayDropZone', this.el, cfg);
+        this.dropZone = Ext.create(this.dropZoneClass, this.el, cfg);
     },
 
     refresh: function(reloadData) {
-        Extensible.log('refresh (DayBodyView)');
+        Extensible.log('refresh (' + Ext.getClassName(this) + '), reload = ' + reloadData);
         var top = this.el.getScroll().top;
 
         this.callParent(arguments);
@@ -114,7 +126,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
      * Scrolls the container to the specified vertical position. If the view is large enough that
      * there is no scroll overflow then this method will have no affect.
      * @param {Number} y The new vertical scroll position in pixels
-     * @param {Boolean} defer (optional) <p>True to slightly defer the call, false to execute immediately.
+     * @param {Boolean} defer (optional) True to slightly defer the call, false to execute immediately.
      *
      * This method will automatically defer itself for IE and Opera (even if you pass false) otherwise
      * the scroll position will not update in those browsers. You can optionally pass true, however, to
@@ -152,7 +164,6 @@ Ext.define('Extensible.calendar.view.DayBody', {
                 hourHeight: this.hourHeight
             });
         }
-        this.tpl.compile();
 
         this.addCls('ext-cal-body-ct');
 
@@ -405,12 +416,33 @@ Ext.define('Extensible.calendar.view.DayBody', {
         evtData._height = Math.max(((endMins - startMins) * heightFactor), this.minEventHeight) + evtOffsets.height;
     },
 
+    /**
+     * Render events.
+     * The event layout is based on this article: http://stackoverflow.com/questions/11311410/ and this sample
+     * implementation http://jsbin.com/detefuveta/5/edit?html,js,output     *
+     */
     renderItems: function() {
-        var day = 0,
-            evt,
-            evts = [];
-        
-        for (; day < this.dayCount; day++) {
+        var evts = [];
+
+        evts = this.filterEventsToRender();
+        this.layoutAndRenderItems(evts);
+        this.fireEvent('eventsrendered', this);
+     },
+
+    /**
+     * Filters events and returns a list of events that need to be displayed by the day body view.
+     * For example, all-day events and multi-day events are filtered out because they are not
+     * displayed in the body.
+     * This is a private helper function.
+     * @protected
+     * @returns {Array} An array of events.
+     */
+    filterEventsToRender: function() {
+        var evt,
+            evts = [],
+            M = Extensible.calendar.data.EventMappings;
+
+        for (var day = 0; day < this.dayCount; day++) {
             var ev = 0,
                 emptyCells = 0,
                 skipped = 0,
@@ -423,7 +455,6 @@ Ext.define('Extensible.calendar.view.DayBody', {
                     continue;
                 }
                 var item = evt.data || evt.event.data,
-                    M = Extensible.calendar.data.EventMappings,
                     ad = item[M.IsAllDay.name] === true,
                     span = this.isEventSpanning(evt.event || evt),
                     renderAsAllDay = ad || span;
@@ -443,57 +474,126 @@ Ext.define('Extensible.calendar.view.DayBody', {
             }
         }
 
-        // overlapping event pre-processing loop
+        return evts;
+    },
+
+    /**
+     * Layout events and render to DOM.
+     * @protected
+     * @param {Array} events An array of events.
+     */
+    layoutAndRenderItems: function(evts) {
+        // Layout events
         var i = 0,
             j = 0,
-            overlapCols = [],
             l = evts.length,
-            prevDt,
-            evt2,
-            dt;
-        
-        for (; i<l; i++) {
-            evt = evts[i].data;
-            evt2 = null;
-            dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
+            evt,
+            minEventDuration = (this.minEventDisplayMinutes || 0) * 60 * 1000,
+            lastEventEnding = 0,
+            columns = [], // virtual columns for placement of the events
+            eventGroups = [],
+            M = Extensible.calendar.data.EventMappings;
 
-            for (j = 0; j < l; j++) {
-                if (i === j) {
-                    continue;
+        for(i=0; i<l; i++){
+            evt =  evts[i];
+            if (lastEventEnding !== 0 && evt.data[M.StartDate.name].getTime() >= lastEventEnding) {
+                // This event does not overlap with the current event group. Start a new event group.
+                eventGroups.push(columns);
+                columns = [];
+                lastEventEnding = 0;
+            }
+            var placed = false;
+
+            for (j = 0; j < columns.length; j++) {
+                var col = columns[ j ];
+                if (!this.isOverlapping( col[col.length-1], evt ) ) {
+                    col.push(evt);
+                    placed = true;
+                    break;
                 }
-                evt2 = evts[j].data;
-                if(this.isOverlapping(evt, evt2)) {
-                    evt._overlap = evt._overlap === undefined ? 1 : evt._overlap+1;
-                    if(i<j) {
-                        if (evt._overcol === undefined) {
-                            evt._overcol = 0;
-                        }
-                        evt2._overcol = evt._overcol+1;
-                        overlapCols[dt] = overlapCols[dt] ? Math.max(overlapCols[dt], evt2._overcol) : evt2._overcol;
-                    }
-                }
+            }
+
+            if (!placed) {
+                columns.push([evt]);
+            }
+
+            // Remember the last event time of the event group.
+            // Very short events have a minimum duration on screen (we can't see a one minute event).
+            var eventDuration = evt.data[M.EndDate.name].getTime() - evt.data[M.StartDate.name].getTime();
+            var eventEnding;
+            if (eventDuration < minEventDuration) {
+                eventEnding = evt.data[M.StartDate.name].getTime() + minEventDuration;
+            } else {
+                eventEnding = evt.data[M.EndDate.name].getTime();
+            }
+            if (eventEnding > lastEventEnding) {
+                lastEventEnding = eventEnding;
             }
         }
 
-        // rendering loop
+        // Push the last event group, if there is one.
+        if(columns.length > 0){
+            eventGroups.push(columns);
+        }
+
+        // Rendering loop
+        l = eventGroups.length;
+        // Loop over all the event groups.
         for (i = 0; i < l; i++) {
-            evt = evts[i].data;
-            dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
+            var evtGroup = eventGroups[i];
+            var numColumns = evtGroup.length;
 
-            if(evt._overlap !== undefined) {
-                var colWidth = 100 / (overlapCols[dt]+1),
-                    evtWidth = 100 - (colWidth * evt._overlap);
+            // Loop over all the virtual columns of an event group
+            for (j = 0; j < numColumns; j++) {
+                col = evtGroup[j];
 
-                evt._width = colWidth;
-                evt._left = colWidth * evt._overcol;
+                // Loop over all the events of a virtual column
+                for (var k = 0; k < col.length; k++) {
+                    evt = col[k];
+
+                    // Check if event is rightmost of a group and can be expanded to the right
+                    var colSpan = this.expandEvent(evt, j, evtGroup);
+
+                    evt.data._width = (100 * colSpan / numColumns);
+                    evt.data._left = (j / numColumns) * 100;
+                    var markup = this.getEventTemplate().apply(evt.data),
+                        target = this.getDayId(evt.date, null, evt.data.CalendarId);
+                    Ext.DomHelper.append(target, markup);
+                }
             }
-            var markup = this.getEventTemplate().apply(evt),
-                target = this.id + '-day-col-' + Ext.Date.format(evts[i].date, 'Ymd');
-            
-            Ext.DomHelper.append(target, markup);
         }
+    },
 
-        this.fireEvent('eventsrendered', this);
+    /**
+     * Expand events at the far right to use up any remaining space. This implements step 5 in the layout
+     * algorithm described here: http://stackoverflow.com/questions/11311410/
+     * @private
+     * @param {Object} evt Event to process.
+     * @param {int} iColumn Virtual column to where the event will be rendered.
+     * @param {Array} columns List of virtual colums for event group. Each column contains a list of events.
+     * @return {Number}
+     */
+    expandEvent: function(evt, iColumn, columns) {
+        var colSpan = 1;
+
+        // To see the output without event expansion, uncomment
+        // the line below. Watch column 3 in the output.
+        // return colSpan;
+
+        for (var i = iColumn + 1; i < columns.length; i++)
+        {
+            var col = columns[i];
+            for (var j = 0; j < col.length; j++)
+            {
+                var evt1 = col[j];
+                if (this.isOverlapping(evt, evt1))
+                {
+                    return colSpan;
+                }
+            }
+            colSpan++;
+        }
+        return colSpan;
     },
 
     getDayEl: function(dt) {
@@ -558,6 +658,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
         var el = e.getTarget('td', 3);
         if(el) {
             if(el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
+                alert('DayBody.onClick unknown case!!');
                 var dt = this.getDateFromId(el.id, this.dayElIdDelimiter);
                 this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt)));
                 return;

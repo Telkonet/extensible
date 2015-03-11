@@ -422,6 +422,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * record} for the event that will be copied
              * @param {Date} dt The new start date to be set in the copy (the end date will be automaticaly
              * adjusted to match the original event duration)
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             beforeeventcopy: true,
             /**
@@ -432,6 +433,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * @param {Extensible.calendar.view.AbstractCalendar} this
              * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
              * record} for the event that was copied (with updated start and end dates)
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             eventcopy: true,
             /**
@@ -445,6 +447,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * for the event that will be moved. Start and end dates will be the original values before the move started.
              * @param {Date} dt The new start date to be set (the end date will be automaticaly calculated to match
              * based on the event duration)
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             beforeeventmove: true,
             /**
@@ -455,12 +458,15 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * @param {Extensible.calendar.view.AbstractCalendar} this
              * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
              * for the event that was moved with updated start and end dates
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             eventmove: true,
             /**
              * @event initdrag
              * Fires when a drag operation is initiated in the view
              * @param {Extensible.calendar.view.AbstractCalendar} this
+             * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
+             * record} for the event that was moved (with updated start and end dates)
              */
             initdrag: true,
             /**
@@ -1441,8 +1447,27 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
                 // remain sorted sequentially by start time. This seems more proper
                 // but can make for a less visually-compact layout when there are
                 // many such events mixed together closely on the calendar.
-                return a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime();
+
+                // Events are sorted by three criteria: Start time, end time and
+                // calendar id. The calendar id is used as the third sort criteria
+                // to ensure that events are always ordered the same way. Without
+                // that third criteria, events that start at the same time and end at
+                // the same time would be ordered randomly.
+                var sortStartDate  = a[M.StartDate.name].getTime() - b[M.StartDate.name].getTime()
+                if (sortStartDate){
+                    return sortStartDate;
+                }
+                var sortEndDate = b[M.EndDate.name].getTime() - a[M.EndDate.name].getTime(); //descending
+                if (sortEndDate){
+                    return sortEndDate;
+                }
+                var sortCalendar = a[M.CalendarId.name] - b[M.CalendarId.name];//ascending
+                if (sortCalendar){
+                    return sortCalendar;
+                }
+                return 0;
             }
+
         }, this));
     },
 
@@ -1558,14 +1583,29 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         Ext.each(operation.records, function(rec) {
             if (rec.dirty) {
                 if (rec.phantom) {
-                    rec.unjoin(this.eventStore);
+                    this.store.remove(rec);
                 }
                 else {
                     rec.reject();
                 }
             }
         }, this);
-        
+
+        // Restore deleted records back to their original positions.
+        // This code was copied from ExtJS V4.2.2 Ext.data.Store, function rejectChanges(). In order to maintain
+        // backwards compatibility with version 4.0.7, this function cannot be called directly.
+        var recs = this.store.removed,
+            len = recs.length,
+            i = 0, rec;
+
+        for (i = len-1; i >= 0; i--) {
+            rec = recs[i];
+            this.store.insert(rec.removedFrom || 0, rec);
+            rec.reject();
+        }
+        // Since removals are cached in a simple array we can simply reset it here.
+        this.store.removed.length = 0;
+
         if (this.fireEvent('eventexception', this, response, operation) !== false) {
             this.notifyOnException(response, operation);
         }
