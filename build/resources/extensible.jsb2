@@ -114,9 +114,6 @@
             "text": "Event.js",
             "path": "../../src/calendar/menu/"
         },{
-            "text": "EventDetails.js",
-            "path": "../../src/calendar/form/"
-        },{
             "text": "EventWindow.js",
             "path": "../../src/calendar/form/"
         },{

@@ -753,6 +753,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             this.initEventRelay(list);
             this.add(list);
         }
+
         if(this.showSchedulerView) {
             var scheduler = Ext.apply({
                 xtype: 'extensible.schedulerview',
@@ -764,6 +765,10 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             this.initEventRelay(scheduler);
             this.add(scheduler);
         }
+
+        // OVERRIDE for Teamup Calendar, May, 10, 2014, sidler@teamup.com
+        // - Don't instantiate an event edit form. It is not used.
+        /*
         this.add(Ext.applyIf({
             xtype: 'extensible.eventeditform',
             id: this.id+'-edit',
@@ -777,6 +782,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
                 'eventcancel': { scope: this, fn: this.onEventCancel }
             }
         }, this.editViewCfg));
+        */
     },
 
     initEventRelay: function(cfg) {

@@ -12,7 +12,9 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
     
     requires: [
         'Ext.CompositeElement',
-        'Extensible.calendar.form.EventDetails',
+        // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+        // - Don't load EventDetails. It is not used.
+        // 'Extensible.calendar.form.EventDetails',
         'Extensible.calendar.form.EventWindow',
         'Extensible.calendar.menu.Event',
         'Extensible.calendar.dd.DragZone',
