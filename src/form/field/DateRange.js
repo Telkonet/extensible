@@ -303,15 +303,6 @@ Ext.define('Extensible.form.field.DateRange', {
             startValue = me.getDT('start'),
             endValue = me.getDT('end');
 
-        if(startValue > endValue) {
-            if(startend === 'start') {
-                endField.setValue(startValue);
-            }else{
-                startField.setValue(endValue);
-                me.checkDates(type, 'start');
-            }
-        }
-
         if(type === 'date') {
             me.checkDates('time', startend);
 
@@ -320,9 +311,8 @@ Ext.define('Extensible.form.field.DateRange', {
                     tmpDate = new Date(endValue.getFullYear(), endValue.getMonth(), newEndDate);
 
                 this['endDate'].setValue(tmpDate);
-
-                // define min limit for end date picker
-                this['endDate'].setMinValue(startValue);
+                this['endDate'].setMinValue(startValue);  // define min limit for end date picker
+                this['endDate'].validate();
             }
         }
         else if (type == 'time'){
@@ -336,6 +326,9 @@ Ext.define('Extensible.form.field.DateRange', {
                     endDateValue = this['endDate'].getValue();
                 if (startDateValue.getDate() === endDateValue.getDate()){
                     this['endTime'].setMinValue(startValue);
+                    this['endTime'].validate();
+                } else {
+                    this['endTime'].reset();
                 }
             }
         }
