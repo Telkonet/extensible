@@ -94,9 +94,10 @@ Ext.define('Extensible.form.recurrence.option.Interval', {
             maxValue: me.maxEndDate,
             allowBlank: false,
             value: startDate,
-            
+            format: 'n/j/Y',
+            altFormats: 'n/j|n/d|n/j/Y|n/m/Y|m/d/y|m/j/y|m/d/Y|n.j|n.d|n.j.Y|n.m.Y|m.d.y|m.j.y|m.d.Y',
             listeners: {
-                'change': Ext.bind(me.onStartDateChange, me)
+                change: Ext.bind(me.onStartDateChange, me)
             }
         };
     },
