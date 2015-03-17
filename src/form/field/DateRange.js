@@ -65,6 +65,18 @@ Ext.define('Extensible.form.field.DateRange', {
      */
     alternativeTimeFormats: 'g:ia|g:iA|g:i a|g:i A|h:i|g:i|H:i|ga|ha|gA|h a|g a|g A|gi|hi|gia|hia|g|H|gi a|hi a|giA|hiA|gi A|hi A|g.i a|g.i A|G.i|Gi|h.i|hi',
 
+    /**
+     * @cfg {Ext.Date | null} previousStartDate
+     * Store the initial start date
+     */
+    previousStartDate: null,
+
+    /**
+     * @cfg {Ext.Date | null} previousStartTime
+     * Store the initial start date
+     */
+    previousStartTime: null,
+
     fieldLayout: {
         type: 'hbox',
         defaultMargins: { top: 0, right: 5, bottom: 0, left: 0 }
@@ -163,9 +175,17 @@ Ext.define('Extensible.form.field.DateRange', {
                 return true;
             },
             listeners: {
-                change: {
-                    fn: function(el, newValue, oldValue) {
-                        this.onFieldChange('date', 'start', newValue, oldValue);
+                select: {
+                    fn: function(field, value){
+                        this.onFieldChange('date', 'start', value, this.previousStartDate);
+                        this.previousStartDate = value;
+                    },
+                    scope: this
+                },
+                blur:{
+                    fn: function(field, event){
+                        this.onFieldChange('date', 'start', field.getValue(), this.previousStartDate);
+                        this.previousStartDate = field.getValue();
                     },
                     scope: this
                 }
@@ -186,9 +206,17 @@ Ext.define('Extensible.form.field.DateRange', {
             format: this.timeFormat,
             altFormats: this.alternativeTimeFormats,
             listeners: {
-                change: {
-                    fn: function(el, newValue, oldValue) {
-                        this.onFieldChange('time', 'start', newValue, oldValue);
+                select: {
+                    fn: function(field, value){
+                        this.onFieldChange('time', 'start', value, this.previousStartTime);
+                        this.previousStartTime = value;
+                    },
+                    scope: this
+                },
+                blur:{
+                    fn: function(field, event){
+                        this.onFieldChange('time', 'start', field.getValue(), this.previousStartTime);
+                        this.previousStartTime = field.getValue();
                     },
                     scope: this
                 }
@@ -221,14 +249,6 @@ Ext.define('Extensible.form.field.DateRange', {
                 }
 
                 return true;
-            },
-            listeners: {
-                change: {
-                    fn: function(el, newValue, oldValue) {
-                        this.onFieldChange('date', 'end', newValue, oldValue);
-                    },
-                    scope: this
-                }
             }
         };
     },
@@ -266,12 +286,6 @@ Ext.define('Extensible.form.field.DateRange', {
                 return true;
             },
             listeners: {
-                change: {
-                    fn: function(el, newValue, oldValue) {
-                        this.onFieldChange('time', 'end', newValue, oldValue);
-                    },
-                    scope: this
-                },
                 expand: {
                     fn:  function(field) {
                         var item = this.findRecordByDisplay(this.getRawValue());
@@ -351,16 +365,16 @@ Ext.define('Extensible.form.field.DateRange', {
             endValue = me.getDT('end');
 
         if(type === 'date') {
-            //me.checkDates('time', startend);
-
             if (startend === 'start'){
                 var diffDays;
 
                 if (endValue && newValue && oldValue){
                     diffDays = this.dateDiffInDays(newValue, oldValue);
 
-                    endValue.setDate(endValue.getDate() + diffDays);
-                    this['endDate'].setValue(endValue);
+                    if (diffDays){
+                        endValue.setDate(endValue.getDate() + diffDays);
+                        this['endDate'].setValue(endValue);
+                    }
                 }
             }
         }
@@ -461,6 +475,9 @@ Ext.define('Extensible.form.field.DateRange', {
             }
             me.allDay.setValue(!!v[eventMappings.IsAllDay.name]);
         }
+
+        me.previousStartDate = me.startDate.getValue();
+        me.previousStartTime = me.startTime.getValue();
     },
     
     // setValue helper
