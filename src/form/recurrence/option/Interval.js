@@ -21,7 +21,7 @@ Ext.define('Extensible.form.recurrence.option.Interval', {
      * @cfg {String} singleLine
      * Alternative formats for date pickers
      */
-    alternativeDateFormat: 'n/j|n/j/Y|n/j/y|n/d|n/d/Y|n/d/y|m/j|m/j/Y|m/j/y|m/d|m/d/Y|m/d/y|j/n|j/n/y|j/n/Y|d/n|d/n/y|d/n/Y|j/m|j/m/y|j/m/Y|d/m|d/m/y|d/m/Y|n.j|n.j.Y|n.j.y|n.d|n.d.Y|n.d.y|m.j|m.j.Y|m.j.y|m.d|m.d.Y|m.d.y|j.n|j.n.y|j.n.Y|d.n|d.n.y|d.n.Y|j.m|j.m.y|j.m.Y|d.m|d.m.y|d.m.Y',
+    alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
     
     strings: {
         repeatEvery: 'Repeat every',
@@ -107,7 +107,7 @@ Ext.define('Extensible.form.recurrence.option.Interval', {
             allowBlank: false,
             value: startDate,
             format: me.dateFormat,
-            altFormats: me.alternativeDateFormat,
+            altFormats: me.alternativeDateFormats,
             listeners: {
                 change: Ext.bind(me.onStartDateChange, me)
             }
