@@ -40,6 +40,18 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
      * Width in pixels of the duration end date field (defaults to 120)
      */
     endDateWidth: 120,
+
+    /**
+     * @cfg {String} dateFormat
+     * The date display format used by the date fields (defaults to 'n/j/Y')
+     */
+    endDateFormat: 'n/j/Y',
+
+    /**
+     * @cfg {String} singleLine
+     * Alternative formats for date picker
+     */
+    alternativeDateFormat: 'n/j|n/j/Y|n/j/y|n/d|n/d/Y|n/d/y|m/j|m/j/Y|m/j/y|m/d|m/d/Y|m/d/y|j/n|j/n/y|j/n/Y|d/n|d/n/y|d/n/Y|j/m|j/m/y|j/m/Y|d/m|d/m/y|d/m/Y|n.j|n.j.Y|n.j.y|n.d|n.d.Y|n.d.y|m.j|m.j.Y|m.j.y|m.d|m.d.Y|m.d.y|j.n|j.n.y|j.n.Y|d.n|d.n.y|d.n.Y|j.m|j.m.y|j.m.Y|d.m|d.m.y|d.m.Y',
     
     strings: {
         andContinuing: 'and continuing',
@@ -50,8 +62,6 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
     },
     
     cls: 'extensible-recur-duration',
-    
-    //endDateFormat: null, // inherit by default
     
     getItemConfigs: function() {
         var me = this;
@@ -106,7 +116,7 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
             showToday: false,
             width: me.endDateWidth,
             format: me.endDateFormat || Ext.form.field.Date.prototype.format,
-            altFormats: 'n/j|n/d|n/j/Y|n/m/Y|m/d/y|m/j/y|m/d/Y|n.j|n.d|n.j.Y|n.m.Y|m.d.y|m.j.y|m.d.Y',
+            altFormats: me.alternativeDateFormat,
             startDay: this.startDay,
             maxValue: me.maxEndDate,
             allowBlank: false,
