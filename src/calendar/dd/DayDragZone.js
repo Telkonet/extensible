@@ -11,8 +11,9 @@ Ext.define('Extensible.calendar.dd.DayDragZone', {
     getDragData: function(e) {
         var target = e.getTarget(this.resizeSelector, 2, true),
             rec,
-            parent;
-        
+            parent,
+            targetId;
+
         if (target) {
             parent = target.parent(this.eventSelector);
             rec = this.view.getEventRecordFromEl(parent);
@@ -55,7 +56,8 @@ Ext.define('Extensible.calendar.dd.DayDragZone', {
         }
         
         // If not dragging/resizing an event then we are dragging on the calendar to add a new event
-        target = this.view.getDayAt(e.getX(), e.getY());
+        var targetId = e.getTarget().id;
+        target = this.view.getDayAt(e.getX(), e.getY(), targetId);
         
         if (target.el) {
             return {

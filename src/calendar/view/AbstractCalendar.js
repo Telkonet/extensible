@@ -422,6 +422,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * record} for the event that will be copied
              * @param {Date} dt The new start date to be set in the copy (the end date will be automaticaly
              * adjusted to match the original event duration)
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             beforeeventcopy: true,
             /**
@@ -432,6 +433,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * @param {Extensible.calendar.view.AbstractCalendar} this
              * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
              * record} for the event that was copied (with updated start and end dates)
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             eventcopy: true,
             /**
@@ -445,6 +447,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * for the event that will be moved. Start and end dates will be the original values before the move started.
              * @param {Date} dt The new start date to be set (the end date will be automaticaly calculated to match
              * based on the event duration)
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             beforeeventmove: true,
             /**
@@ -455,12 +458,15 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
              * @param {Extensible.calendar.view.AbstractCalendar} this
              * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel record}
              * for the event that was moved with updated start and end dates
+             * @param {Number} CalendarId The Id of the current calendar record (optional)
              */
             eventmove: true,
             /**
              * @event initdrag
              * Fires when a drag operation is initiated in the view
              * @param {Extensible.calendar.view.AbstractCalendar} this
+             * @param {Extensible.calendar.data.EventModel} rec The {@link Extensible.calendar.data.EventModel
+             * record} for the event that was moved (with updated start and end dates)
              */
             initdrag: true,
             /**

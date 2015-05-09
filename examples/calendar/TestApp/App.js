@@ -1,6 +1,6 @@
 Ext.Loader.setConfig({
     enabled: true,
-    //disableCaching: false,
+    disableCaching: false,
     paths: {
         "Extensible": "../../../src",
         "Extensible.example": "../.."
@@ -186,14 +186,16 @@ Ext.define('Extensible.example.calendar.TestApp.App', {
                             scope: this
                         },
                         'eventcopy': {
-                            fn: function(vw, rec){
-                                this.onEventCopyOrMove(rec, 'copy');
+                            fn: function(vw, rec, calendarId){
+                                calendarId = (typeof(calendarId) === 'object' ? undefined : calendarId);
+                                this.onEventCopyOrMove(rec, 'copy', calendarId);
                             },
                             scope: this
                         },
                         'eventmove': {
-                            fn: function(vw, rec){
-                                this.onEventCopyOrMove(rec, 'move');
+                            fn: function(vw, rec, calendarId){
+                               calendarId = (typeof(calendarId) === 'object' ? undefined : calendarId);
+                                this.onEventCopyOrMove(rec, 'move', calendarId);
                             },
                             scope: this
                         },
@@ -248,15 +250,21 @@ Ext.define('Extensible.example.calendar.TestApp.App', {
     },
     
     // Handle event moves or copies generically
-    onEventCopyOrMove: function(rec, mode) {
+    onEventCopyOrMove: function(rec, mode, calendarId) {
+        //calendarId = calendarId || undefined;
         var mappings = Extensible.calendar.data.EventMappings,
             time = rec.data[mappings.IsAllDay.name] ? '' : ' \\a\\t g:i a',
             action = mode === 'copy' ? 'copied' : 'moved';
         
         rec.commit();
-        
-        this.showMsg('Event '+ rec.data[mappings.Title.name] +' was ' + action + ' to '+
-            Ext.Date.format(rec.data[mappings.StartDate.name], ('F jS'+time)));
+
+        if (calendarId === undefined) {
+            this.showMsg('Event ' + rec.data[mappings.Title.name] + ' was ' + action + ' to ' +
+            Ext.Date.format(rec.data[mappings.StartDate.name], ('F jS' + time)));
+            return;
+        }
+        this.showMsg('Event ' + rec.data[mappings.Title.name] + ' was ' + action + ' to calendar '
+        + this.calendarStore.findRecord('CalendarId',calendarId).data.Title + ' at ' + Ext.Date.format(rec.data[mappings.StartDate.name], ('F jS' + time)));
     },
     
     // This is an application-specific way to communicate CalendarPanel event messages back to the user.
