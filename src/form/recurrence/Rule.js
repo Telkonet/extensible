@@ -298,7 +298,7 @@ Ext.define('Extensible.form.recurrence.Rule', {
      * @returns {String} The corresponding date string
      */
     formatDate: function(date) {
-        return Ext.Date.format(date, this.dateValueFormat);
+        return Ext.Date.format(date, this.getDateValueFormat);
     },
 
     /**

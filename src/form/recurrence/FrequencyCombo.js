@@ -30,10 +30,9 @@ Ext.define('Extensible.form.recurrence.FrequencyCombo', {
          * @param {String} value The selected frequency value (one of the names
          * from {@link #frequencyOptions}, e.g. 'DAILY')
          */
-        me.addEvents('frequencychange');
-        
-        var freq = Extensible.form.recurrence.Parser.strings.frequency;
-        
+
+        var freq = Extensible.form.recurrence.Parser.getStrings().frequency;
+
         /**
          * @cfg {Array} frequencyOptions
          * An array of arrays, each containing the name/value pair that defines a recurring
@@ -71,7 +70,7 @@ Ext.define('Extensible.form.recurrence.FrequencyCombo', {
         me.callParent(arguments);
     },
     
-    onSelect: function(combo, records) {
-        this.fireEvent('frequencychange', records[0].data.id);
+    onSelect: function(combo, record) {
+        this.fireEvent('frequencychange', record.data.id);
     }
 });

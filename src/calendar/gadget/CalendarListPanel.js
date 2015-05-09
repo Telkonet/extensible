@@ -164,10 +164,10 @@ Ext.define('Extensible.calendar.gadget.CalendarListPanel', {
         for (; i < len; i++) {
             recId = recs[i].data[calendarId];
             // make a truthy check so that either numeric or string ids can match
-            if(recId === id) {
+            if(recId == id) {
                 this.showCalendar(recId, false);
             }
-            else{
+            else {
                 this.hideCalendar(recId, false);
             }
         }

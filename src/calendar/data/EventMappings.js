@@ -148,7 +148,7 @@ Extensible.calendar.data.EventMappings = {
         name:    'RRule',
         mapping: 'rrule',
         type:    'string',
-        useNull: true
+        allowNull: true
     },
     
     // When using recurrence, the standard EndDate value will be the end date
@@ -162,7 +162,7 @@ Extensible.calendar.data.EventMappings = {
         name:         'Duration',
         mapping:      'duration',
         defaultValue: -1,   // the standard int default of 0 is actually a valid duration
-        useNull:      true, // Without this, the null returned from the server is coerced to 0
+        allowNull:      true, // Without this, the null returned from the server is coerced to 0
         type:         'int'
     },
     
@@ -176,7 +176,7 @@ Extensible.calendar.data.EventMappings = {
         name:    'OriginalEventId',
         mapping: 'origid',
         type:    'string',
-        useNull: true
+        allowNull: true
     },
     
     // The start date for the recurring series.
@@ -185,7 +185,7 @@ Extensible.calendar.data.EventMappings = {
         mapping:    'rsstart',
         type:       'date',
         dateFormat: 'c',
-        useNull:    true
+        allowNull:    true
     },
     
     // If the start date of a recurring event instance is changed and then saved
@@ -199,7 +199,7 @@ Extensible.calendar.data.EventMappings = {
         mapping:    'ristart',
         type:       'date',
         dateFormat: 'c',
-        useNull:    true
+        allowNull:    true
     },
     
     // Recurrence edit mode ('single', 'future' or 'all'). This is transient data
@@ -210,6 +210,6 @@ Extensible.calendar.data.EventMappings = {
         name:    'REditMode',
         mapping: 'redit',
         type:    'string',
-        useNull: true
+        allowNull: true
     }
 };

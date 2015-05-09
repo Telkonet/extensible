@@ -86,7 +86,7 @@ StartTest(function(t) {
             
             reader: {
                 type: 'json',
-                root: 'data'
+                rootProperty: 'data'
             },
             
             writer: {

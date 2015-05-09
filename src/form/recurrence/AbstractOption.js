@@ -1,3 +1,4 @@
+
 /**
  * The abstract base class for all of the recurrence option widgets. Intended to be subclassed.
  * 
@@ -57,17 +58,14 @@ Ext.define('Extensible.form.recurrence.AbstractOption', {
     initComponent: function() {
         var me = this;
         
-        me.addEvents(
-            /**
-             * @event change
-             * Fires when a user-initiated change is detected in the value of the field.
-             * @param {Extensible.form.recurrence.AbstractOption} this
-             * @param {Mixed} newValue The new value
-             * @param {Mixed} oldValue The old value
-             */
-            'change'
-        );
-        
+        /**
+         * @event change
+         * Fires when a user-initiated change is detected in the value of the field.
+         * @param {Extensible.form.recurrence.AbstractOption} this
+         * @param {Mixed} newValue The new value
+         * @param {Mixed} oldValue The old value
+         */
+
         me.initRRule();
         me.items = me.getItemConfigs();
         

@@ -136,7 +136,7 @@ Ext.define('Extensible.calendar.util.WeekEventRenderer', {
                                     cls: 'ext-cal-ev',
                                     html: spaceChar,
                                     //style: 'outline: 1px solid red;', // helpful for debugging
-                                    id: config.viewId + '-empty-' + eventCount + '-day-' + currentDateString
+                                    id: config.viewId + '-empty-' + eventIndex + '-day-' + currentDateString
                                 });
                             }
                             else {

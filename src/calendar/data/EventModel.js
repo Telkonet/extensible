@@ -35,7 +35,7 @@ Ext.define('Extensible.calendar.data.EventModel', {
     mappingClass: 'Extensible.calendar.data.EventMappings',
     
     mappingIdProperty: 'EventId',
-    
+
     // Experimental, not currently used:
     // associations: [{
         // type: 'hasMany',
@@ -68,6 +68,7 @@ Ext.define('Extensible.calendar.data.EventModel', {
         var RRule = Extensible.calendar.data.EventMappings.RRule;
         
         if (RRule) {
+            var rrule = this.get(RRule.name);
             return !!this.get(RRule.name);
         }
         return false;

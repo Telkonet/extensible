@@ -248,26 +248,26 @@
      */
     function calculateEndDate($event) {
         global $date_format, $mappings;
-        
+
         $end = $event[$mappings['end_date']];
         $rrule = $event[$mappings['rrule']];
         $isRecurring = isset($rrule) && $rrule !== '';
-        
+
         if ($isRecurring) {
             $max_date = new DateTime('9999-12-31');
             $recurrence = new When();
             $recurrence->rrule($rrule);
-            
             if (isset($recurrence->end_date) && $recurrence->end_date < $max_date) {
                 // The RRULE includes an explicit end date, so use that
-                $end = $recurrence->end_date->format($date_format).'Z';
+                $recurrence->end_date->setTimezone(new DateTimeZone('UTC'));
+                $end = $recurrence->end_date->format($date_format);
             }
             else if (isset($recurrence->count) && $recurrence->count > 0) {
                 // The RRULE has a limit, so calculate the end date based on the instance count
                 $count = 0;
-                $newEnd;
+                $newEnd = null;
                 $rdates = $recurrence->recur($event[$mappings['start_date']])->rrule($rrule);
-                
+
                 while ($rdate = $rdates->next()) {
                     $newEnd = $rdate;
                     if (++$count > $recurrence->count) {
@@ -276,16 +276,19 @@
                 }
                 // The 'minutes' portion should match Extensible.calendar.data.EventModel.resolution:
                 $newEnd->modify('+'.$event[$mappings['duration']].' minutes');
-                $end = $newEnd->format($date_format).'Z';
+                $newEnd->setTimezone(new DateTimeZone('UTC'));
+                $end = $newEnd->format($date_format);
             }
             else {
                 // The RRULE does not specify an end date or count, so default to max date
-                $end = date($date_format, PHP_INT_MAX).'Z';
+                $newEnd = new DateTime();
+                $newEnd->setTimestamp(PHP_INT_MAX);
+                $end = $newEnd->format($date_format);
             }
         }
         return $end;
     }
-    
+
     /**
      * Remove any extra attributes that are not mapped to db columns for persistence
      * otherwise MySQL will throw an error

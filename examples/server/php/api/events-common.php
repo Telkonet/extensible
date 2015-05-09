@@ -11,8 +11,10 @@
     
     // Clean the event.
     // MySQL doesn't really have a true boolean type, so convert to int for this demo
-    $event['all_day'] = $event['all_day'] === TRUE ? 1 : 0;
-    
+    if (isset($event['all_day'])) {
+        $event['all_day'] = $event['all_day'] === TRUE ? 1 : 0;
+    }
+
     // Grab the requested start and end dates if supplied
     $start_dt = isset($_REQUEST['startDate']) ? strtolower($_REQUEST['startDate']) : null;
     $end_dt = isset($_REQUEST['endDate']) ? strtolower($_REQUEST['endDate']) : null;
@@ -26,7 +28,7 @@
     
     // Set the app_id to allow each example to reuse this API with its own data.
     // In a real application this would not be needed.
-    $app_id = $event['app_id'] = isset($_REQUEST['app_id']) ? strtolower($_REQUEST['app_id']) : null;
+    $app_id = $event['app_id'] = isset($_REQUEST['app_id']) ? strtolower($_REQUEST['app_id']) : 'remote';
     
     // The demos support simulating server failure for testing purposes
     $fail = isset($_REQUEST['fail']) ? TRUE : FALSE;

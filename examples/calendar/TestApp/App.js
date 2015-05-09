@@ -1,6 +1,6 @@
 Ext.Loader.setConfig({
     enabled: true,
-    //disableCaching: false,
+    disableCaching: false, // Do not disable caching. This makes the debugger forget breakpoints on each load.
     paths: {
         "Extensible": "../../../src",
         "Extensible.example": "../.."

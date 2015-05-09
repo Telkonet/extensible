@@ -62,7 +62,7 @@
  *		    // read the id property generically, regardless of the mapping:
  *			idProperty: Extensible.calendar.data.CalendarMappings.CalendarId.mapping  || 'id',
  *		    // this is also a handy way to configure your reader's fields generically:
- *			fields: Extensible.calendar.data.CalendarModel.prototype.fields.getRange()
+ *			fields: Extensible.calendar.data.CalendarModel.prototype.fields
  *		});
  */
 Ext.ns('Extensible.calendar.data');

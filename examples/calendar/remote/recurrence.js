@@ -1,6 +1,6 @@
 Ext.Loader.setConfig({
     enabled: true,
-    //disableCaching: false,
+    disableCaching: false,
     paths: {
         "Extensible": "../../../src",
         "Extensible.example": "../../"
@@ -34,32 +34,32 @@ Ext.onReady(function() {
     
     // Set up mappings to match the DB column names as defined in examples/server/setup.sql
     Extensible.calendar.data.EventMappings = {
-        EventId:     {name: 'EventId', mapping:'id', type:'string'},
-        CalendarId:  {name: 'CalendarId', mapping: 'calendar_id', type: 'string'},
-        Title:       {name: 'Title', mapping: 'title'},
-        StartDate:   {name: 'Start', mapping: 'start', type: 'date', dateFormat: 'c'},
-        EndDate:     {name: 'End', mapping: 'end', type: 'date', dateFormat: 'c'},
-        Location:    {name: 'Location', mapping: 'location'},
-        Notes:       {name: 'Notes', mapping: 'notes'},
-        Url:         {name: 'Url', mapping: 'url'},
-        IsAllDay:    {name: 'IsAllDay', mapping: 'all_day', type: 'boolean'},
-        Reminder:    {name: 'Reminder', mapping: 'reminder'},
-        
+        EventId:     {name: 'EventId', mapping:'id', type:'string', critical: true},
+        CalendarId:  {name: 'CalendarId', mapping: 'calendar_id', type: 'int', critical: true},
+        Title:       {name: 'Title', mapping: 'title', type: 'string', critical: true},
+        StartDate:   {name: 'Start', mapping: 'start', type: 'date', dateFormat: 'Y-m-d H:i:s', critical: true},
+        EndDate:     {name: 'End', mapping: 'end', type: 'date', dateFormat: 'Y-m-d H:i:s', critical: true},
+        Location:    {name: 'Location', mapping: 'location', type: 'string', critical: true},
+        Notes:       {name: 'Notes', mapping: 'notes', type: 'string', critical: true},
+        Url:         {name: 'Url', mapping: 'url', type: 'string', critical: true},
+        IsAllDay:    {name: 'IsAllDay', mapping: 'all_day', type: 'boolean', critical: true},
+        Reminder:    {name: 'Reminder', mapping: 'reminder', type: 'boolean', critical: true},
+
         // NOTE that since we want recurrence support in this demo, we must also include
         // the recurrence-specific data mappings. Typically RRule and Duration are the only
         // values that need to be persisted and returned with events, and they are the only ones
         // mapped to columns in the MySQL database:
-        RRule:    {name: 'RRule', mapping: 'rrule', type: 'string', useNull: true},
-        Duration: {name: 'Duration', mapping: 'duration', defaultValue: -1, useNull: true, type: 'int'},
+        RRule:    {name: 'RRule', mapping: 'rrule', type: 'string', critical: true, allowNull: true},
+        Duration: {name: 'Duration', mapping: 'duration', type: 'int', defaultValue: -1, critical: true, allowNull: true},
         
         // These additional values are required for processing recurring events properly,
         // but are either calculated or used only during editing. They still must be mapped
         // to whatever the server expects, but typically aren't persisted in the DB. For additional
         // details see the comments in src/calendar/data/EventMappings.
-        OriginalEventId:    {name: 'OriginalEventId', mapping: 'origid', type: 'string', useNull: true},
-        RSeriesStartDate:   {name: 'RSeriesStartDate', mapping: 'rsstart', type: 'date', dateFormat: 'c', useNull: true},
-        RInstanceStartDate: {name: 'RInstanceStartDate', mapping: 'ristart', type: 'date', dateFormat: 'c', useNull: true},
-        REditMode:          {name: 'REditMode', mapping: 'redit', type: 'string', useNull: true}
+        OriginalEventId:    {name: 'OriginalEventId', mapping: 'origid', type: 'string', critical: true, allowNull: true},
+        RSeriesStartDate:   {name: 'RSeriesStartDate', mapping: 'rsstart', type: 'date', dateFormat: 'Y-m-d H:i:s', critical: true, allowNull: true},
+        RInstanceStartDate: {name: 'RInstanceStartDate', mapping: 'ristart', type: 'date', dateFormat: 'Y-m-d H:i:s', critical: true, allowNull: true},
+        REditMode:          {name: 'REditMode', mapping: 'redit', type: 'string', critical: true, allowNull: true}
     };
     Extensible.calendar.data.EventModel.reconfigure();
     
@@ -73,7 +73,7 @@ Ext.onReady(function() {
             
             reader: {
                 type: 'json',
-                root: 'calendars'
+                rootProperty: 'calendars'
             }
         }
     });
@@ -100,11 +100,13 @@ Ext.onReady(function() {
             },
             reader: {
                 type: 'json',
-                root: 'data'
+                rootProperty: 'data'
             },
             writer: {
                 type: 'json',
-                nameProperty: 'mapping'
+                nameProperty: 'mapping',
+                writeAllFields: true,
+                allDataOptions: {changes: true, critical: true}
             }
         },
 
@@ -115,7 +117,10 @@ Ext.onReady(function() {
         // option for generically messaging after CRUD persistence has succeeded.
         listeners: {
             'write': function(store, operation) {
-                var title = Ext.value(operation.records[0].data[Extensible.calendar.data.EventMappings.Title.name], '(No title)');
+                var record = 'Ext.data.operation.Destroy' == Ext.getClass(operation).getName() ?
+                        operation.getResultSet().getRecords()[0] : operation.getRecords()[0],
+                    title = record.get(Extensible.calendar.data.EventMappings.Title.name) || '(No title)';
+
                 switch(operation.action){
                     case 'create':
                         Extensible.example.msg('Add', 'Added "' + title + '"');
