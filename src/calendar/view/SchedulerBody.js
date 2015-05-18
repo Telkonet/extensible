@@ -4,6 +4,7 @@
  * @extends Extensible.calendar.view.DayBody
  * @constructor
  * @param {Object} config The config object
+ * @author Alin Miron, reea.net
  */
 Ext.define('Extensible.calendar.view.SchedulerBody', {
     extend: 'Extensible.calendar.view.DayBody',
@@ -51,95 +52,35 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
 
     // private
     renderItems: function() {
-        var day = 0,
-            evt,
-            evts = [];
-        
-        for (; day < this.dayCount; day++) {
-            var ev = 0,
-                emptyCells = 0,
-                skipped = 0,
-                d = this.eventGrid[0][day],
-                ct = d ? d.length : 0;
+        var evt,
+            evts,
+            eventBatches = {},
+            eventBatch,
+            M = Extensible.calendar.data.EventMappings;
 
-            for (; ev < ct; ev++) {
-                evt = d[ev];
-                if(!evt) {
-                    continue;
-                }
-                var item = evt.data || evt.event.data,
-                    M = Extensible.calendar.data.EventMappings,
-                    ad = item[M.IsAllDay.name] === true,
-                    span = this.isEventSpanning(evt.event || evt),
-                    renderAsAllDay = ad || span;
+        evts = this.filterEventsToRender();
 
-                if(renderAsAllDay) {
-                    // this event is already rendered in the header view
-                    continue;
-                }
-                Ext.apply(item, {
-                    cls: 'ext-cal-ev',
-                    _positioned: true
-                });
-                evts.push({
-                    data: this.getTemplateEventData(item),
-                    date: Extensible.Date.add(this.viewStart, {days: day})
-                });
+        // For scheduler view events are displayed in separate columns per calendar.
+        // Therefore, we batch events per calendar and apply the layout algorithm to each batch.
+        for (var i = 0; i < evts.length; i++) {
+            evt = evts[i];
+            eventBatch = eventBatches[evt.data[M.CalendarId.name]];
+            if (typeof eventBatch !== 'object') {
+                eventBatch = [];
+                var batchName = evt.data[M.CalendarId.name];
+                eventBatches[batchName] = eventBatch;
+            }
+            eventBatch.push(evt);
+        }
+
+        // Render events for each batch
+        for (var batchId in eventBatches) {
+            if (eventBatches.hasOwnProperty(batchId)) {
+                evts = eventBatches[batchId];
+                this.layoutAndRenderItems(evts);
             }
         }
 
-        // overlapping event pre-processing loop
-        var i = 0,
-            j = 0,
-            overlapCols = [],
-            l = evts.length,
-            prevDt,
-            evt2,
-            dt;
-        
-        for (; i<l; i++) {
-            evt = evts[i].data;
-            evt2 = null;
-            dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
-
-            for (j = 0; j < l; j++) {
-                if (i === j) {
-                    continue;
-                }
-                evt2 = evts[j].data;
-                if(this.isOverlapping(evt, evt2)) {
-                    evt._overlap = evt._overlap === undefined ? 1 : evt._overlap+1;
-                    if (evt.CalendarId == evt2.CalendarId) {
-                        if(i < j) {
-                            overlapCols[dt] = (overlapCols[dt] === undefined ? [] : overlapCols[dt]);
-                            if (evt._overcol === undefined) {
-                                evt._overcol = 0;
-                            }
-                            evt2._overcol = evt._overcol+1;
-                            overlapCols[dt][evt.CalendarId] = overlapCols[dt][evt.CalendarId] ? Math.max(overlapCols[dt][evt.CalendarId], evt2._overcol) : evt2._overcol;
-                        }
-                    }
-                }
-            }
-        }
-
-        // rendering loop
-        for (i = 0; i < l; i++) {
-            evt = evts[i].data;
-            dt = evt[Extensible.calendar.data.EventMappings.StartDate.name].getDate();
-
-            if(evt._overlap !== undefined) {
-                var colWidth = 100 / (overlapCols[dt][evt.CalendarId] + 1),
-                    evtWidth = 100 - (colWidth * evt._overlap);
-
-                evt._width = colWidth;
-                evt._left = colWidth * evt._overcol;
-            }
-            var markup = this.getEventTemplate().apply(evt),
-                target = this.id + this.dayColumnElIdDelimiter + evt.CalendarId+ '-' + Ext.Date.format(evts[i].date, 'Ymd');
-
-            Ext.DomHelper.append(target, markup);
-        }
         this.fireEvent('eventsrendered', this);
     },
 
@@ -174,15 +115,15 @@ Ext.define('Extensible.calendar.view.SchedulerBody', {
     },
 
     // private
-    getDayId: function(dt,calDomId) {
+    getDayId: function(dt, calDomId, calendarId) {
+        if (calDomId != null) {
+            return calDomId;
+        }
+
         if(Ext.isDate(dt)) {
             dt = Ext.Date.format(dt, 'Ymd');
         }
-        if (calDomId != undefined || calDomId != '') {
-            return calDomId;
-        }
-        return this.id + this.dayColumnElIdDelimiter + dt;
-
+        return this.id + this.dayColumnElIdDelimiter + calendarId + '-' + dt;
     },
 
     // private
