@@ -39,6 +39,15 @@
             "text": "Month.js",
             "path": "../../src/calendar/template/"
         },{
+            "text": "SchedulerHeaderCalendar.js",
+            "path": "../../src/calendar/template/"
+        },{
+            "text": "SchedulerHeader.js",
+            "path": "../../src/calendar/template/"
+        },{
+            "text": "SchedulerBody.js",
+            "path": "../../src/calendar/template/"
+        },{
             "text": "CalendarScrollManager.js",
             "path": "../../src/calendar/dd/"
         },{
@@ -55,6 +64,12 @@
             "path": "../../src/calendar/dd/"
         },{
             "text": "DayDropZone.js",
+            "path": "../../src/calendar/dd/"
+        },{
+            "text": "SchedulerHDropZone.js",
+            "path": "../../src/calendar/dd/"
+        },{
+            "text": "SchedulerBDropZone.js",
             "path": "../../src/calendar/dd/"
         },{
             "text": "EventModel.js",
@@ -127,6 +142,15 @@
             "path": "../../src/calendar/view/"
         },{
             "text": "MultiWeek.js",
+            "path": "../../src/calendar/view/"
+        },{
+            "text": "SchedulerHeader.js",
+            "path": "../../src/calendar/view/"
+        },{
+            "text": "SchedulerBody.js",
+            "path": "../../src/calendar/view/"
+        },{
+            "text": "Scheduler.js",
             "path": "../../src/calendar/view/"
         },{
             "text": "CalendarPanel.js",
