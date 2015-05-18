@@ -3,6 +3,7 @@
  * @extends Ext.XTemplate
  * @constructor
  * @param {Object} config The config object
+ * @author Alin Miron, reea.net
  */
 Ext.define('Extensible.calendar.template.SchedulerHeader', {
     extend: 'Ext.XTemplate',

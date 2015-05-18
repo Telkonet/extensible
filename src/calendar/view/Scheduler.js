@@ -2,6 +2,7 @@
  * Scheduler view displays events for each calendar in their own column. It currently support a time span of one day.
  * This class does not usually need ot be used directly as you can use a {@link Extensible.calendar.CalendarPanel
  * CalendarPanel} to manage multiple calendar views at once including the scheduler view.
+ * @author Alin Miron, reea.net
  */
 Ext.define('Extensible.calendar.view.Scheduler', {
     extend: 'Extensible.calendar.view.Day',

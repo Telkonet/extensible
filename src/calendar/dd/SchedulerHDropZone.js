@@ -2,6 +2,7 @@
  * Internal drop zone implementation for the calendar components. This provides base functionality
  * and is primarily for the scheduler view (header section) -- SchedulerHeaderDD adds calendar column view-specific functionality.
  * @private
+ * @author Alin Miron, reea.net
  */
 Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
     extend: 'Extensible.calendar.dd.DropZone',

@@ -7,6 +7,7 @@
  * presented by {@link Extensible.calendar.CalendarPanel CalendarPanel}.</p>
  * @constructor
  * @param {Object} config The config object
+ * @author Alin Miron, reea.net
  */
 Ext.define('Extensible.calendar.view.SchedulerHeader', {
     extend: 'Extensible.calendar.view.DayHeader',

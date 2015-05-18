@@ -1,6 +1,7 @@
 /**
  * Internal drop zone implementation for the calendar day and week views.
  * @private
+ * @author Alin Miron, reea.net
  */
 Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
     extend: 'Extensible.calendar.dd.DropZone',

@@ -2,6 +2,7 @@
  * This is the template that is used to build the scheduler header view having each calendar as a column containing
  * all it's "AllDay" events
  * @param config
+ * @author Alin Miron, reea.net
  */
 Ext.define('Extensible.calendar.template.SchedulerHeaderCalendar', {
     extend: 'Ext.XTemplate',
