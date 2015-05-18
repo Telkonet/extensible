@@ -20,6 +20,18 @@ Ext.define('Extensible.calendar.view.DayBody', {
     dayColumnElIdDelimiter: '-day-col-',
     hourIncrement: 60,
 
+    /**
+     * @cfg {String} dragZoneClass
+     * Class to be used as the view's drag zone implementation.
+     */
+    dragZoneClass: 'Extensible.calendar.dd.DayDragZone',
+
+    /**
+     * @cfg {String} dropZoneClass
+     * Class to be used as the view's drop zone implementation.
+     */
+    dropZoneClass: 'Extensible.calendar.dd.DayDropZone',
+
     initComponent: function() {
         this.callParent(arguments);
 
@@ -75,7 +87,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
             moveText: this.ddMoveEventText,
             resizeText: this.ddResizeEventText,
             ddIncrement: this.ddIncrement,
-            ddGroup: this.ddGroup || this.id+'-DayViewDD'
+            ddGroup: this.ddGroup || this.id + '-ddGroup'
         };
 
         this.el.ddScrollConfig = {
@@ -85,19 +97,19 @@ Ext.define('Extensible.calendar.view.DayBody', {
             hthresh: -1,
             frequency: 50,
             increment: 100,
-            ddGroup: this.ddGroup || this.id+'-DayViewDD'
+            ddGroup: this.ddGroup || this.id + '-ddGroup'
         };
 
-        this.dragZone = Ext.create('Extensible.calendar.dd.DayDragZone', this.el, Ext.apply({
+        this.dragZone = Ext.create(this.dragZoneClass, this.el, Ext.apply({
             // disabled for now because of bugs in Ext 4 ScrollManager:
             //containerScroll: true
         }, cfg));
 
-        this.dropZone = Ext.create('Extensible.calendar.dd.DayDropZone', this.el, cfg);
+        this.dropZone = Ext.create(this.dropZoneClass, this.el, cfg);
     },
 
     refresh: function(reloadData) {
-        Extensible.log('refresh (DayBodyView)');
+        Extensible.log('refresh (' + Ext.getClassName(this) + '), reload = ' + reloadData);
         var top = this.el.getScroll().top;
 
         this.callParent(arguments);
@@ -114,7 +126,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
      * Scrolls the container to the specified vertical position. If the view is large enough that
      * there is no scroll overflow then this method will have no affect.
      * @param {Number} y The new vertical scroll position in pixels
-     * @param {Boolean} defer (optional) <p>True to slightly defer the call, false to execute immediately.
+     * @param {Boolean} defer (optional) True to slightly defer the call, false to execute immediately.
      *
      * This method will automatically defer itself for IE and Opera (even if you pass false) otherwise
      * the scroll position will not update in those browsers. You can optionally pass true, however, to
@@ -152,7 +164,6 @@ Ext.define('Extensible.calendar.view.DayBody', {
                 hourHeight: this.hourHeight
             });
         }
-        this.tpl.compile();
 
         this.addCls('ext-cal-body-ct');
 
@@ -647,6 +658,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
         var el = e.getTarget('td', 3);
         if(el) {
             if(el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
+                alert('DayBody.onClick unknown case!!');
                 var dt = this.getDateFromId(el.id, this.dayElIdDelimiter);
                 this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt)));
                 return;

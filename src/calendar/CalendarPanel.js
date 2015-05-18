@@ -15,7 +15,8 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         'Extensible.calendar.view.Month',
         'Extensible.calendar.view.MultiDay',
         'Extensible.calendar.view.MultiWeek',
-        'Extensible.calendar.view.Agenda'
+        'Extensible.calendar.view.Agenda',
+        'Extensible.calendar.view.Scheduler'
     ],
     
     /**
@@ -71,6 +72,11 @@ Ext.define('Extensible.calendar.CalendarPanel', {
      * of events rather than an agenda style list of events.
      */
     showListView: false,
+    /**
+     * @cfg {Boolean} showSchedulerView
+     * True to include the scheduler view (and toolbar button), false to hide them (defaults to true).
+     */
+    showSchedulerView: true,
     /**
      * @cfg {Boolean} showNavBar
      * True to display the calendar navigation toolbar, false to hide it (defaults to true). Note that
@@ -174,6 +180,11 @@ Ext.define('Extensible.calendar.CalendarPanel', {
      * Text to use for the 'List' nav bar button.
      */
     listText: 'List',
+    /**
+     * @cfg {String} schedulerText
+     * Text to use for the 'Scheduler' nav bar button.
+     */
+    schedulerText: 'Scheduler',
     /**
      * @cfg {Boolean} editModal
      * True to show the default event editor window modally over the entire page, false to allow user
@@ -301,7 +312,13 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         }
         
         this.tbar.items.push('->');
-        
+              
+        if(this.showSchedulerView) {
+            this.tbar.items.push({
+                id: this.id+'-tb-scheduler', text: this.schedulerText, handler: this.onSchedulerNavClick, scope: this, toggleGroup: this.id+'-tb-views'
+            });
+            this.viewCount++;
+        }
         if(this.showDayView) {
             this.tbar.items.push({
                 id: this.id+'-tb-day', text: this.dayText, handler: this.onDayNavClick, scope: this, toggleGroup: this.id+'-tb-views'
@@ -645,7 +662,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             wk.id = this.id+'-week';
             this.initEventRelay(wk);
             this.add(wk);
-        }
+        }	
         if(this.showMultiWeekView) {
             var mwk = Ext.applyIf({
                 xtype: 'extensible.multiweekview',
@@ -727,10 +744,22 @@ Ext.define('Extensible.calendar.CalendarPanel', {
                 }
             }, sharedViewCfg);
 
+
             list = Ext.apply(Ext.apply(list, this.viewConfig), this.listViewCfg);
             list.id = this.id+'-list';
             this.initEventRelay(list);
             this.add(list);
+        }
+        if(this.showSchedulerView) {
+            var scheduler = Ext.apply({
+                xtype: 'extensible.schedulerview',
+                title: this.schedulerText
+            }, sharedViewCfg);
+
+            scheduler = Ext.apply(Ext.apply(scheduler, this.viewConfig), this.schedulerViewCfg);
+            scheduler.id = this.id+'-scheduler';
+            this.initEventRelay(scheduler);
+            this.add(scheduler);
         }
         this.add(Ext.applyIf({
             xtype: 'extensible.eventeditform',
@@ -1069,6 +1098,10 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         this.setActiveView(this.id+'-list');
     },
 
+    onSchedulerNavClick: function() {
+        this.setActiveView(this.id+'-scheduler');
+    },
+    
     /**
      * Return the calendar view that is currently active, which will be a subclass of
      * {@link Extensible.calendar.view.AbstractCalendar AbstractCalendar}.
