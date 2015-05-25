@@ -54,6 +54,18 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
      */
     optimizeForMobile: false,
 
+    /**
+     * @cfg {String} dateFormat
+     * The date display format used by the date fields (defaults to 'n/j/Y')
+     */
+    endDateFormat: 'n/j/Y',
+
+    /**
+     * @cfg {String} singleLine
+     * Alternative formats for date picker
+     */
+    alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
+    
     strings: {
         andContinuing: 'and continuing',
         occurrences: 'occurrences',
@@ -63,8 +75,6 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
     },
     
     cls: 'extensible-recur-duration',
-    
-    //endDateFormat: null, // inherit by default
     
     getItemConfigs: function() {
         var me = this;
@@ -120,15 +130,15 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
             showToday: false,
             width: me.endDateWidth,
             format: me.endDateFormat || Ext.form.field.Date.prototype.format,
+            altFormats: me.alternativeDateFormats,
             startDay: this.startDay,
             maxValue: me.maxEndDate,
             allowBlank: false,
             hidden: true,
             minValue: Ext.Date.add(startDate, Ext.Date.DAY, me.minDateOffset),
             value: me.getDefaultEndDate(startDate),
-            
             listeners: {
-                'change': Ext.bind(me.onEndDateChange, me)
+                change: Ext.bind(me.onEndDateChange, me)
             }
         };
     },

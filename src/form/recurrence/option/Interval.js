@@ -10,6 +10,18 @@ Ext.define('Extensible.form.recurrence.option.Interval', {
     minValue: 1,
     maxValue: 999,
     startDateWidth: 120,
+
+    /**
+     * @cfg {String} dateFormat
+     * The date display format used by the date fields (defaults to 'n/j/Y')
+     */
+    dateFormat: 'n/j/Y',
+
+    /**
+     * @cfg {String} singleLine
+     * Alternative formats for date pickers
+     */
+    alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
     
     strings: {
         repeatEvery: 'Repeat every',
@@ -96,9 +108,10 @@ Ext.define('Extensible.form.recurrence.option.Interval', {
             maxValue: me.maxEndDate,
             allowBlank: false,
             value: startDate,
-            
+            format: me.dateFormat,
+            altFormats: me.alternativeDateFormats,
             listeners: {
-                'change': Ext.bind(me.onStartDateChange, me)
+                change: Ext.bind(me.onStartDateChange, me)
             }
         };
     },
