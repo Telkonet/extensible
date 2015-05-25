@@ -225,47 +225,58 @@ Ext.define('Extensible.calendar.view.Month', {
     /**
      * @protected 
      */
-    getEventBodyMarkup: function() {
-        if(!this.eventBodyMarkup) {
-            this.eventBodyMarkup = ['{Title}',
+    getEventBodyMarkup : function(){
+        if(!this.eventBodyMarkup){
+            // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
+            // - Split time and title
+            // - Move icons before title
+            // - Add read-only icon
+            // -
+            this.eventBodyMarkup = [
+                '{Time}',
+                '<tpl if="_isReadOnly">',
+                    '<i title="read-only event" class="ext-cal-ic ext-cal-ic-ro-gray">&#160;</i>',
+                '</tpl>',
                 '<tpl if="_isReminder">',
-                    '<i class="ext-cal-ic ext-cal-ic-rem">&#160;</i>',
+                    '<i title="reminder is activated" class="ext-cal-ic ext-cal-ic-rem-gray">&#160;</i>',
                 '</tpl>',
                 '<tpl if="_isRecurring">',
-                    '<i class="ext-cal-ic ext-cal-ic-rcr">&#160;</i>',
+                    '<i title="recurring event" class="ext-cal-ic ext-cal-ic-rcr-gray">&#160;</i>',
                 '</tpl>',
                 '<tpl if="spanLeft">',
                     '<i class="ext-cal-spl">&#160;</i>',
                 '</tpl>',
                 '<tpl if="spanRight">',
-                    '<i class="ext-cal-spr">&#160;</i>',
-                '</tpl>'
+                '<i class="ext-cal-spr">&#160;</i>',
+                '</tpl>',
+                '{Title}'
             ].join('');
         }
         return this.eventBodyMarkup;
     },
-    
     /**
      * @protected 
      */
     getEventTemplate: function() {
         if(!this.eventTpl) {
             var tpl, body = this.getEventBodyMarkup();
-            
+
+            // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
+            // - Add tooltips (data-qtip attributes)
             tpl = !(Ext.isIE || Ext.isOpera) ?
                 Ext.create('Ext.XTemplate',
-                    '<div class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evr">',
+                    '<div data-qtip="{Title}" class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evr">',
                         body,
                     '</div>'
                 )
                 : Ext.create('Ext.XTemplate',
                     '<tpl if="_renderAsAllDay">',
-                        '<div class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evo">',
+                        '<div data-qtip="{Title}" class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evo">',
                             '<div class="ext-cal-evm">',
                                 '<div class="ext-cal-evi">',
                     '</tpl>',
                     '<tpl if="!_renderAsAllDay">',
-                        '<div class="{_extraCls} ext-cal-evt ext-cal-evr">',
+                        '<div data-qtip="{Title}" class="{_extraCls} ext-cal-evt ext-cal-evr">',
                     '</tpl>',
                     body,
                     '<tpl if="_renderAsAllDay">',
@@ -311,9 +322,15 @@ Ext.define('Extensible.calendar.view.Month', {
         templateData._extraCls = extraClasses.join(' ');
         templateData._isRecurring = M.RRule && !!evtData[M.RRule.name];
         templateData._isReminder = evtData[M.Reminder.name] && evtData[M.Reminder.name] !== '';
-        templateData.Title = (evtData[M.IsAllDay.name] ? '' : Ext.Date.format(evtData[M.StartDate.name], fmt)) +
-                (!title || title.length === 0 ? this.defaultEventTitleText : title);
-        
+        // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
+        // - Add read-only property
+        // - Split title in title and time
+        // - Display who event attribute
+        templateData._isReadOnly = evtData[M.IsReadOnly.name] && evtData[M.IsReadOnly.name] != '';
+        templateData.Time = (evtData[M.IsAllDay.name] ? '' : Ext.Date.format(evtData[M.StartDate.name], fmt));
+        templateData.Title = (!title || title.length == 0 ? this.defaultEventTitleText : title) +
+            (!evtData[M.Who.name] || evtData[M.Who.name].length == 0 ? '' : ' (' + evtData[M.Who.name] + ')');
+
         return Ext.applyIf(templateData, evtData);
     },
 
@@ -573,7 +590,10 @@ Ext.define('Extensible.calendar.view.Month', {
                 dt = parts[parts.length-1];
                     
                 //this.fireEvent('dayclick', this, Ext.Date.parseDate(dt, 'Ymd'), false, Ext.get(this.getDayId(dt)));
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), false, Ext.get(this.getDayId(dt)));
+                // OVERRIDE for Teamup Calendar, 28. Feb. 2014, sidler@teamup.com
+                // - Make new events all-day by default.
+                //this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), false, Ext.get(this.getDayId(dt)));
+                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt)));
                 return;
             }
         }

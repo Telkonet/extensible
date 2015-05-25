@@ -251,20 +251,28 @@ Ext.define('Extensible.calendar.view.DayBody', {
      * @protected 
      */
     getEventBodyMarkup: function() {
+        // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
+        // - Changes order of icons and title text. Icons are shown first, followed by the title.
+        // - Insert an lock icon if event is read-only.
         if(!this.eventBodyMarkup) {
-            this.eventBodyMarkup = ['{Title}',
+            this.eventBodyMarkup = [
+                '{Time}',
+                '<tpl if="_isReadOnly">',
+                '<i title="read-only event" class="ext-cal-ic ext-cal-ic-ro">&#160;</i>',
+                '</tpl>',
                 '<tpl if="_isReminder">',
-                    '<i class="ext-cal-ic ext-cal-ic-rem">&#160;</i>',
+                '<i title="reminder is activated" class="ext-cal-ic ext-cal-ic-rem">&#160;</i>',
                 '</tpl>',
                 '<tpl if="_isRecurring">',
-                    '<i class="ext-cal-ic ext-cal-ic-rcr">&#160;</i>',
-                '</tpl>'
-//                '<tpl if="spanLeft">',
-//                    '<i class="ext-cal-spl">&#160;</i>',
-//                '</tpl>',
-//                '<tpl if="spanRight">',
-//                    '<i class="ext-cal-spr">&#160;</i>',
-//                '</tpl>'
+                '<i title="recurring event" class="ext-cal-ic ext-cal-ic-rcr">&#160;</i>',
+                '</tpl>',
+                // '<tpl if="spanLeft">',
+                //     '<i class="ext-cal-spl">&#160;</i>',
+                // '</tpl>',
+                // '<tpl if="spanRight">',
+                //     '<i class="ext-cal-spr">&#160;</i>',
+                // '</tpl>'
+                '{Title}'
             ].join('');
         }
         return this.eventBodyMarkup;
@@ -277,7 +285,9 @@ Ext.define('Extensible.calendar.view.DayBody', {
         if(!this.eventTpl) {
             this.eventTpl = !(Ext.isIE || Ext.isOpera) ?
                 Ext.create('Ext.XTemplate',
-                    '<div id="{_elId}" class="{_extraCls} ext-cal-evt ext-cal-evr" ',
+                    // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
+                    // Add tooltips (attribute data-qtip)
+                    '<div data-qtip="{Time} {Title}" id="{_elId}" class="{_extraCls} ext-cal-evt ext-cal-evr" ',
                             'style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
                         '<div class="ext-evt-bd">', this.getEventBodyMarkup(), '</div>',
                         this.enableEventResize ?
@@ -285,7 +295,9 @@ Ext.define('Extensible.calendar.view.DayBody', {
                     '</div>'
                 )
                 : Ext.create('Ext.XTemplate',
-                    '<div id="{_elId}" class="ext-cal-evt {_extraCls}" ',
+                    // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
+                    // Add tooltips (attribute data-qtip)
+                    '<div data-qtip="{Time} {Title}" id="{_elId}" class="ext-cal-evt {_extraCls}" ',
                             'style="left: {_left}%; width: {_width}%; top: {_top}px;">',
                         '<div class="ext-cal-evb">&#160;</div>',
                         '<dl style="height: {_height}px;" class="ext-cal-evdm">',
@@ -377,8 +389,15 @@ Ext.define('Extensible.calendar.view.DayBody', {
         data._extraCls = extraClasses.join(' ');
         data._isRecurring = M.RRule && evtData[M.RRule.name] && evtData[M.RRule.name] !== '';
         data._isReminder = evtData[M.Reminder.name] && evtData[M.Reminder.name] !== '';
-        data.Title = (evtData[M.IsAllDay.name] ? '' : Ext.Date.format(evtData[M.StartDate.name], fmt)) +
-                (!title || title.length === 0 ? this.defaultEventTitleText : title);
+
+        // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
+        // Separate time from title string to be more flexible with the layout of events.
+        // Add owner name.
+        data.Title = (!title || title.length == 0 ? this.defaultEventTitleText : title) +
+            (!evtData[M.Who.name] || evtData[M.Who.name].length == 0 ? '' : ' (' + evtData[M.Who.name] + ')');
+        data.Time = (evtData[M.IsAllDay.name] ? '' : Ext.Date.format(evtData[M.StartDate.name], fmt));
+        // New datum read-only, 15. Dec. 2011, Gabriel Sidler
+        data._isReadOnly = evtData[M.IsReadOnly.name] && evtData[M.IsReadOnly.name] != '';
 
         return Ext.applyIf(data, evtData);
     },

@@ -97,7 +97,10 @@ Ext.onReady(function() {
     if (exists('Extensible.form.field.DateRange')) {
         Ext.apply(Extensible.form.field.DateRange.prototype, {
             toText: 'bis',
-            allDayText: 'ganzer Tag'
+            allDayText: 'ganzer Tag',
+            dateFormat: 'j.n.Y',
+            alternativeDateFormats: 'j.n.Y|j.n.y|j.n.|j.|j/n/Y|j/n/y|j-n-y|j-n-Y|j/n|j-n|dm|dmy|dmY|j|Y-n-j|Y-m-d',
+            alternativeTimeFormats: 'g:ia|g:iA|g:i a|g:i A|h:i|g:i|H:i|ga|ha|gA|h a|g a|g A|gi|hi|gia|hia|g|H|gi a|hi a|giA|hiA|gi A|hi A|g.i a|g.i A|G.i|Gi|h.i|hi'
         });
     }
 
@@ -307,6 +310,8 @@ Ext.onReady(function() {
     if (exists('Extensible.form.recurrence.option.Interval')) {
         Ext.apply(Extensible.form.recurrence.option.Interval.prototype, {
             dateLabelFormat: 'l, j. F',
+            dateFormat: 'j.n.Y',
+            alternativeDateFormats: 'j.n.Y|j.n.y|j.n.|j.|j/n/Y|j/n/y|j-n-y|j-n-Y|j/n|j-n|dm|dmy|dmY|j|Y-n-j|Y-m-d',
             strings: {
                 repeatEvery: 'Wiederholen alle',
                 beginning: 'ab',
@@ -324,6 +329,8 @@ Ext.onReady(function() {
 
     if (exists('Extensible.form.recurrence.option.Duration')) {
         Ext.apply(Extensible.form.recurrence.option.Duration.prototype, {
+            endDateFormat: 'j.n.Y',
+            alternativeDateFormats: 'j.n.Y|j.n.y|j.n.|j.|j/n/Y|j/n/y|j-n-y|j-n-Y|j/n|j-n|dm|dmy|dmY|j|Y-n-j|Y-m-d',
             strings: {
                 andContinuing: 'und endet',
                 occurrences: 'Wiederholungen',

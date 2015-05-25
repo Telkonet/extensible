@@ -598,9 +598,12 @@ Ext.define('Extensible.calendar.CalendarPanel', {
              * {@link Extensible.calendar.view.AbstractCalendar#notifyOnException notifyOnException} method. If
              * any function handling this event returns false, the notifyOnException method will not be called.
              *
-             * Note that only Server proxy and subclasses (including Ajax proxy) will raise this event.
+             * Note that only Server proxy and subclasses (including Ajax proxy) will raise this event. Note
+             * furthermore that this event will be raised once for each instance of AbstractCalendar in the current
+             * calendar view. For example, for weekly view this event will be raised twice, once for the header and
+             * once for the body, since both are instances of AbstractCalendar.
              *
-             * @param {Extensible.calendar.CalendarPanel} this
+             * @param {Extensible.calendar.view.AbstractCalendar} view The current view, a subclass of AbstractCalendar
              * @param {Object} response The raw response object returned from the server
              * @param {Ext.data.Operation} operation The operation that was processed
              * @since 1.6.0
@@ -750,6 +753,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             this.initEventRelay(list);
             this.add(list);
         }
+
         if(this.showSchedulerView) {
             var scheduler = Ext.apply({
                 xtype: 'extensible.schedulerview',
@@ -761,6 +765,10 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             this.initEventRelay(scheduler);
             this.add(scheduler);
         }
+
+        // OVERRIDE for Teamup Calendar, May, 10, 2014, sidler@teamup.com
+        // - Don't instantiate an event edit form. It is not used.
+        /*
         this.add(Ext.applyIf({
             xtype: 'extensible.eventeditform',
             id: this.id+'-edit',
@@ -774,6 +782,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
                 'eventcancel': { scope: this, fn: this.onEventCancel }
             }
         }, this.editViewCfg));
+        */
     },
 
     initEventRelay: function(cfg) {
