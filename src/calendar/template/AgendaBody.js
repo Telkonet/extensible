@@ -421,10 +421,11 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
     getTitleMarkup: function(evt) {
         var result,
             M = Extensible.calendar.data.EventMappings,
-            title = evt.data[M.Title.name];
+            title = evt.data[M.Title.name],
+            ec = Ext.String.htmlEncode;
         result = [
             '<span class="ext-cal-evt ', evt.data['_extraCls'], '"><strong>',
-                !title || title.length == 0 ? this.defaultEventTitleText : title,
+                !title || title.length == 0 ? this.defaultEventTitleText : ec(title),
                 // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
                 // Add output of read-only icon
                 ' ',
@@ -438,7 +439,7 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
        if (evt.data[M.Location.name] && evt.data[M.Location.name] != '') {
             result.push(
                 ' - ',
-                evt.data[M.Location.name]
+                ec(evt.data[M.Location.name])
             );
         }
        // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
@@ -446,7 +447,7 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
        if (evt.data[M.Who.name] && evt.data[M.Who.name] != '') {
            result.push(
                ' (',
-               evt.data[M.Who.name],
+               ec(evt.data[M.Who.name]),
                ')'
            );
        }
