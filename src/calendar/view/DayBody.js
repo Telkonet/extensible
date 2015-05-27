@@ -254,6 +254,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
         // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
         // - Changes order of icons and title text. Icons are shown first, followed by the title.
         // - Insert an lock icon if event is read-only.
+        // - Add :htmlEncode to Title
         if(!this.eventBodyMarkup) {
             this.eventBodyMarkup = [
                 '{Time}',
@@ -272,7 +273,7 @@ Ext.define('Extensible.calendar.view.DayBody', {
                 // '<tpl if="spanRight">',
                 //     '<i class="ext-cal-spr">&#160;</i>',
                 // '</tpl>'
-                '{Title}'
+                '{Title:htmlEncode}'
             ].join('');
         }
         return this.eventBodyMarkup;
@@ -287,7 +288,8 @@ Ext.define('Extensible.calendar.view.DayBody', {
                 Ext.create('Ext.XTemplate',
                     // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
                     // Add tooltips (attribute data-qtip)
-                    '<div data-qtip="{Time} {Title}" id="{_elId}" class="{_extraCls} ext-cal-evt ext-cal-evr" ',
+                    // Add :htmlEncode to Title
+                    '<div data-qtip="{Time} {[Ext.String.htmlEncode(Ext.String.htmlEncode(values.Title))]}" id="{_elId}" class="{_extraCls} ext-cal-evt ext-cal-evr" ',
                             'style="left: {_left}%; width: {_width}%; top: {_top}px; height: {_height}px;">',
                         '<div class="ext-evt-bd">', this.getEventBodyMarkup(), '</div>',
                         this.enableEventResize ?
@@ -297,7 +299,8 @@ Ext.define('Extensible.calendar.view.DayBody', {
                 : Ext.create('Ext.XTemplate',
                     // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
                     // Add tooltips (attribute data-qtip)
-                    '<div data-qtip="{Time} {Title}" id="{_elId}" class="ext-cal-evt {_extraCls}" ',
+                    // Add :htmlEncode to Title
+                    '<div data-qtip="{Time} {[Ext.String.htmlEncode(Ext.String.htmlEncode(values.Title))]}" id="{_elId}" class="ext-cal-evt {_extraCls}" ',
                             'style="left: {_left}%; width: {_width}%; top: {_top}px;">',
                         '<div class="ext-cal-evb">&#160;</div>',
                         '<dl style="height: {_height}px;" class="ext-cal-evdm">',

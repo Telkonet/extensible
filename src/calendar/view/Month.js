@@ -231,6 +231,7 @@ Ext.define('Extensible.calendar.view.Month', {
             // - Split time and title
             // - Move icons before title
             // - Add read-only icon
+            // - Add :htmlEncode to Title
             // -
             this.eventBodyMarkup = [
                 '{Time}',
@@ -249,7 +250,7 @@ Ext.define('Extensible.calendar.view.Month', {
                 '<tpl if="spanRight">',
                 '<i class="ext-cal-spr">&#160;</i>',
                 '</tpl>',
-                '{Title}'
+                '{Title:htmlEncode}'
             ].join('');
         }
         return this.eventBodyMarkup;
@@ -263,20 +264,21 @@ Ext.define('Extensible.calendar.view.Month', {
 
             // Customization for Teamup Calendar, May 9, 2014, sidler@teamup.com
             // - Add tooltips (data-qtip attributes)
+            // - Add :htmlEncode to Title
             tpl = !(Ext.isIE || Ext.isOpera) ?
                 Ext.create('Ext.XTemplate',
-                    '<div data-qtip="{Title}" class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evr">',
+                    '<div data-qtip="{[Ext.String.htmlEncode(Ext.String.htmlEncode(values.Title))]}" class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evr">',
                         body,
                     '</div>'
                 )
                 : Ext.create('Ext.XTemplate',
                     '<tpl if="_renderAsAllDay">',
-                        '<div data-qtip="{Title}" class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evo">',
+                        '<div data-qtip="{[Ext.String.htmlEncode(Ext.String.htmlEncode(values.Title))]}" class="{_extraCls} {spanCls} ext-cal-evt ext-cal-evo">',
                             '<div class="ext-cal-evm">',
                                 '<div class="ext-cal-evi">',
                     '</tpl>',
                     '<tpl if="!_renderAsAllDay">',
-                        '<div data-qtip="{Title}" class="{_extraCls} ext-cal-evt ext-cal-evr">',
+                        '<div data-qtip="{[Ext.String.htmlEncode(Ext.String.htmlEncode(values.Title))]}" class="{_extraCls} ext-cal-evt ext-cal-evr">',
                     '</tpl>',
                     body,
                     '<tpl if="_renderAsAllDay">',
