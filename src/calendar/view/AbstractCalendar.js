@@ -959,11 +959,10 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         // edited or was recurring before being edited AND an event store reload has not been triggered already for
         // this operation. If an event is not currently recurring (isRecurring = false) but still has an instance
         // start date set, then it must have been recurring and edited to no longer recur.
-        var record = 'Ext.data.operation.Destroy' == Ext.getClass(operation).getName() ?
-                operation.getResultSet().getRecords()[0] : operation.getRecords()[0],
-            M = Extensible.calendar.data.EventMappings;
+        var record = operation.getRecords()[0],
+            M = Extensible.calendar.data.EventMappings,
             isRecurring = record.isRecurring(),
-            wasRecurring = M.RRule && !!operation.request.getJsonData()[M.RRule.mapping];
+            wasRecurring = M.RRule && !!record[M.RRule.mapping],
             reload = (isRecurring || wasRecurring) && !operation.wasStoreReloadTriggered;
 
         if (reload) {
@@ -1020,10 +1019,10 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
             // if a view is hidden.
             return;
         }
-        // if (rec._deleting) {
-            // delete rec._deleting;
-            // return;
-        // }
+        if (rec._deleting) {
+            delete rec._deleting;
+            return;
+        }
 
         Extensible.log('onAdd');
 
@@ -1064,7 +1063,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         Extensible.log('onRemove');
         this.dismissEventEditor();
 
-        var rec = operation.getResultSet().getRecords()[0];
+        var rec = operation.getRecords()[0];
 
         if (this.enableFx && this.enableRemoveFx) {
             this.doRemoveFx(this.getEventEls(rec.data[Extensible.calendar.data.EventMappings.EventId.name]), {
@@ -1641,8 +1640,14 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
     },
 
     getEventRecord: function(id) {
-        var rec = this.store.getById(id);
-        return rec;
+        var idx = this.store.find(Extensible.calendar.data.EventMappings.EventId.name, id,
+            0,     // start index
+            false, // match any part of string
+            true,  // case sensitive
+            true   // force exact match
+        );
+
+        return this.store.getAt(idx);
     },
 
     getEventRecordFromEl: function(el) {
@@ -1756,8 +1761,6 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
 
     onWrite: function(store, operation) {
         if (operation.wasSuccessful()) {
-            //var rec = operation.records[0];
-
             switch(operation.action) {
                 case 'create':
                     this.onAdd(store, operation);
@@ -2020,7 +2023,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
         if (el) {
             var id = me.getEventIdFromEl(el),
                 rec = me.getEventRecord(id);
-            
+
             if (rec && me.fireEvent('eventclick', me, rec, el) !== false) {
                 if (me.readOnly !== true) {
                     me.showEventEditor(rec, el);

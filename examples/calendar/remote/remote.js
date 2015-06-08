@@ -100,9 +100,8 @@ Ext.onReady(function() {
         // NOT that your changes were actually persisted correctly in the back end. The 'write' event is the best
         // option for generically messaging after CRUD persistence has succeeded.
         listeners: {
-            'write': function(store, operation) {
-                var record = 'Ext.data.operation.Destroy' == Ext.getClass(operation).getName() ?
-                        operation.getResultSet().getRecords()[0] : operation.getRecords()[0],
+            write: function(store, operation) {
+                var record = operation.getRecords()[0],
                     title = record.get(Extensible.calendar.data.EventMappings.Title.name) || '(No title)';
 
                 switch(operation.action){
@@ -116,6 +115,13 @@ Ext.onReady(function() {
                         Extensible.example.msg('Delete', 'Deleted "' + title + '"');
                         break;
                 }
+            }
+        },
+        onDestroyRecords: function(records, operation, success) {
+            if (success){
+                var record = records[0];
+                this.removed.length = 0;
+                operation.setRecords([record]);
             }
         }
     });

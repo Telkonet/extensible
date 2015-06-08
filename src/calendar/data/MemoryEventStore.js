@@ -31,7 +31,8 @@ Ext.define('Extensible.calendar.data.MemoryEventStore', {
             rootProperty: 'evts'
         },
         writer: {
-            type: 'json'
+            type: 'json',
+            rootProperty: 'evts'
         }
     },
 
@@ -90,12 +91,9 @@ Ext.define('Extensible.calendar.data.MemoryEventStore', {
 
     // private
     onWrite: function(store, operation) {
-        var me = this;
-
         if (Extensible.example && Extensible.example.msg) {
-            var records = 'Ext.data.operation.Destroy' == Ext.getClass(operation).getName()? operation.getResultSet().getRecords() : operation.getRecords(),
-                record = records[0],
-                title = record.get(Extensible.calendar.data.EventMappings.Title.mapping) || '(No title)';
+            var record = operation.getRecords()[0],
+                title = record.get(Extensible.calendar.data.EventMappings.Title.name) || '(No title)';
 
             switch (operation.action) {
                 case 'create':
@@ -146,43 +144,33 @@ Ext.define('Extensible.calendar.data.MemoryEventStore', {
 
                 record.phantom = false;
                 record.data[Extensible.calendar.data.EventMappings.EventId.name] = id;
+                record.data[Extensible.calendar.data.EventMappings.EventId.mapping] = id;
 
-                var operation = Ext.create('Ext.data.operation.Create',{
-                    success: true,
-                    complete: true,
-                    request: Ext.create('Ext.data.Request', { jsonData: record }),
-                    records: [record]
-                });
-
-                store.fireAction('write', [store, operation], function(){});
+                this.triggerWriteEvent(store, record, 'Ext.data.operation.Create');
             }
         },
         update: {
-            fn: function(store, record){
-                var operation = Ext.create('Ext.data.operation.Update',{
-                    success: true,
-                    complete: true,
-                    request: Ext.create('Ext.data.Request', { jsonData: record }),
-                    records: [record]
-                });
-
-                store.fireAction('write', [store, operation], function(){});
+            fn: function(store, record, operation){
+                if (Ext.data.Model.COMMIT === operation){
+                    this.triggerWriteEvent(store, record, 'Ext.data.operation.Update');
+                }
             }
         },
         remove: {
             fn: function(store, records){
-                var record = records[0];
-
-                var operation = Ext.create('Ext.data.operation.Destroy',{
-                    success: true,
-                    complete: true,
-                    request: Ext.create('Ext.data.Request', { jsonData: record }),
-                    _resultSet: Ext.create('Ext.data.ResultSet', { records: [record]})
-                });
-
-                store.fireAction('write', [store, operation], function(){});
-
+                this.triggerWriteEvent(store, records[0], 'Ext.data.operation.Destroy');
             }
         }
+    },
+
+    triggerWriteEvent: function(store, record, operationClass){
+        var operation = Ext.create(operationClass,{
+            success: true,
+            complete: true,
+            request: Ext.create('Ext.data.Request', { jsonData: record }),
+            _resultSet: Ext.create('Ext.data.ResultSet', { records: [record]})
+        });
+
+        store.fireAction('write', [store, operation], function(){});
     }
 });

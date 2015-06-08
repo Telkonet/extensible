@@ -34,6 +34,10 @@ Ext.define('Extensible.calendar.form.field.CalendarCombo', {
         });
         
         this.store.on('update', this.refreshColorCls, this);
+
+        this.on('change', function(combo, newValue, oldValue){
+            this.refreshColorCls();
+        }, this);
         
         this.callParent(arguments);
     },
@@ -89,19 +93,5 @@ Ext.define('Extensible.calendar.form.field.CalendarCombo', {
         me.wrap.addCls(colorCls);
         
         return me;
-    },
-    
-    /**
-     * @protected 
-     */
-    setValue: function(value) {
-        if (!value && this.store.getCount() > 0) {
-            // ensure that a valid value is always set if possible
-            value = this.store.getAt(0).data[Extensible.calendar.data.CalendarMappings.CalendarId.name];
-        }
-        
-        this.callParent(arguments);
-        
-        this.refreshColorCls();
     }
 });
