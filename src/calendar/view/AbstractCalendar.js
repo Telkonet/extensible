@@ -124,7 +124,7 @@ Ext.define('Extensible.calendar.view.AbstractCalendar', {
      * context menu will also suppress the default browser context menu (no menu will be shown at all). When false,
      * the browser context menu will still show if the right-clicked element has no custom menu (this is the default).
      */
-    suppressBrowserContextMenu: false,
+    suppressBrowserContextMenu: true,
     /**
      * @cfg {Boolean} monitorResize
      * True to monitor the browser's resize event (the default), false to ignore it. If the calendar view is rendered
