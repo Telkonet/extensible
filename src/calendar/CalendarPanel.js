@@ -632,7 +632,19 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             startDay: this.startDay,
             ownerCalendarPanel: this
         };
-        
+
+        if(this.showSchedulerView) {
+            var scheduler = Ext.apply({
+                xtype: 'extensible.schedulerview',
+                title: this.schedulerText
+            }, sharedViewCfg);
+
+            scheduler = Ext.apply(Ext.apply(scheduler, this.viewConfig), this.schedulerViewCfg);
+            scheduler.id = this.id+'-scheduler';
+            this.initEventRelay(scheduler);
+            this.add(scheduler);
+        }
+
         if(this.showDayView) {
             var day = Ext.apply({
                 xtype: 'extensible.dayview',
@@ -752,18 +764,6 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             list.id = this.id+'-list';
             this.initEventRelay(list);
             this.add(list);
-        }
-
-        if(this.showSchedulerView) {
-            var scheduler = Ext.apply({
-                xtype: 'extensible.schedulerview',
-                title: this.schedulerText
-            }, sharedViewCfg);
-
-            scheduler = Ext.apply(Ext.apply(scheduler, this.viewConfig), this.schedulerViewCfg);
-            scheduler.id = this.id+'-scheduler';
-            this.initEventRelay(scheduler);
-            this.add(scheduler);
         }
 
         // OVERRIDE for Teamup Calendar, May, 10, 2014, sidler@teamup.com

@@ -38,9 +38,12 @@ Ext.onReady(function() {
     if (exists('Extensible.calendar.CalendarPanel')) {
         Ext.apply(Extensible.calendar.CalendarPanel.prototype, {
             todayText: 'Today',
+            schedulerText: 'Scheduler',
             dayText: 'Day',
             weekText: 'Week',
             monthText: 'Month',
+            agendaText: 'Agenda',
+            listText: 'List',
             jumpToText: 'Jump to:',
             goText: 'Go',
             multiDayText: '{0} Days', // deprecated

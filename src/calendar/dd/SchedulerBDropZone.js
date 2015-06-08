@@ -6,7 +6,6 @@
 Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
     extend: 'Extensible.calendar.dd.DropZone',
 
-    shims:[],
     /**
      * This is the point where we are retrieving the cell on which the event is about to be dropped.
      * @param e
@@ -157,30 +156,23 @@ Ext.define('Extensible.calendar.dd.SchedulerBDropZone', {
     },
     
     shim: function(dt, box, calendarId) {
+        var shim;
+
         this.DDMInstance.notifyOccluded = true;
 
         Ext.each(this.shims, function(shim) {
-            if(shim) {
+            if (shim) {
                 shim.isActive = false;
                 shim.hide();
             }
         });
 
-        var shim = this.createShim(calendarId);
-        this.shims[calendarId] = shim;
-        shim.boxInfo = box;
+        shim = this.createShim(calendarId);
+        this.shims[0] = shim;
         shim.isActive = true;
-        Ext.each(this.shims, function(shim) {
-            if (shim) {
-                if (shim.isActive) {
-                    shim.show();
-                    shim.setBox(shim.boxInfo);
-                } else if (shim.isVisible()) {
-                    shim.hide();
-                }
-            }
-        });
-
+        shim.boxInfo = box;
+        shim.show();
+        shim.setBox(shim.boxInfo);
     },
 
     createShim: function(calId) {

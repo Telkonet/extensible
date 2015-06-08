@@ -125,7 +125,6 @@
 .ext-cal-dayview .ext-cal-hd-days-tbl {
     table-layout: fixed;
     width: 100%;
-    background-color: #CDDCEF;
     overflow: hidden;
     font-size: 11px;
     line-height: 14px;
@@ -282,10 +281,10 @@
 }
 .ext-cal-schedulerview-header .ext-cal-bg-tbl .ext-cal-bg-tbl-hd td {
     height:20px;
-    background-color:#CDDCEF;
+    background-color:#D3E1F1;
 }
 .ext-cal-schedulerview-header .ext-cal-bg-tbl  td {
-    border-left: 1px solid #BBCCFF!important;
+    border-left: 1px solid #BBCCFF !important;
 }
 .ext-cal-schedulerview-header .ext-cal-bg-tbl td:first-child {
     border:none!important;
