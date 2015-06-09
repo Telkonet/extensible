@@ -376,6 +376,17 @@ Extensible.applyOverrides = function() {
             }
         });
     }
+
+    Ext.form.field.Time.override({
+       isEqual: function(date1, date2){
+           // check we have 2 date objects
+           if ((date1 instanceof Date) && (date2 instanceof Date)) {
+               return (date1.getTime() === date2.getTime());
+           }
+           // one or both isn't a date, only equal if both are false
+           return !(date1 || date2);
+       }
+    });
     
     // This was fixed in Ext 4.0.4?
     Ext.Component.override({
