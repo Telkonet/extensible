@@ -286,7 +286,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             border: true,
             items: []
         };
-        
+
         this.viewCount = 0;
         
         var text,
@@ -1022,7 +1022,10 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             if (me.showNavToday) {
                 Ext.getCmp(me.id + '-tb-today').setDisabled(activeItem.isToday());
             }
-            btn.toggle(true);
+
+            if (btn){
+                btn.toggle(true);
+            }
         }
     },
 
@@ -1053,6 +1056,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         this.startDate = this.layout.activeItem.moveToday(true);
         this.updateNavState();
         this.fireViewChange();
+        this.updateNavPicker();
     },
 
     onJumpClick: function() {
@@ -1069,12 +1073,14 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         this.startDate = this.layout.activeItem.movePrev(true);
         this.updateNavState();
         this.fireViewChange();
+        this.updateNavPicker();
     },
 
     onNextClick: function() {
         this.startDate = this.layout.activeItem.moveNext(true);
         this.updateNavState();
         this.fireViewChange();
+        this.updateNavPicker();
     },
 
     onDayNavClick: function() {
@@ -1118,5 +1124,24 @@ Ext.define('Extensible.calendar.CalendarPanel', {
      */
     getActiveView: function() {
         return this.layout.activeItem;
+    },
+
+    /**
+     * Synchronize date picker with calendar view.
+     * This method is called when Next/Previous button from toolbar view is pressed.
+     */
+    updateNavPicker: function() {
+        var container = this.up(),
+            leftSidebar = container.items.getByKey('app-west'),
+            calendarPanel = container.items.getByKey('teamup-calendar-panel'),
+            datePicker = leftSidebar.items.getByKey('app-nav-picker');
+
+        if (calendarPanel && calendarPanel.activeView) {
+            var viewDateLimit = calendarPanel.activeView.getViewBounds();
+
+            if (viewDateLimit['start']){
+                datePicker.setValue(viewDateLimit['start']);
+            }
+        }
     }
 });
