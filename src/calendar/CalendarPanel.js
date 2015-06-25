@@ -1026,6 +1026,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             if (btn){
                 btn.toggle(true);
             }
+            this.updateNavPicker();
         }
     },
 
@@ -1056,7 +1057,6 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         this.startDate = this.layout.activeItem.moveToday(true);
         this.updateNavState();
         this.fireViewChange();
-        this.updateNavPicker();
     },
 
     onJumpClick: function() {
@@ -1073,14 +1073,12 @@ Ext.define('Extensible.calendar.CalendarPanel', {
         this.startDate = this.layout.activeItem.movePrev(true);
         this.updateNavState();
         this.fireViewChange();
-        this.updateNavPicker();
     },
 
     onNextClick: function() {
         this.startDate = this.layout.activeItem.moveNext(true);
         this.updateNavState();
         this.fireViewChange();
-        this.updateNavPicker();
     },
 
     onDayNavClick: function() {
@@ -1128,19 +1126,35 @@ Ext.define('Extensible.calendar.CalendarPanel', {
 
     /**
      * Synchronize date picker with calendar view.
-     * This method is called when Next/Previous button from toolbar view is pressed.
+     * This method is called when view date range is changed.
      */
     updateNavPicker: function() {
-        var container = this.up(),
-            leftSidebar = container.items.getByKey('app-west'),
-            calendarPanel = container.items.getByKey('teamup-calendar-panel'),
-            datePicker = leftSidebar.items.getByKey('app-nav-picker');
+        var mainCt = this.up(),
+            leftCt = mainCt.items.getByKey('app-west'),
+            calendarPanel = mainCt.items.getByKey('teamup-calendar-panel'),
+            datePicker = leftCt.items.getByKey('app-nav-picker'),
+            highlightDates = [];
+
+        datePicker.highlightDates = null;
 
         if (calendarPanel && calendarPanel.activeView) {
-            var viewDateLimit = calendarPanel.activeView.getViewBounds();
+            var activeView = calendarPanel.activeView,
+                activeViewDateRange = activeView.getViewBounds();
 
-            if (viewDateLimit['start']){
-                datePicker.setValue(viewDateLimit['start']);
+            if (activeViewDateRange['start']) {
+                if (activeView instanceof Extensible.calendar.view.MultiDay || activeView instanceof Extensible.calendar.view.Week) {
+                    var viewStartDt = Ext.clone(activeViewDateRange['start']),
+                        viewEndDt = Ext.clone(activeViewDateRange['end']);
+
+                    for (var d = viewStartDt; d <= viewEndDt; d.setDate(d.getDate() + 1)) {
+                        highlightDates.push(Ext.Date.format(d, 'Y-m-d'));
+                    }
+
+                    if (highlightDates.length > 0) {
+                        datePicker.highlightDates = highlightDates;
+                    }
+                }
+                datePicker.setValue(activeViewDateRange['start']);
             }
         }
     }
