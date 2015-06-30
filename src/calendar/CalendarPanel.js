@@ -280,6 +280,8 @@ Ext.define('Extensible.calendar.CalendarPanel', {
     // private property
     startDate: new Date(),
 
+    defaultViewLimits: null,
+
     initComponent: function() {
         this.tbar = {
             cls: 'ext-cal-toolbar',
@@ -1026,6 +1028,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             if (btn){
                 btn.toggle(true);
             }
+
             this.updateNavPicker();
         }
     },
@@ -1142,6 +1145,10 @@ Ext.define('Extensible.calendar.CalendarPanel', {
                 activeViewDateRange = activeView.getViewBounds();
 
             if (activeViewDateRange['start']) {
+                if (this.defaultViewLimits == null){
+                    this.defaultViewLimits = activeViewDateRange;
+                }
+
                 if (activeView instanceof Extensible.calendar.view.MultiDay || activeView instanceof Extensible.calendar.view.Week) {
                     var viewStartDt = Ext.clone(activeViewDateRange['start']),
                         viewEndDt = Ext.clone(activeViewDateRange['end']);
@@ -1153,6 +1160,8 @@ Ext.define('Extensible.calendar.CalendarPanel', {
                     if (highlightDates.length > 0) {
                         datePicker.highlightDates = highlightDates;
                     }
+                } else {
+                    datePicker.defaultViewLimits = this.defaultViewLimits;
                 }
                 datePicker.setValue(activeViewDateRange['start']);
             }
