@@ -542,12 +542,12 @@ Extensible.applyOverrides = function() {
                 cells = me.cells.elements;
 
             for(var i = 0; i < cells.length; ++i) {
-                cells[i].className = cells[i].className.replace(' x-date-highlight', '');
+                cells[i].className = cells[i].className.replace(' x-datepicker-highlight', '');
 
                 if (hdates){
                     current = new Date(cells[i].title);
                     if (hdates.indexOf(';' + Ext.Date.format(current, 'Y-m-d') + ';') != -1) {
-                        cells[i].className += ' x-date-highlight';
+                        cells[i].className += ' x-datepicker-highlight';
                     }
                 }
             }
@@ -585,8 +585,7 @@ Extensible.applyOverrides = function() {
                 cls,
                 formatValue,
                 value,
-                hdates = me.highlightDates ? ';' + me.highlightDates.join(';') + ';' : false,
-                defaultViewLimits = me.defaultViewLimits;
+                hdates = me.highlightDates ? ';' + me.highlightDates.join(';') + ';' : false;
 
             if (startingPos < 0) {
                 startingPos += 7;
@@ -608,8 +607,8 @@ Extensible.applyOverrides = function() {
                 }
             }
 
-            setCellClass = function(cell, cls, skipHighlight){
-                cell.className = cell.className.replace('x-date-highlight','');
+            setCellClass = function(cell, cls){
+                cell.className = cell.className.replace('x-datepicker-highlight','');
                 disabled = false;
                 value = +eDate.clearTime(current, true);
                 cell.title = eDate.format(current, longDayFormat);
@@ -619,7 +618,7 @@ Extensible.applyOverrides = function() {
                     cls += ' ' + me.todayCls;
                     cell.title = me.todayText;
                 }
-                if(value == sel && skipHighlight == true){
+                if(value == sel){
                     cls += ' ' + me.selectedCls;
                     me.fireEvent('highlightitem', me, cell);
                     if (visible && me.floating) {
@@ -654,14 +653,13 @@ Extensible.applyOverrides = function() {
                 }
                 if (hdates){
                     if (hdates.indexOf(';' + eDate.format(current, 'Y-m-d') + ';') != -1) {
-                        cls += ' x-date-highlight';
+                        cls += ' x-datepicker-highlight';
                     }
                 }
 
                 cell.className = cls + ' ' + me.cellCls;
             };
 
-            var skipHighlight;
             for(; i < me.numDays; ++i) {
                 if (i < startingPos) {
                     html = (++prevStart);
@@ -674,16 +672,8 @@ Extensible.applyOverrides = function() {
                     cls = me.activeCls;
                 }
                 textNodes[i].innerHTML = html;
-
                 current.setDate(current.getDate() + 1);
-
-                if (typeof defaultViewLimits == "undefined" || ( eDate.format(defaultViewLimits.start, 'Y-m-d') <= eDate.format(current, 'Y-m-d') && eDate.format(current, 'Y-m-d') <= eDate.format(defaultViewLimits.end, 'Y-m-d'))) {
-                    cls = '';
-                    skipHighlight = true;
-                } else {
-                    skipHighlight = false;
-                }
-                setCellClass(cells[i], cls, skipHighlight);
+                setCellClass(cells[i], cls);
             }
 
             me.monthBtn.setText(Ext.Date.format(date, me.monthYearFormat));
