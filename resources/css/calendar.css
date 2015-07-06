@@ -36,7 +36,7 @@
 }
 .ext-cal-ct {
     position: relative;
-    font-family: helvetica, arial, sans-serif;
+    /*font-family: helvetica, arial, sans-serif;*/
 }
 .x-cal-panel .x-panel-body {
     background: white !important;
@@ -61,7 +61,7 @@
 }
 .ext-cal-ct td,
 .ext-cal-mdv td {
-    font-size: 11px;
+    font-size: 12px;
 }
 .x-cal-body {
     /* override the default -noheader style ext uses when there is no panel header */
@@ -126,8 +126,8 @@
     table-layout: fixed;
     width: 100%;
     overflow: hidden;
-    font-size: 11px;
-    line-height: 14px;
+    font-size: 12px;
+    line-height: 12px;
     height: 100%;
 }
 .ext-cal-hd-days-td {
@@ -171,7 +171,7 @@
 }
 .ext-cal-dayview .ext-cal-dtitle {
     padding: 8px 1px 2px;
-} 
+}
 .ext-cal-hd-ad-bg-tbl {
     position: absolute;
     left: 0;
@@ -439,7 +439,7 @@
 .ext-cal-readonly .ext-cal-day,
 .ext-cal-readonly .ext-cal-dtitle {
     cursor: default;
-} 
+}
 .ext-day-over {
     background: #D1EAEF !important;
 }
@@ -498,7 +498,8 @@ td.ext-cal-dtitle-today div {
 }
 /* Event cells */
 .ext-cal-ev {
-    font-family:Verdana,sans-serif;
+    /*font-family:Verdana,sans-serif;*/
+    font-family:Arial,sans-serif;
     padding:1px 1px 0 2px;
     vertical-align:top;
 }
@@ -527,7 +528,8 @@ td.ext-cal-dtitle-today div {
     -webkit-border-radius:5px;
     border-radius:5px;
     overflow:hidden;
-    padding:1px 1px 1px 5px;
+    /*padding:1px 1px 1px 5px;*/
+    padding:0 1px 0 3px;
     white-space:nowrap;
 	text-overflow: ellipsis;
     border: 0;
@@ -929,7 +931,7 @@ td.ext-cal-dtitle-today div {
 .ext-cal-nav-picker .x-datepicker-month .x-btn-inner {
     color: #555 !important;
     font-weight: bold;
-    font-family: arial,tahoma,verdana,helvetica;
+    /*font-family: arial,tahoma,verdana,helvetica;*/
 }
 .ext-cal-nav-picker .x-datepicker-month .x-btn-split-right {
     background-image: url(../images/default/ext/button-arrow.gif) !important;
@@ -1051,7 +1053,7 @@ td.ext-cal-dtitle-today div {
 .x-calendar-list .x-panel-body {
     padding: 4px 2px 2px;
     background: #fff !important;
-    font-family: helvetica, arial, sans-serif;
+    /*font-family: helvetica, arial, sans-serif;*/
     font-size: 12px;
 }
 .x-calendar-list .x-panel-header-text {
@@ -1140,7 +1142,7 @@ td.ext-cal-dtitle-today div {
     outline: 0 none;
     cursor: pointer;
 }
-.x-calendar-list-menu .x-color-picker a:hover, 
+.x-calendar-list-menu .x-color-picker a:hover,
 .x-calendar-list-menu .x-color-picker a.x-color-picker-selected {
     border-color: #8BB8F3;
 }
