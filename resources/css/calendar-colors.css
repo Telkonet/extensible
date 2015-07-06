@@ -37,14 +37,15 @@
 .x-cal-default-x dl,
 .x-calendar-palette em .x-cal-default {
     background-color: #668CB3;
+    border-color: #668CB3;
 }
 /*
  * Yet more rules for IE/Opera
  */
-.x-cal-default-ad,
-.x-cal-default-ad .ext-cal-evm {
-    border-color: #668CB3;
-}
+/*.x-cal-default-ad,*/
+/*.x-cal-default-ad .ext-cal-evm {*/
+    /*border-color: #668CB3;*/
+/*}*/
 /*  END of default event styles
  * ========================================================
  */
@@ -74,11 +75,12 @@
 .x-cal-1-x dl,
 .x-calendar-palette .x-cal-1 span {
     background-color: #fa7166;
-}
-.x-cal-1-ad,
-.x-cal-1-ad .ext-cal-evm {
     border-color: #fa7166;
 }
+/*.x-cal-1-ad,*/
+/*.x-cal-1-ad .ext-cal-evm {*/
+    /*border-color: #fa7166;*/
+/*}*/
 
 /* ===== x-cal-2 ===== */
 .x-cal-2,
@@ -95,11 +97,12 @@
 .x-cal-2-x dl,
 .x-calendar-palette .x-cal-2 span {
     background-color: #cf2424;
-}
-.x-cal-2-ad,
-.x-cal-2-ad .ext-cal-evm {
     border-color: #cf2424;
 }
+/*.x-cal-2-ad,*/
+/*.x-cal-2-ad .ext-cal-evm {*/
+    /*border-color: #cf2424;*/
+/*}*/
 
 /* ===== x-cal-3 ===== */
 .x-cal-3,
@@ -116,11 +119,12 @@
 .x-cal-3-x dl,
 .x-calendar-palette .x-cal-3 span {
     background-color: #a01a1a;
-}
-.x-cal-3-ad,
-.x-cal-3-ad .ext-cal-evm {
     border-color: #a01a1a;
 }
+/*.x-cal-3-ad,*/
+/*.x-cal-3-ad .ext-cal-evm {*/
+    /*border-color: #a01a1a;*/
+/*}*/
 
 /* ===== x-cal-4 ===== */
 .x-cal-4,
@@ -137,11 +141,12 @@
 .x-cal-4-x dl,
 .x-calendar-palette .x-cal-4 span {
     background-color: #7e3838;
-}
-.x-cal-4-ad,
-.x-cal-4-ad .ext-cal-evm {
     border-color: #7e3838;
 }
+/*.x-cal-4-ad,*/
+/*.x-cal-4-ad .ext-cal-evm {*/
+    /*border-color: #7e3838;*/
+/*}*/
 
 /* ===== x-cal-5 ===== */
 .x-cal-5,
@@ -158,11 +163,12 @@
 .x-cal-5-x dl,
 .x-calendar-palette .x-cal-5 span {
     background-color: #ca7609;
-}
-.x-cal-5-ad,
-.x-cal-5-ad .ext-cal-evm {
     border-color: #ca7609;
 }
+/*.x-cal-5-ad,*/
+/*.x-cal-5-ad .ext-cal-evm {*/
+    /*border-color: #ca7609;*/
+/*}*/
 
 /* ===== x-cal-6 ===== */
 .x-cal-6,
@@ -179,11 +185,12 @@
 .x-cal-6-x dl,
 .x-calendar-palette .x-cal-6 span {
     background-color: #f88015;
-}
-.x-cal-6-ad,
-.x-cal-6-ad .ext-cal-evm {
     border-color: #f88015;
 }
+/*.x-cal-6-ad,*/
+/*.x-cal-6-ad .ext-cal-evm {*/
+    /*border-color: #f88015;*/
+/*}*/
 
 /* ===== x-cal-7 ===== */
 .x-cal-7,
@@ -200,11 +207,12 @@
 .x-cal-7-x dl,
 .x-calendar-palette .x-cal-7 span {
     background-color: #eda12a;
-}
-.x-cal-7-ad,
-.x-cal-7-ad .ext-cal-evm {
     border-color: #eda12a;
 }
+/*.x-cal-7-ad,*/
+/*.x-cal-7-ad .ext-cal-evm {*/
+    /*border-color: #eda12a;*/
+/*}*/
 
 /* ===== x-cal-8 ===== */
 .x-cal-8,
@@ -221,11 +229,12 @@
 .x-cal-8-x dl,
 .x-calendar-palette .x-cal-8 span {
     background-color: #d5b816;
-}
-.x-cal-8-ad,
-.x-cal-8-ad .ext-cal-evm {
     border-color: #d5b816;
 }
+/*.x-cal-8-ad,*/
+/*.x-cal-8-ad .ext-cal-evm {*/
+    /*border-color: #d5b816;*/
+/*}*/
 
 /* ===== x-cal-9 ===== */
 .x-cal-9,
@@ -242,11 +251,12 @@
 .x-cal-9-x dl,
 .x-calendar-palette .x-cal-9 span {
     background-color: #e281ca;
-}
-.x-cal-9-ad,
-.x-cal-9-ad .ext-cal-evm {
     border-color: #e281ca;
 }
+/*.x-cal-9-ad,*/
+/*.x-cal-9-ad .ext-cal-evm {*/
+    /*border-color: #e281ca;*/
+/*}*/
 
 /* ===== x-cal-10 ===== */
 .x-cal-10,
@@ -263,11 +273,12 @@
 .x-cal-10-x dl,
 .x-calendar-palette .x-cal-10 span {
     background-color: #bf53a4;
-}
-.x-cal-10-ad,
-.x-cal-10-ad .ext-cal-evm {
     border-color: #bf53a4;
 }
+/*.x-cal-10-ad,*/
+/*.x-cal-10-ad .ext-cal-evm {*/
+    /*border-color: #bf53a4;*/
+/*}*/
 
 /* ===== x-cal-11 ===== */
 .x-cal-11,
@@ -284,11 +295,12 @@
 .x-cal-11-x dl,
 .x-calendar-palette .x-cal-11 span {
     background-color: #9d3283;
-}
-.x-cal-11-ad,
-.x-cal-11-ad .ext-cal-evm {
     border-color: #9d3283;
 }
+/*.x-cal-11-ad,*/
+/*.x-cal-11-ad .ext-cal-evm {*/
+    /*border-color: #9d3283;*/
+/*}*/
 
 /* ===== x-cal-12 ===== */
 .x-cal-12,
@@ -305,11 +317,12 @@
 .x-cal-12-x dl,
 .x-calendar-palette .x-cal-12 span {
     background-color: #7a0f60;
-}
-.x-cal-12-ad,
-.x-cal-12-ad .ext-cal-evm {
     border-color: #7a0f60;
 }
+/*.x-cal-12-ad,*/
+/*.x-cal-12-ad .ext-cal-evm {*/
+    /*border-color: #7a0f60;*/
+/*}*/
 
 /* ===== x-cal-13 ===== */
 .x-cal-13,
@@ -326,11 +339,12 @@
 .x-cal-13-x dl,
 .x-calendar-palette .x-cal-13 span {
     background-color: #542382;
-}
-.x-cal-13-ad,
-.x-cal-13-ad .ext-cal-evm {
     border-color: #542382;
 }
+/*.x-cal-13-ad,*/
+/*.x-cal-13-ad .ext-cal-evm {*/
+    /*border-color: #542382;*/
+/*}*/
 
 /* ===== x-cal-14 ===== */
 .x-cal-14,
@@ -347,11 +361,12 @@
 .x-cal-14-x dl,
 .x-calendar-palette .x-cal-14 span {
     background-color: #7742a9;
-}
-.x-cal-14-ad,
-.x-cal-14-ad .ext-cal-evm {
     border-color: #7742a9;
 }
+/*.x-cal-14-ad,*/
+/*.x-cal-14-ad .ext-cal-evm {*/
+    /*border-color: #7742a9;*/
+/*}*/
 
 /* ===== x-cal-15 ===== */
 .x-cal-15,
@@ -368,11 +383,12 @@
 .x-cal-15-x dl,
 .x-calendar-palette .x-cal-15 span {
     background-color: #8763ca;
-}
-.x-cal-15-ad,
-.x-cal-15-ad .ext-cal-evm {
     border-color: #8763ca;
 }
+/*.x-cal-15-ad,*/
+/*.x-cal-15-ad .ext-cal-evm {*/
+    /*border-color: #8763ca;*/
+/*}*/
 
 /* ===== x-cal-16 ===== */
 .x-cal-16,
@@ -389,11 +405,12 @@
 .x-cal-16-x dl,
 .x-calendar-palette .x-cal-16 span {
     background-color: #b586e2;
-}
-.x-cal-16-ad,
-.x-cal-16-ad .ext-cal-evm {
     border-color: #b586e2;
 }
+/*.x-cal-16-ad,*/
+/*.x-cal-16-ad .ext-cal-evm {*/
+    /*border-color: #b586e2;*/
+/*}*/
 
 /* ===== x-cal-17 ===== */
 .x-cal-17,
@@ -410,11 +427,12 @@
 .x-cal-17-x dl,
 .x-calendar-palette .x-cal-17 span {
     background-color: #7399f9;
-}
-.x-cal-17-ad,
-.x-cal-17-ad .ext-cal-evm {
     border-color: #7399f9;
 }
+/*.x-cal-17-ad,*/
+/*.x-cal-17-ad .ext-cal-evm {*/
+    /*border-color: #7399f9;*/
+/*}*/
 
 /* ===== x-cal-18 ===== */
 .x-cal-18,
@@ -431,11 +449,12 @@
 .x-cal-18-x dl,
 .x-calendar-palette .x-cal-18 span {
     background-color: #4e79e6;
-}
-.x-cal-18-ad,
-.x-cal-18-ad .ext-cal-evm {
     border-color: #4e79e6;
 }
+/*.x-cal-18-ad,*/
+/*.x-cal-18-ad .ext-cal-evm {*/
+    /*border-color: #4e79e6;*/
+/*}*/
 
 /* ===== x-cal-19 ===== */
 .x-cal-19,
@@ -452,11 +471,12 @@
 .x-cal-19-x dl,
 .x-calendar-palette .x-cal-19 span {
     background-color: #2951b9;
-}
-.x-cal-19-ad,
-.x-cal-19-ad .ext-cal-evm {
     border-color: #2951b9;
 }
+/*.x-cal-19-ad,*/
+/*.x-cal-19-ad .ext-cal-evm {*/
+    /*border-color: #2951b9;*/
+/*}*/
 
 /* ===== x-cal-20 ===== */
 .x-cal-20,
@@ -473,11 +493,12 @@
 .x-cal-20-x dl,
 .x-calendar-palette .x-cal-20 span {
     background-color: #133897;
-}
-.x-cal-20-ad,
-.x-cal-20-ad .ext-cal-evm {
     border-color: #133897;
 }
+/*.x-cal-20-ad,*/
+/*.x-cal-20-ad .ext-cal-evm {*/
+    /*border-color: #133897;*/
+/*}*/
 
 /* ===== x-cal-21 ===== */
 .x-cal-21,
@@ -494,11 +515,12 @@
 .x-cal-21-x dl,
 .x-calendar-palette .x-cal-21 span {
     background-color: #1a5173;
-}
-.x-cal-21-ad,
-.x-cal-21-ad .ext-cal-evm {
     border-color: #1a5173;
 }
+/*.x-cal-21-ad,*/
+/*.x-cal-21-ad .ext-cal-evm {*/
+    /*border-color: #1a5173;*/
+/*}*/
 
 /* ===== x-cal-22 ===== */
 .x-cal-22,
@@ -515,11 +537,12 @@
 .x-cal-22-x dl,
 .x-calendar-palette .x-cal-22 span {
     background-color: #1a699c;
-}
-.x-cal-22-ad,
-.x-cal-22-ad .ext-cal-evm {
     border-color: #1a699c;
 }
+/*.x-cal-22-ad,*/
+/*.x-cal-22-ad .ext-cal-evm {*/
+    /*border-color: #1a699c;*/
+/*}*/
 
 /* ===== x-cal-23 ===== */
 .x-cal-23,
@@ -536,11 +559,12 @@
 .x-cal-23-x dl,
 .x-calendar-palette .x-cal-23 span {
     background-color: #3694b7;
-}
-.x-cal-23-ad,
-.x-cal-23-ad .ext-cal-evm {
     border-color: #3694b7;
 }
+/*.x-cal-23-ad,*/
+/*.x-cal-23-ad .ext-cal-evm {*/
+    /*border-color: #3694b7;*/
+/*}*/
 
 /* ===== x-cal-24 ===== */
 .x-cal-24,
@@ -557,11 +581,12 @@
 .x-cal-24-x dl,
 .x-calendar-palette .x-cal-24 span {
     background-color: #64b9d9;
-}
-.x-cal-24-ad,
-.x-cal-24-ad .ext-cal-evm {
     border-color: #64b9d9;
 }
+/*.x-cal-24-ad,*/
+/*.x-cal-24-ad .ext-cal-evm {*/
+    /*border-color: #64b9d9;*/
+/*}*/
 
 /* ===== x-cal-25 ===== */
 .x-cal-25,
@@ -578,11 +603,12 @@
 .x-cal-25-x dl,
 .x-calendar-palette .x-cal-25 span {
     background-color: #a8c67b;
-}
-.x-cal-25-ad,
-.x-cal-25-ad .ext-cal-evm {
     border-color: #a8c67b;
 }
+/*.x-cal-25-ad,*/
+/*.x-cal-25-ad .ext-cal-evm {*/
+    /*border-color: #a8c67b;*/
+/*}*/
 
 /* ===== x-cal-26 ===== */
 .x-cal-26,
@@ -599,11 +625,12 @@
 .x-cal-26-x dl,
 .x-calendar-palette .x-cal-26 span {
     background-color: #83ad47;
-}
-.x-cal-26-ad,
-.x-cal-26-ad .ext-cal-evm {
     border-color: #83ad47;
 }
+/*.x-cal-26-ad,*/
+/*.x-cal-26-ad .ext-cal-evm {*/
+    /*border-color: #83ad47;*/
+/*}*/
 
 /* ===== x-cal-27 ===== */
 .x-cal-27,
@@ -620,11 +647,12 @@
 .x-cal-27-x dl,
 .x-calendar-palette .x-cal-27 span {
     background-color: #2e8f0c;
-}
-.x-cal-27-ad,
-.x-cal-27-ad .ext-cal-evm {
     border-color: #2e8f0c;
 }
+/*.x-cal-27-ad,*/
+/*.x-cal-27-ad .ext-cal-evm {*/
+    /*border-color: #2e8f0c;*/
+/*}*/
 
 /* ===== x-cal-28 ===== */
 .x-cal-28,
@@ -641,11 +669,12 @@
 .x-cal-28-x dl,
 .x-calendar-palette .x-cal-28 span {
     background-color: #176413;
-}
-.x-cal-28-ad,
-.x-cal-28-ad .ext-cal-evm {
     border-color: #176413;
 }
+/*.x-cal-28-ad,*/
+/*.x-cal-28-ad .ext-cal-evm {*/
+    /*border-color: #176413;*/
+/*}*/
 
 /* ===== x-cal-29 ===== */
 .x-cal-29,
@@ -662,11 +691,12 @@
 .x-cal-29-x dl,
 .x-calendar-palette .x-cal-29 span {
     background-color: #0f4c30;
-}
-.x-cal-29-ad,
-.x-cal-29-ad .ext-cal-evm {
     border-color: #0f4c30;
 }
+/*.x-cal-29-ad,*/
+/*.x-cal-29-ad .ext-cal-evm {*/
+    /*border-color: #0f4c30;*/
+/*}*/
 
 /* ===== x-cal-30 ===== */
 .x-cal-30,
@@ -683,11 +713,12 @@
 .x-cal-30-x dl,
 .x-calendar-palette .x-cal-30 span {
     background-color: #386651;
-}
-.x-cal-30-ad,
-.x-cal-30-ad .ext-cal-evm {
     border-color: #386651;
 }
+/*.x-cal-30-ad,*/
+/*.x-cal-30-ad .ext-cal-evm {*/
+    /*border-color: #386651;*/
+/*}*/
 
 /* ===== x-cal-31 ===== */
 .x-cal-31,
@@ -704,11 +735,12 @@
 .x-cal-31-x dl,
 .x-calendar-palette .x-cal-31 span {
     background-color: #3ea987;
-}
-.x-cal-31-ad,
-.x-cal-31-ad .ext-cal-evm {
     border-color: #3ea987;
 }
+/*.x-cal-31-ad,*/
+/*.x-cal-31-ad .ext-cal-evm {*/
+    /*border-color: #3ea987;*/
+/*}*/
 
 /* ===== x-cal-32 ===== */
 .x-cal-32,
@@ -725,8 +757,9 @@
 .x-cal-32-x dl,
 .x-calendar-palette .x-cal-32 span {
     background-color: #7bc3b5;
-}
-.x-cal-32-ad,
-.x-cal-32-ad .ext-cal-evm {
     border-color: #7bc3b5;
 }
+/*.x-cal-32-ad,*/
+/*.x-cal-32-ad .ext-cal-evm {*/
+    /*border-color: #7bc3b5;*/
+/*}*/
