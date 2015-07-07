@@ -36,7 +36,7 @@
 }
 .ext-cal-ct {
     position: relative;
-    /*font-family: helvetica, arial, sans-serif;*/
+    font-family: helvetica, arial, sans-serif;
 }
 .x-cal-panel .x-panel-body {
     background: white !important;
@@ -54,7 +54,7 @@
 }
 .ext-cal-inner-ct {
     height: 100%;
-    line-height: 14px;
+    line-height: 12px;
     position: relative;
     background: #eee;
     white-space: nowrap;
@@ -117,6 +117,9 @@
     text-align: center;
     padding: 4px 0;
     white-space: nowrap;
+}
+th.ext-cal-hd-day {
+    line-height: 14px;
 }
 
 /* -----------------------------------------
@@ -498,8 +501,7 @@ td.ext-cal-dtitle-today div {
 }
 /* Event cells */
 .ext-cal-ev {
-    /*font-family:Verdana,sans-serif;*/
-    font-family:Arial,sans-serif;
+    font-family: helvetica, arial, sans-serif;
     padding:1px 1px 0 2px;
     vertical-align:top;
 }
@@ -520,6 +522,7 @@ td.ext-cal-dtitle-today div {
 
 .ext-cal-evt {
     cursor:pointer;
+    font-family: helvetica, arial, sans-serif;
 }
 
 /* Default rounded event div (Gecko/Webkit/W3C) */
@@ -532,12 +535,13 @@ td.ext-cal-dtitle-today div {
     padding:0 1px 0 3px;
     white-space:nowrap;
 	text-overflow: ellipsis;
-    border: 0;
+    border-width: 2px;
+    border-style: solid;
 }
 /* Nested event divs (IE/Opera) */
 .ext-cal-evo { /* outer */
-    border-top: 1px solid;
-    border-bottom: 1px solid;
+    border-top: 2px solid;
+    border-bottom: 2px solid;
     border-right: 0;
     border-left: 0;
     margin: 0 1px;
@@ -548,8 +552,8 @@ td.ext-cal-dtitle-today div {
     height: 100%;
 }
 .ext-cal-evm { /* middle */
-    border-left: 1px solid;
-    border-right: 1px solid;
+    border-left: 2px solid;
+    border-right: 2px solid;
     border-top: 0;
     border-bottom: 0;
     margin: 0 -1px;
@@ -569,12 +573,12 @@ td.ext-cal-dtitle-today div {
     cursor: default;
     color: #fff;
     -moz-user-select: none;
+    line-height: 14px;
 }
 .ext-cal-evt dl {
     margin: 0;
-    border: 0 1px;
     overflow: hidden;
-    border-width: 0 1px;
+    border-width: 0 2px;
     border-style: solid;
 }
 .x-ie6 .ext-cal-evt dl {
@@ -583,9 +587,10 @@ td.ext-cal-dtitle-today div {
 .ext-cal-evt dd {
     margin: 0;
     overflow: hidden;
-    font-size: 11px;
+    font-size: 12px;
     text-align: left;
     word-wrap: break-word;
+    padding: 0 2px;
 }
 .ext-cal-evdm {
     border: 1px solid;
@@ -607,7 +612,7 @@ td.ext-cal-dtitle-today div {
     height: 1px;
     overflow: hidden;
     margin: 0 2px;
-    border-top-width: 1px;
+    border-top-width: 2px;
     border-top-style: solid;
 }
 .x-opera .ext-cal-evb,
@@ -824,7 +829,7 @@ td.ext-cal-dtitle-today div {
 /* StatusProxy override styles */
 .ext-dd-ghost-ct {
 	color:#000;
-	font: normal 11px arial, helvetica, sans-serif;
+	font: normal 11px helvetica, arial, sans-serif;
 	border: 1px solid;
     border-color: #ddd #bbb #bbb #ddd;
 	background-color:#fff;
@@ -1053,7 +1058,7 @@ td.ext-cal-dtitle-today div {
 .x-calendar-list .x-panel-body {
     padding: 4px 2px 2px;
     background: #fff !important;
-    /*font-family: helvetica, arial, sans-serif;*/
+    font-family: helvetica, arial, sans-serif;
     font-size: 12px;
 }
 .x-calendar-list .x-panel-header-text {
@@ -1068,6 +1073,7 @@ td.ext-cal-dtitle-today div {
     margin-bottom: 2px;
     cursor: pointer;
     list-style-type: none;
+    line-height: 13px;
 }
 .x-calendar-list li em {
     background-image: url(../images/default/calendar-sprites.gif);
@@ -1077,7 +1083,7 @@ td.ext-cal-dtitle-today div {
     height: 11px;
     line-height: 11px;
     width: 14px;
-    top: 2px;
+    top: 1px;
     background-position: -60px 0;
     right: 0;
 }
@@ -1116,11 +1122,6 @@ td.ext-cal-dtitle-today div {
 .extensible-cal-icon-cal-show {
     background-image:url(../images/default/silk/calendar_view_month.png) !important;
 }
-/* Brian: Image color_wheel.png does not exist. Can this style be removed?
-.extensible-cal-icon-cal-colors {
-    background-image:url(../images/default/silk/color_wheel.png) !important;
-}
-*/
 
 /*******************************************
  * 
