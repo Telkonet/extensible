@@ -342,11 +342,12 @@
 }
 
 /* ===== x-cal-17 ===== */
+/* This is the same color as the default color. */
 .x-cal-17,
 .x-cal-17-x .ext-cal-evb,
 .ext-ie .x-cal-17-ad,
 .ext-opera .x-cal-17-ad {
-    color: #7399f9;
+    color: #668CB3;
 }
 .ext-cal-day-col .x-cal-17,
 .ext-dd-drag-proxy .x-cal-17,
@@ -355,8 +356,8 @@
 .x-cal-17 .ext-cal-picker-icon,
 .x-cal-17-x dl,
 .x-calendar-palette .x-cal-17 span {
-    background-color: #7399f9;
-    border-color: #7399f9;
+    background-color: #668CB3;
+    border-color: #668CB3;
 }
 
 /* ===== x-cal-18 ===== */
