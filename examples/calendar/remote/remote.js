@@ -132,7 +132,26 @@ Ext.onReady(function() {
         region: 'center', // it will be used in a border layout below
         eventStore: eventStore,
         calendarStore: calendarStore,
-        title: 'Remote Calendar'
+        title: 'Remote Calendar',
+        showAgendaView: true,
+        showListView: true,
+        activeItem: 3, // month view
+
+        // Any generic view options that should be applied to all sub views:
+        viewConfig: {
+            startDay: 0
+        },
+
+        agendaViewCfg: {
+            linkDatesToDayView: true,
+            dateRangeDefault: '3months'
+        },
+
+        listViewCfg: {
+            linkDatesToDayView: true,
+            dateRangeDefault: '3months',
+            groupBy: 'month'
+        }
     });
     
     Ext.create('Ext.container.Viewport', {
@@ -144,6 +163,7 @@ Ext.onReady(function() {
             collapsible: true,
             split: true,
             autoScroll: true,
+            showListView: true,
             contentEl: 'sample-overview' // from remote.html
         },
             calendarPanel
