@@ -54,14 +54,14 @@
 }
 .ext-cal-inner-ct {
     height: 100%;
-    line-height: 14px;
+    line-height: 12px;
     position: relative;
     background: #eee;
     white-space: nowrap;
 }
 .ext-cal-ct td,
 .ext-cal-mdv td {
-    font-size: 11px;
+    font-size: 12px;
 }
 .x-cal-body {
     /* override the default -noheader style ext uses when there is no panel header */
@@ -118,6 +118,9 @@
     padding: 4px 0;
     white-space: nowrap;
 }
+th.ext-cal-hd-day {
+    line-height: 14px;
+}
 
 /* -----------------------------------------
  * Day/week-specific styles
@@ -125,10 +128,9 @@
 .ext-cal-dayview .ext-cal-hd-days-tbl {
     table-layout: fixed;
     width: 100%;
-    background-color: #CDDCEF;
     overflow: hidden;
-    font-size: 11px;
-    line-height: 14px;
+    font-size: 12px;
+    line-height: 12px;
     height: 100%;
 }
 .ext-cal-hd-days-td {
@@ -172,7 +174,7 @@
 }
 .ext-cal-dayview .ext-cal-dtitle {
     padding: 8px 1px 2px;
-} 
+}
 .ext-cal-hd-ad-bg-tbl {
     position: absolute;
     left: 0;
@@ -282,10 +284,10 @@
 }
 .ext-cal-schedulerview-header .ext-cal-bg-tbl .ext-cal-bg-tbl-hd td {
     height:20px;
-    background-color:#CDDCEF;
+    background-color:#D3E1F1;
 }
 .ext-cal-schedulerview-header .ext-cal-bg-tbl  td {
-    border-left: 1px solid #BBCCFF!important;
+    border-left: 1px solid #BBCCFF !important;
 }
 .ext-cal-schedulerview-header .ext-cal-bg-tbl td:first-child {
     border:none!important;
@@ -440,7 +442,7 @@
 .ext-cal-readonly .ext-cal-day,
 .ext-cal-readonly .ext-cal-dtitle {
     cursor: default;
-} 
+}
 .ext-day-over {
     background: #D1EAEF !important;
 }
@@ -499,7 +501,7 @@ td.ext-cal-dtitle-today div {
 }
 /* Event cells */
 .ext-cal-ev {
-    font-family:Verdana,sans-serif;
+    font-family: helvetica, arial, sans-serif;
     padding:1px 1px 0 2px;
     vertical-align:top;
 }
@@ -520,6 +522,7 @@ td.ext-cal-dtitle-today div {
 
 .ext-cal-evt {
     cursor:pointer;
+    font-family: helvetica, arial, sans-serif;
 }
 
 /* Default rounded event div (Gecko/Webkit/W3C) */
@@ -528,15 +531,17 @@ td.ext-cal-dtitle-today div {
     -webkit-border-radius:5px;
     border-radius:5px;
     overflow:hidden;
-    padding:1px 1px 1px 5px;
+    /*padding:1px 1px 1px 5px;*/
+    padding:0 1px 0 3px;
     white-space:nowrap;
 	text-overflow: ellipsis;
-    border: 0;
+    border-width: 2px;
+    border-style: solid;
 }
 /* Nested event divs (IE/Opera) */
 .ext-cal-evo { /* outer */
-    border-top: 1px solid;
-    border-bottom: 1px solid;
+    border-top: 2px solid;
+    border-bottom: 2px solid;
     border-right: 0;
     border-left: 0;
     margin: 0 1px;
@@ -547,8 +552,8 @@ td.ext-cal-dtitle-today div {
     height: 100%;
 }
 .ext-cal-evm { /* middle */
-    border-left: 1px solid;
-    border-right: 1px solid;
+    border-left: 2px solid;
+    border-right: 2px solid;
     border-top: 0;
     border-bottom: 0;
     margin: 0 -1px;
@@ -568,12 +573,12 @@ td.ext-cal-dtitle-today div {
     cursor: default;
     color: #fff;
     -moz-user-select: none;
+    line-height: 14px;
 }
 .ext-cal-evt dl {
     margin: 0;
-    border: 0 1px;
     overflow: hidden;
-    border-width: 0 1px;
+    border-width: 0 2px;
     border-style: solid;
 }
 .x-ie6 .ext-cal-evt dl {
@@ -582,9 +587,10 @@ td.ext-cal-dtitle-today div {
 .ext-cal-evt dd {
     margin: 0;
     overflow: hidden;
-    font-size: 11px;
+    font-size: 12px;
     text-align: left;
     word-wrap: break-word;
+    padding: 0 2px;
 }
 .ext-cal-evdm {
     border: 1px solid;
@@ -606,7 +612,7 @@ td.ext-cal-dtitle-today div {
     height: 1px;
     overflow: hidden;
     margin: 0 2px;
-    border-top-width: 1px;
+    border-top-width: 2px;
     border-top-style: solid;
 }
 .x-opera .ext-cal-evb,
@@ -823,7 +829,7 @@ td.ext-cal-dtitle-today div {
 /* StatusProxy override styles */
 .ext-dd-ghost-ct {
 	color:#000;
-	font: normal 11px arial, helvetica, sans-serif;
+	font: normal 11px helvetica, arial, sans-serif;
 	border: 1px solid;
     border-color: #ddd #bbb #bbb #ddd;
 	background-color:#fff;
@@ -923,7 +929,7 @@ td.ext-cal-dtitle-today div {
 .ext-cal-nav-picker .x-datepicker-month .x-btn-inner {
     color: #555 !important;
     font-weight: bold;
-    font-family: arial,tahoma,verdana,helvetica;
+    /*font-family: arial,tahoma,verdana,helvetica;*/
 }
 .ext-cal-nav-picker .x-datepicker-inner {
     border-top: 1px solid #BBCCFF;
@@ -1077,6 +1083,7 @@ td.ext-cal-dtitle-today div {
     margin-bottom: 2px;
     cursor: pointer;
     list-style-type: none;
+    line-height: 13px;
 }
 .x-calendar-list li em {
     background-image: url(../images/default/calendar-sprites.gif);
@@ -1086,7 +1093,7 @@ td.ext-cal-dtitle-today div {
     height: 11px;
     line-height: 11px;
     width: 14px;
-    top: 2px;
+    top: 1px;
     background-position: -60px 0;
     right: 0;
 }
@@ -1146,7 +1153,7 @@ td.ext-cal-dtitle-today div {
     outline: 0 none;
     cursor: pointer;
 }
-.x-calendar-list-menu .x-color-picker a:hover, 
+.x-calendar-list-menu .x-color-picker a:hover,
 .x-calendar-list-menu .x-color-picker a.x-color-picker-selected {
     border-color: #8BB8F3;
 }

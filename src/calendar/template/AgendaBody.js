@@ -52,8 +52,9 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
     /**
      * @cfg {String} allDayText
      * Text used to display in times column for all-day events and for events that last the entire day.
+     * OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
      */
-    allDayText: 'All day',
+    allDayText: '',
     /**
      * @cfg {String} locationText
      * Label used for the event location output.
@@ -80,7 +81,7 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
      * Text used for the previous link.
      */
     prevLinkText: 'Previous',
-
+    
     /**
      * @cfg {String} nextLinkText
      * Text used for the next link.
@@ -98,6 +99,13 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
      * Text used as tooltip for the reminder icon.
      */
     recurringTooltip: 'Recurring event',
+
+    /**
+     * @cfg {String} readonlyTooltip
+     * Text used as tooltip for the readonly icon.
+     * OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+     */
+    readonlyTooltip: 'Read-only event',
 
     /**
      * @cfg {String} showEventDetails
@@ -168,27 +176,31 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
                                         '<td width="90%">',
                                             '{[this.getTitleMarkup(values)]}',
                                             '<tpl if="this.showEventDetails">',
-                                                // Display event with all details
-                                                '<table class="ext-cal-evt-agenda-details" cellspacing="0" cellpadding="0" width="100%" border="0">',
-                                                    '<tpl if="this.eventHasLocation(values)">',
+                                                // OVERRIDE for Teamup Calendar, May 9, 2014, sidler@teamup.com
+                                                // Optimize output for Teamup Calendar
+                                                '<tpl if="this.eventHasNotes(values)">',
+                                                    // Display event with all details
+                                                    '<table class="ext-cal-evt-agenda-details" cellspacing="0" cellpadding="0" width="100%" border="0">',
+                                                        // Hide location and link. They are shown in the title already.
+                                                        //'<tpl if="this.eventHasLocation(values)">',
+                                                        //    '<tr>',
+                                                        //        '<td nowrap>', this.locationText, ':</td>',
+                                                        //        '<td width="95%">{[values.data[Extensible.calendar.data.EventMappings.Location.name]]}</td>',
+                                                        //    '</tr>',
+                                                        //'</tpl>',
+                                                        //'<tpl if="this.eventHasLink(values)">',
+                                                        //    '<tr>',
+                                                        //        '<td nowrap>', this.webLinkText, ':</td>',
+                                                        //        '<td width="95%"><a href="{[this.getWebLinkMarkup(values)]}" target="_blank">{[this.getWebLinkMarkup(values, true)]}</a></td>',
+                                                        //    '</tr>',
+                                                        //'</tpl>',
                                                         '<tr>',
-                                                            '<td nowrap>', this.locationText, ':</td>',
-                                                            '<td width="95%">{[values.data[Extensible.calendar.data.EventMappings.Location.name]]}</td>',
+                                                            // Hide label for notes section
+                                                            //'<td nowrap>', this.notesText, ':</td>',
+                                                            '<td width="95%" colspan="2">{[this.getNotesMarkup(values)]}</td>',
                                                         '</tr>',
-                                                    '</tpl>',
-                                                    '<tpl if="this.eventHasLink(values)">',
-                                                        '<tr>',
-                                                            '<td nowrap>', this.webLinkText, ':</td>',
-                                                            '<td width="95%"><a href="{[this.getWebLinkMarkup(values)]}" target="_blank">{[this.getWebLinkMarkup(values, true)]}</a></td>',
-                                                        '</tr>',
-                                                    '</tpl>',
-                                                    '<tpl if="this.eventHasNotes(values)">',
-                                                        '<tr>',
-                                                            '<td nowrap>', this.notesText, ':</td>',
-                                                            '<td width="95%">{[this.getNotesMarkup(values)]}</td>',
-                                                        '</tr>',
-                                                    '</tpl>',
-                                                '</table>',
+                                                    '</table>',
+                                                '</tpl>',
                                             '</tpl>',
                                         '</td>',
                                 '</tr>',
@@ -241,29 +253,33 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
                                             '{[this.getEventTimesMarkupForSimpleList(values, parent.date)]}',
                                             '<td width="90%">',
                                                 '{[this.getTitleMarkup(values)]}',
-                                                '<tpl if="this.showEventDetails">',
-                                                    // Display event with all details
-                                                    '<table class="ext-cal-evt-agenda-details" cellspacing="0" cellpadding="0" width="100%" border="0">',
-                                                        '<tpl if="this.eventHasLocation(values)">',
-                                                            '<tr>',
-                                                                '<td nowrap>', this.locationText, ':</td>',
-                                                                '<td width="95%">{[values.data[Extensible.calendar.data.EventMappings.Location.name]]}</td>',
-                                                            '</tr>',
-                                                        '</tpl>',
-                                                        '<tpl if="this.eventHasLink(values)">',
-                                                            '<tr>',
-                                                                '<td nowrap>', this.webLinkText, ':</td>',
-                                                                '<td width="95%"><a href="{[this.getWebLinkMarkup(values)]}" target="_blank">{[this.getWebLinkMarkup(values, true)]}</a></td>',
-                                                            '</tr>',
-                                                        '</tpl>',
-                                                        '<tpl if="this.eventHasNotes(values)">',
-                                                            '<tr>',
-                                                                '<td nowrap>', this.notesText, ':</td>',
-                                                                '<td width="95%">{[this.getNotesMarkup(values)]}</td>',
-                                                            '</tr>',
-                                                        '</tpl>',
-                                                    '</table>',
-                                                '</tpl>',
+												'<tpl if="this.showEventDetails">',
+                                                    // OVERRIDE for Teamup Calendar, May 9, 2014, sidler@teamup.com
+                                                    // Optimize output for Teamup Calendar
+                                                    '<tpl if="this.eventHasNotes(values)">',
+														// Display event with all details
+														'<table class="ext-cal-evt-agenda-details" cellspacing="0" cellpadding="0" width="100%" border="0">',
+															// Overwrite: Hide location and link. They are shown in the title already.
+															//'<tpl if="this.eventHasLocation(values)">',
+															//    '<tr>',
+															//        '<td nowrap>', this.locationText, ':</td>',
+															//        '<td width="95%">{[values.data[Extensible.calendar.data.EventMappings.Location.name]]}</td>',
+															//    '</tr>',
+															//'</tpl>',
+															//'<tpl if="this.eventHasLink(values)">',
+															//    '<tr>',
+															//        '<td nowrap>', this.webLinkText, ':</td>',
+															//        '<td width="95%"><a href="{[this.getWebLinkMarkup(values)]}" target="_blank">{[this.getWebLinkMarkup(values, true)]}</a></td>',
+															//    '</tr>',
+															//'</tpl>',
+															'<tr>',
+																// Overwrite: Hide label for notes section
+																//'<td nowrap>', this.notesText, ':</td>',
+																'<td width="95%" colspan="2">{[this.getNotesMarkup(values)]}</td>',
+															'</tr>',
+														'</table>',
+													'</tpl>',
+												'</tpl>',
                                             '</td>',
                                     '</tr>',
                                 '</tpl>',
@@ -405,21 +421,37 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
     getTitleMarkup: function(evt) {
         var result,
             M = Extensible.calendar.data.EventMappings,
-            title = evt.data[M.Title.name];
+            title = evt.data[M.Title.name],
+            ec = Ext.String.htmlEncode;
         result = [
             '<span class="ext-cal-evt ', evt.data['_extraCls'], '"><strong>',
-                !title || title.length == 0 ? this.defaultEventTitleText : title,
+                !title || title.length == 0 ? this.defaultEventTitleText : ec(title),
+                // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+                // Add output of read-only icon
+                ' ',
+                this.getReadonlyFlagMarkup(evt),
                 this.getReminderFlagMarkup(evt),
                 this.getRecurrenceFlagMarkup(evt),
             '</strong></span>'
         ];
-        if (evt.data[M.Location.name] && evt.data[M.Location.name] != '' && !this.showEventDetails) {
+       // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+       // Don't hide location in details view.
+       if (evt.data[M.Location.name] && evt.data[M.Location.name] != '') {
             result.push(
                 ' - ',
-                evt.data[M.Location.name]
+                ec(evt.data[M.Location.name])
             );
         }
-        return result.join('');
+       // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+       // Add output of who field.
+       if (evt.data[M.Who.name] && evt.data[M.Who.name] != '') {
+           result.push(
+               ' (',
+               ec(evt.data[M.Who.name]),
+               ')'
+           );
+       }
+       return result.join('');
     },
 
     /**
@@ -474,9 +506,9 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
      * @return {String}
      */
     getNotesMarkup: function(evt) {
-        var M = Extensible.calendar.data.EventMappings,
-            n = evt.data[M.Notes.name];
-        return n.length > this.maxNotesLength ? n.substring(0, this.maxNotesLength-3) + '...' : n;
+        // OVERRIDE for Teamup Calendar, May 10, 2014, sidler@teamup.com
+        // Display full event notes.
+        return '<div class="eventnotes">' + evt.data[Extensible.calendar.data.EventMappings.Notes.name] + '</div>';
     },
 
 
@@ -505,6 +537,17 @@ Ext.define('Extensible.calendar.template.AgendaBody', {
             result = [''];
         }
         return result.join('');
+    },
+
+    /**
+     * Returns the markup for the read-only flag, if an event is read-only. Otherwise an empty string is returned.
+     * OVERRIDE for Teamup Calendar, May 9, 2014, sidler@teamup.com
+     * @param {Extensible.calendar.data.EventModel} evt
+     * @return {String}
+     */
+    getReadonlyFlagMarkup: function(evt) {
+        var M = Extensible.calendar.data.EventMappings;
+        return evt.data[M.IsReadOnly.name] && evt.data[M.IsReadOnly.name] != '' ? '<i title="' + this.readonlyTooltip + '" class="ext-cal-ic ext-cal-ic-ro-gray">&#160;</i>' : '';
     },
 
     /**

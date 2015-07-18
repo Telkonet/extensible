@@ -75,28 +75,16 @@ Ext.define('Extensible.calendar.dd.SchedulerHDropZone', {
         Ext.each(this.shims, function(shim) {
             if (shim) {
                 shim.isActive = false;
+                shim.hide();
             }
         });
-        
-        if (n.calendarId !== null) {
-            shim = this.shims[n.calendarId];
-            if (!shim) {
-                shim = this.createShim(n.calendarId);
-                this.shims[n.calendarId] = shim;
-            }
-            shim.boxInfo = box;
-            shim.isActive = true;
-        }
-        Ext.each(this.shims, function(shim) {
-            if (shim) {
-                if (shim.isActive) {
-                    shim.show();
-                    shim.setBox(shim.boxInfo);
-                } else if (shim.isVisible()) {
-                    shim.hide();
-                }
-            }
-        });
+
+        shim = this.createShim(n.calendarId);
+        this.shims[0] = shim;
+        shim.boxInfo = box;
+        shim.isActive = true;
+        shim.show();
+        shim.setBox(shim.boxInfo);
    },
 
    /**

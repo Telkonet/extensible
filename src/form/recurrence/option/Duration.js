@@ -40,6 +40,31 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
      * Width in pixels of the duration end date field (defaults to 120)
      */
     endDateWidth: 120,
+    /**
+     * @cfg {Number} startDay
+     * The 0-based index for the day on which the calendar week begins (0=Sunday, which is the default)
+     */
+    startDay: 0,
+    /**
+     * @cfg {boolean} optimizeForMobile
+     * If true, this widget is optimized for mobile clients. This includes the following changes:
+     * - Combo Boxes are made non-editable to prevent the keypad being displayed.
+     * - Numeric input fields are defined with inputType = "numeric" to force the display of the numeric keypad.
+     * The config is passed on to sub-components.
+     */
+    optimizeForMobile: false,
+
+    /**
+     * @cfg {String} dateFormat
+     * The date display format used by the date fields (defaults to 'n/j/Y')
+     */
+    endDateFormat: 'n/j/Y',
+
+    /**
+     * @cfg {String} singleLine
+     * Alternative formats for date picker
+     */
+    alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
     
     strings: {
         andContinuing: 'and continuing',
@@ -50,8 +75,6 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
     },
     
     cls: 'extensible-recur-duration',
-    
-    //endDateFormat: null, // inherit by default
     
     getItemConfigs: function() {
         var me = this;
@@ -82,6 +105,7 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
             width: 85,
             triggerAction: 'all',
             forceSelection: true,
+            editable: !this.optimizeForMobile,
             value: me.strings.forever,
             
             store: [
@@ -106,15 +130,15 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
             showToday: false,
             width: me.endDateWidth,
             format: me.endDateFormat || Ext.form.field.Date.prototype.format,
+            altFormats: me.alternativeDateFormats,
             startDay: this.startDay,
             maxValue: me.maxEndDate,
             allowBlank: false,
             hidden: true,
             minValue: Ext.Date.add(startDate, Ext.Date.DAY, me.minDateOffset),
             value: me.getDefaultEndDate(startDate),
-            
             listeners: {
-                'change': Ext.bind(me.onEndDateChange, me)
+                change: Ext.bind(me.onEndDateChange, me)
             }
         };
     },
@@ -125,6 +149,8 @@ Ext.define('Extensible.form.recurrence.option.Duration', {
         return {
             xtype: 'numberfield',
             itemId: me.id + '-duration-num',
+            inputType: 'number',     // Mobile devices uses that to determine the type of keypad to display. Number field needs number keypad.
+            inputCls: 'x-form-text', // Needed because EXTJS assigns class x-form-number to input element, which is unknown.
             value: 5,
             width: 55,
             minValue: me.minOccurrences,

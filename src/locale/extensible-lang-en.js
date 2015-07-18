@@ -43,6 +43,7 @@ Ext.onReady(function() {
     if (exists('Extensible.calendar.CalendarPanel')) {
         Ext.apply(Extensible.calendar.CalendarPanel.prototype, {
             todayText: 'Today',
+            schedulerText: 'Scheduler',
             dayText: 'Day',
             weekText: 'Week',
             monthText: 'Month',
@@ -103,7 +104,10 @@ Ext.onReady(function() {
     if (exists('Extensible.form.field.DateRange')) {
         Ext.apply(Extensible.form.field.DateRange.prototype, {
             toText: 'to',
-            allDayText: 'All day'
+            allDayText: 'All day',
+            dateFormat: 'n/j/Y',
+            alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
+            alternativeTimeFormats: 'g:ia|g:iA|g:i a|g:i A|h:i|g:i|H:i|ga|ha|gA|h a|g a|g A|gi|hi|gia|hia|g|H|gi a|hi a|giA|hiA|gi A|hi A|g.i a|g.i A|G.i|Gi|h.i|hi'
         });
     }
     
@@ -313,6 +317,8 @@ Ext.onReady(function() {
     if (exists('Extensible.form.recurrence.option.Interval')) {
         Ext.apply(Extensible.form.recurrence.option.Interval.prototype, {
             dateLabelFormat: 'l, F j',
+            dateFormat: 'n/j/Y',
+            alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
             strings: {
                 repeatEvery: 'Repeat every',
                 beginning: 'beginning',
@@ -330,6 +336,8 @@ Ext.onReady(function() {
 
     if (exists('Extensible.form.recurrence.option.Duration')) {
         Ext.apply(Extensible.form.recurrence.option.Duration.prototype, {
+            endDateFormat: 'n/j/Y',
+            alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
             strings: {
                 andContinuing: 'and continuing',
                 occurrences: 'occurrences',

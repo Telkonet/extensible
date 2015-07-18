@@ -170,6 +170,17 @@ Ext.define('Extensible.calendar.dd.DropZone', {
                     this.dragStartDate = Ext.Date.clearTime(data.start);
                     this.dragEndDate = Extensible.Date.add(this.dragStartDate, {days: 1, millis: -1, clearTime: true});
                 }
+
+                // OVERRIDE for Teamup Calendar, Jan. 12, 2013, sidler@teamup.com
+                // If user selects several days in the all day header of weekly view or in monthly view, then the
+                // start date and end date have time 0:00 (midnight). Add 23:59 hours to the end date to
+                // represent the time span that the user selected.
+                // Submitted this to Brian as a bug fix on Jan. 27, 2013. See See http://ext.ensible.com/forum/viewtopic.php?f=3&t=699
+                if (Extensible.Date.isMidnight(this.dragEndDate)) {
+                    this.dragEndDate = Extensible.Date.add(this.dragEndDate, {days: 1, minutes: -1});
+                }
+                // End of fix
+
                 this.view.onCalendarEndDrag(this.dragStartDate, this.dragEndDate,
                     Ext.bind(this.onCalendarDragComplete, this));
                 //shims are NOT cleared here -- they stay visible until the handling

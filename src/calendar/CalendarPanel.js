@@ -286,7 +286,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             border: true,
             items: []
         };
-        
+
         this.viewCount = 0;
         
         var text,
@@ -626,7 +626,19 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             startDay: this.startDay,
             ownerCalendarPanel: this
         };
-        
+
+        if(this.showSchedulerView) {
+            var scheduler = Ext.apply({
+                xtype: 'extensible.schedulerview',
+                title: this.schedulerText
+            }, sharedViewCfg);
+
+            scheduler = Ext.apply(Ext.apply(scheduler, this.viewConfig), this.schedulerViewCfg);
+            scheduler.id = this.id+'-scheduler';
+            this.initEventRelay(scheduler);
+            this.add(scheduler);
+        }
+
         if(this.showDayView) {
             var day = Ext.apply({
                 xtype: 'extensible.dayview',
@@ -747,17 +759,10 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             this.initEventRelay(list);
             this.add(list);
         }
-        if(this.showSchedulerView) {
-            var scheduler = Ext.apply({
-                xtype: 'extensible.schedulerview',
-                title: this.schedulerText
-            }, sharedViewCfg);
 
-            scheduler = Ext.apply(Ext.apply(scheduler, this.viewConfig), this.schedulerViewCfg);
-            scheduler.id = this.id+'-scheduler';
-            this.initEventRelay(scheduler);
-            this.add(scheduler);
-        }
+        // OVERRIDE for Teamup Calendar, May, 10, 2014, sidler@teamup.com
+        // - Don't instantiate an event edit form. It is not used.
+        /*
         this.add(Ext.applyIf({
             xtype: 'extensible.eventeditform',
             id: this.id+'-edit',
@@ -771,6 +776,7 @@ Ext.define('Extensible.calendar.CalendarPanel', {
                 'eventcancel': { scope: this, fn: this.onEventCancel }
             }
         }, this.editViewCfg));
+        */
     },
 
     initEventRelay: function(cfg) {
@@ -1010,7 +1016,12 @@ Ext.define('Extensible.calendar.CalendarPanel', {
             if (me.showNavToday) {
                 Ext.getCmp(me.id + '-tb-today').setDisabled(activeItem.isToday());
             }
-            btn.toggle(true);
+
+            if (btn){
+                btn.toggle(true);
+            }
+
+            this.updateNavPicker();
         }
     },
 
@@ -1106,5 +1117,40 @@ Ext.define('Extensible.calendar.CalendarPanel', {
      */
     getActiveView: function() {
         return this.layout.activeItem;
+    },
+
+    /**
+     * Synchronize date picker with calendar view.
+     * This method is called when the view or the view date range is changed.
+     */
+    updateNavPicker: function() {
+        var mainCt = this.up(),
+            leftCt = mainCt.items.getByKey('app-west'),
+            calendarPanel = mainCt.items.getByKey('teamup-calendar-panel'),
+            datePicker = leftCt ? leftCt.items.getByKey('app-nav-picker') : null,
+            highlightDates = [];
+
+        datePicker.highlightDates = null;
+
+        if (datePicker && calendarPanel && calendarPanel.activeView) {
+            var activeView = calendarPanel.activeView,
+                activeViewDateRange = activeView.getViewBounds();
+                activeViewStartDate = activeView.getStartDate();
+
+            if (activeViewDateRange['start']) {
+                var viewStartDt = Ext.clone(activeViewDateRange['start']),
+                    viewEndDt = Ext.clone(activeViewDateRange['end']);
+
+                for (var d = viewStartDt; d <= viewEndDt; d.setDate(d.getDate() + 1)) {
+                    highlightDates.push(Ext.Date.format(d, 'Y-m-d'));
+                }
+
+                if (highlightDates.length > 0) {
+                    datePicker.highlightDates = highlightDates;
+                }
+
+                datePicker.setValue(activeViewStartDate);
+            }
+        }
     }
 });

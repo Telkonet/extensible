@@ -527,6 +527,179 @@ Extensible.applyOverrides = function() {
             }
         });
     }
+
+    Ext.override(Ext.picker.Date, {
+        selectedUpdate: function(date){
+            var me        = this,
+                t         = date.getTime(),
+                cells     = me.cells,
+                cls       = me.selectedCls,
+                cellItems = cells.elements,
+                c,
+                cLen      = cellItems.length,
+                cell,
+                hdates    = me.highlightDates ? ';' + me.highlightDates.join(';') + ';' : false;
+
+            cells.removeCls(cls);
+
+            for (c = 0; c < cLen; c++) {
+                cell = Ext.fly(cellItems[c]);
+
+                if (cell.dom.firstChild.dateValue == t) {
+                    me.fireEvent('highlightitem', me, cell);
+                    cell.addCls(cls);
+
+                    if(me.isVisible() && !me.doCancelFocus){
+                        Ext.fly(cell.dom.firstChild).focus(50);
+                    }
+
+                    break;
+                }
+            }
+
+            // Highlight dates displayed in view
+            var current,
+                cells = me.cells.elements;
+
+            for(var i = 0; i < cells.length; ++i) {
+                cells[i].className = cells[i].className.replace(' x-datepicker-highlight', '');
+
+                if (hdates){
+                    current = new Date(cells[i].title);
+                    if (hdates.indexOf(';' + Ext.Date.format(current, 'Y-m-d') + ';') != -1) {
+                        cells[i].className += ' x-datepicker-highlight';
+                    }
+                }
+            }
+        },
+        fullUpdate: function(date){
+            var me = this,
+                cells = me.cells.elements,
+                textNodes = me.textNodes,
+                disabledCls = me.disabledCellCls,
+                eDate = Ext.Date,
+                i = 0,
+                extraDays = 0,
+                visible = me.isVisible(),
+                sel = +eDate.clearTime(date, true),
+                today = +eDate.clearTime(new Date()),
+                min = me.minDate ? eDate.clearTime(me.minDate, true) : Number.NEGATIVE_INFINITY,
+                max = me.maxDate ? eDate.clearTime(me.maxDate, true) : Number.POSITIVE_INFINITY,
+                ddMatch = me.disabledDatesRE,
+                ddText = me.disabledDatesText,
+                ddays = me.disabledDays ? me.disabledDays.join('') : false,
+                ddaysText = me.disabledDaysText,
+                format = me.format,
+                days = eDate.getDaysInMonth(date),
+                firstOfMonth = eDate.getFirstDateOfMonth(date),
+                startingPos = firstOfMonth.getDay() - me.startDay,
+                previousMonth = eDate.add(date, eDate.MONTH, -1),
+                longDayFormat = me.longDayFormat,
+                disabled,
+                prevStart,
+                current,
+                disableToday,
+                tempDate,
+                setCellClass,
+                html,
+                cls,
+                formatValue,
+                value,
+                hdates = me.highlightDates ? ';' + me.highlightDates.join(';') + ';' : false;
+
+            if (startingPos < 0) {
+                startingPos += 7;
+            }
+
+            days += startingPos;
+            prevStart = eDate.getDaysInMonth(previousMonth) - startingPos;
+            current = new Date(previousMonth.getFullYear(), previousMonth.getMonth(), prevStart, me.initHour);
+
+            if (me.showToday) {
+                tempDate = eDate.clearTime(new Date());
+                disableToday = (tempDate < min || tempDate > max ||
+                (ddMatch && format && ddMatch.test(eDate.dateFormat(tempDate, format))) ||
+                (ddays && ddays.indexOf(tempDate.getDay()) != -1));
+
+                if (!me.disabled) {
+                    me.todayBtn.setDisabled(disableToday);
+                    me.todayKeyListener.setDisabled(disableToday);
+                }
+            }
+
+            setCellClass = function(cell, cls){
+                cell.className = cell.className.replace('x-datepicker-highlight','');
+                disabled = false;
+                value = +eDate.clearTime(current, true);
+                cell.title = eDate.format(current, longDayFormat);
+                // store dateValue number as an expando
+                cell.firstChild.dateValue = value;
+                if(value == today){
+                    cls += ' ' + me.todayCls;
+                    cell.title = me.todayText;
+                }
+                if(value == sel){
+                    cls += ' ' + me.selectedCls;
+                    me.fireEvent('highlightitem', me, cell);
+                    if (visible && me.floating) {
+                        Ext.fly(cell.firstChild).focus(50);
+                    }
+                }
+                // disabling, once the cell is disabled we can short circuit
+                // the other more expensive checks
+                if(value < min) {
+                    cls += ' ' + disabledCls;
+                    cell.title = me.minText;
+                    disabled = true;
+                }
+                if (!disabled && value > max) {
+                    cls += ' ' + disabledCls;
+                    cell.title = me.maxText;
+                    disabled = true;
+                }
+                if (!disabled && ddays) {
+                    if(ddays.indexOf(current.getDay()) !== -1){
+                        cell.title = ddaysText;
+                        cls += ' ' + disabledCls;
+                        disabled = true;
+                    }
+                }
+                if(!disabled && ddMatch && format){
+                    formatValue = eDate.dateFormat(current, format);
+                    if(ddMatch.test(formatValue)){
+                        cell.title = ddText.replace('%0', formatValue);
+                        cls += ' ' + disabledCls;
+                    }
+                }
+                if (hdates){
+                    if (hdates.indexOf(';' + eDate.format(current, 'Y-m-d') + ';') != -1) {
+                        cls += ' x-datepicker-highlight';
+                    }
+                }
+
+                cell.className = cls + ' ' + me.cellCls;
+            };
+
+            for(; i < me.numDays; ++i) {
+                if (i < startingPos) {
+                    html = (++prevStart);
+                    cls = me.prevCls;
+                } else if (i >= days) {
+                    html = (++extraDays);
+                    cls = me.nextCls;
+                } else {
+                    html = i - startingPos + 1;
+                    cls = me.activeCls;
+                }
+                textNodes[i].innerHTML = html;
+                current.setDate(current.getDate() + 1);
+                setCellClass(cells[i], cls);
+            }
+
+            me.monthBtn.setText(Ext.Date.format(date, me.monthYearFormat));
+        }
+    });
+
 };
 
 Ext.onReady(Extensible.applyOverrides);

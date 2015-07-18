@@ -51,7 +51,12 @@ Ext.define('Extensible.calendar.util.WeekEventRenderer', {
             // The view passes a template function to use when rendering the events.
             // These are special data values that get passed back to the template.
             eventData._weekIndex = weekIndex;
-            eventData._renderAsAllDay = eventData[eventMappings.IsAllDay.name] || event.isSpanStart;
+
+            // Modification for Teamup Calendar. We render hourly events like all-day events with a solid background.
+            // June 1, 2015, sidler@teamup.com
+            // eventData._renderAsAllDay = eventData[eventMappings.IsAllDay.name] || event.isSpanStart;
+            eventData._renderAsAllDay = true;
+
             eventData.spanLeft = eventData[eventMappings.StartDate.name].getTime() < startOfWeek.getTime();
             eventData.spanRight = eventEndDate.getTime() > endOfWeek.getTime();
             eventData.spanCls = (eventData.spanLeft ? (eventData.spanRight ?

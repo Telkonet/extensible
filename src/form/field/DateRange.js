@@ -47,6 +47,36 @@ Ext.define('Extensible.form.field.DateRange', {
      */
     startDay: 0,
 
+    /**
+     * @cfg {Ext.Date | null} startDate
+     * Store the initial start date
+     */
+    startDate: null,
+
+    /**
+     * @cfg {String} singleLine
+     * Alternative formats for date pickers
+     */
+    alternativeDateFormats: 'm/d/Y|n/j/Y|n/j/y|m/j/y|n/d/y|m/j/Y|n/d/Y|m-d-y|n-j-y|m-d-Y|n-j-Y|m/d|m-d|md|mdy|mdY|d|j|Y-m-d|n-j|n/j',
+
+    /**
+     * @cfg {String} singleLine
+     * Alternative formats for time pickers
+     */
+    alternativeTimeFormats: 'g:ia|g:iA|g:i a|g:i A|h:i|g:i|H:i|ga|ha|gA|h a|g a|g A|gi|hi|gia|hia|g|H|gi a|hi a|giA|hiA|gi A|hi A|g.i a|g.i A|G.i|Gi|h.i|hi',
+
+    /**
+     * @cfg {Ext.Date | null} previousStartDate
+     * Store the initial start date
+     */
+    previousStartDate: null,
+
+    /**
+     * @cfg {Ext.Date | null} previousStartTime
+     * Store the initial start date
+     */
+    previousStartTime: null,
+
     fieldLayout: {
         type: 'hbox',
         defaultMargins: { top: 0, right: 5, bottom: 0, left: 0 }
@@ -63,7 +93,7 @@ Ext.define('Extensible.form.field.DateRange', {
         me.timeFormat = me.timeFormat || (Extensible.Date.use24HourTime ? 'G:i' : 'g:i A');
         
         me.addCls('ext-dt-range');
-        
+
         if (me.singleLine) {
             me.layout = me.fieldLayout;
             me.items = me.getFieldConfigs();
@@ -91,7 +121,7 @@ Ext.define('Extensible.form.field.DateRange', {
         me.callParent(arguments);
         me.initRefs();
     },
-    
+
     initRefs: function() {
         var me = this;
         me.startDate = me.down('#' + me.id + '-start-date');
@@ -128,12 +158,34 @@ Ext.define('Extensible.form.field.DateRange', {
             xtype: 'datefield',
             id: this.id + '-start-date',
             format: this.dateFormat,
-            width: 100,
+            altFormats: this.alternativeDateFormats,
+            // OVERRIDE: Save space
+            // width: 100,
+            width: 94,
             startDay: this.startDay,
+            validator: function(value){
+                var me = this.up();
+
+                if (me.endDate){
+                    // start date has been changed; change also the min value of end date & time fields
+                    me.endDate.setMinValue(this.getValue());
+                    me.endDate.validate();
+                }
+
+                return true;
+            },
             listeners: {
-                'change': {
-                    fn: function() {
-                        this.onFieldChange('date', 'start');
+                select: {
+                    fn: function(field, value){
+                        this.onFieldChange('date', 'start', value, this.previousStartDate);
+                        this.previousStartDate = value;
+                    },
+                    scope: this
+                },
+                blur:{
+                    fn: function(field, event){
+                        this.onFieldChange('date', 'start', field.getValue(), this.previousStartDate);
+                        this.previousStartDate = field.getValue();
                     },
                     scope: this
                 }
@@ -148,12 +200,23 @@ Ext.define('Extensible.form.field.DateRange', {
             hidden: this.showTimes === false,
             labelWidth: 0,
             hideLabel: true,
-            width: 90,
+            // OVERRIDE: Save space
+            // width: 90,
+            width: 80,
             format: this.timeFormat,
+            altFormats: this.alternativeTimeFormats,
             listeners: {
-                'select': {
-                    fn: function() {
-                        this.onFieldChange('time', 'start');
+                select: {
+                    fn: function(field, value){
+                        this.onFieldChange('time', 'start', value, this.previousStartTime);
+                        this.previousStartTime = value;
+                    },
+                    scope: this
+                },
+                blur:{
+                    fn: function(field, event){
+                        this.onFieldChange('time', 'start', field.getValue(), this.previousStartTime);
+                        this.previousStartTime = field.getValue();
                     },
                     scope: this
                 }
@@ -166,16 +229,26 @@ Ext.define('Extensible.form.field.DateRange', {
             xtype: 'datefield',
             id: this.id + '-end-date',
             format: this.dateFormat,
+            altFormats: this.alternativeDateFormats,
             hideLabel: true,
-            width: 100,
+            // OVERRIDE: Save space
+            // width: 100,
+            width: 94,
             startDay: this.startDay,
-            listeners: {
-                'change': {
-                    fn: function() {
-                        this.onFieldChange('date', 'end');
-                    },
-                    scope: this
+            //minValue: new Date(), // disable the past days
+            validateOnChange: true,
+            validateOnBlur: true,
+            validator: function(value){
+                var me = this.up();
+
+                if (me.startDate){
+                    // disable past dates in end date picker
+                    this.setMinValue(me.startDate.getValue());
+                    // validate the end time field: the current value might become invalid
+                    me.endTime.validate();
                 }
+
+                return true;
             }
         };
     },
@@ -187,14 +260,39 @@ Ext.define('Extensible.form.field.DateRange', {
             hidden: this.showTimes === false,
             labelWidth: 0,
             hideLabel: true,
-            width: 90,
+            // OVERRIDE: Save space
+            // width: 100,
+            width: 80,
             format: this.timeFormat,
+            altFormats: this.alternativeTimeFormats,
+            validateOnChange: true,
+            validateOnBlur: true,
+            validator: function(value){
+                var me = this.up();
+
+                if (me.startDate && me.endDate){
+                    var startDate = me.startDate.getValue(),
+                        endDate = me.endDate.getValue();
+
+                    if ((startDate instanceof Date) && (endDate instanceof Date)){
+                        if (me.areEqual(startDate, endDate)){
+                            this.setMinValue(me.startTime.getValue());
+                        } else {
+                            this.setMinValue(null);
+                        }
+                    }
+                }
+
+                return true;
+            },
             listeners: {
-                'select': {
-                    fn: function() {
-                        this.onFieldChange('time', 'end');
-                    },
-                    scope: this
+                expand: {
+                    fn:  function(field) {
+                        var item = this.findRecordByDisplay(this.getRawValue());
+                        if (item){
+                            this.select(item);
+                        }
+                    }
                 }
             }
         };
@@ -253,12 +351,12 @@ Ext.define('Extensible.form.field.DateRange', {
         return me.calculatedSingleLine;
     },
     
-    onFieldChange: function(type, startend) {
-        this.checkDates(type, startend);
+    onFieldChange: function(type, startend, newValue, oldValue) {
+        this.checkDates(type, startend, newValue, oldValue);
         this.fireEvent('change', this, this.getValue());
     },
         
-    checkDates: function(type, startend) {
+    checkDates: function(type, startend, newValue, oldValue) {
         var me = this,
             typeCap = type === 'date' ? 'Date' : 'Time',
             startField = this['start' + typeCap],
@@ -266,16 +364,37 @@ Ext.define('Extensible.form.field.DateRange', {
             startValue = me.getDT('start'),
             endValue = me.getDT('end');
 
-        if(startValue > endValue) {
-            if(startend === 'start') {
-                endField.setValue(startValue);
-            }else{
-                startField.setValue(endValue);
-                me.checkDates(type, 'start');
+        if(type === 'date') {
+            if (startend === 'start'){
+                var diffDays;
+
+                if (endValue && newValue && oldValue){
+                    diffDays = this.dateDiffInDays(newValue, oldValue);
+
+                    if (diffDays){
+                        endValue.setDate(endValue.getDate() + diffDays);
+                        this['endDate'].setValue(endValue);
+                    }
+                }
             }
         }
-        if(type === 'date') {
-            me.checkDates('time', startend);
+        else if (type == 'time'){
+            if (startend == 'start'){
+                var diffMinutes;
+
+                if (newValue && oldValue){
+                    diffMinutes = this.timeDiffInMinutes(newValue, oldValue);
+
+                    // Add(or remove) minutes to current end date; Update both end date & time fields
+                    var newDate = new Date(endValue.getTime() + diffMinutes * 60000);
+                    this['endTime'].setValue(newDate);
+                    this['endDate'].setValue(newDate);
+
+                    this['endDate'].validate();
+                    this['endTime'].validate();
+
+                }
+            }
         }
     },
     
@@ -297,7 +416,7 @@ Ext.define('Extensible.form.field.DateRange', {
             this.allDay.getValue()
         ];
     },
-    
+
     // getValue helper
     getDT: function(startend) {
         var time = this[startend+'Time'].getValue(),
@@ -356,6 +475,9 @@ Ext.define('Extensible.form.field.DateRange', {
             }
             me.allDay.setValue(!!v[eventMappings.IsAllDay.name]);
         }
+
+        me.previousStartDate = me.startDate.getValue();
+        me.previousStartTime = me.startTime.getValue();
     },
     
     // setValue helper
@@ -402,7 +524,39 @@ Ext.define('Extensible.form.field.DateRange', {
         Ext.destroy(this.fieldCt);
         this.callParent(arguments);
     },
-    
+
+    dateDiffInDays: function (a, b) {
+        if ((a instanceof Date) && (b instanceof Date)) {
+            var msPerDay = 1000 * 60 * 60 * 24,
+                utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate()),
+                utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+            return Math.ceil((utc1 - utc2) / msPerDay);
+        }
+        return null;
+    },
+
+    timeDiffInMinutes: function(a, b){
+        var msPerMinute = 1000 * 60,
+            diff = a.getTime() - b.getTime(); // this is a time in milliseconds
+
+        return Math.ceil(diff / msPerMinute);
+    },
+
+    areEqual: function(a, b){
+        if (!a || !b) return null;
+
+        if (!(a instanceof Date)) {
+            a = new Date(a);
+        }
+
+        if (!(b instanceof Date)) {
+            b = new Date(b);
+        }
+
+        return (a.getFullYear() == b.getFullYear() && a.getMonth() == b.getMonth() && a.getDate() == b.getDate());
+    },
+
     /**
      * @method getRawValue
      * @hide

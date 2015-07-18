@@ -91,8 +91,12 @@ Ext.define('Extensible.calendar.view.MonthDayDetail', {
         evts.each(function(evt) {
             var item = evt.data,
                 M = Extensible.calendar.data.EventMappings;
-                
-            item._renderAsAllDay = item[M.IsAllDay.name] || Extensible.Date.diffDays(item[M.StartDate.name], item[M.EndDate.name]) > 0;
+
+            // Modification for Teamup Calendar. We render hourly events like all-day events with a solid background.
+            // June 1, 2015, sidler@teamup.com
+            //item._renderAsAllDay = item[M.IsAllDay.name] || Extensible.Date.diffDays(item[M.StartDate.name], item[M.EndDate.name]) > 0;
+            item._renderAsAllDay = true;
+
             item.spanLeft = Extensible.Date.diffDays(item[M.StartDate.name], this.date) > 0;
             item.spanRight = Extensible.Date.diffDays(this.date, item[M.EndDate.name]) > 0;
             item.spanCls = (item.spanLeft ? (item.spanRight ? 'ext-cal-ev-spanboth' :
