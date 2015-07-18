@@ -151,8 +151,8 @@ Ext.define('Extensible.calendar.template.BoxLayout', {
                         (nextMonth ? ' ' + nextMonthCls : '') +
                         (isWeekend && weekendCls ? ' ' + weekendCls : '')
                 });
-                
-                dt = Extensible.Date.add(dt, {days: 1});
+
+                dt = Extensible.Date.getDayBeginning(dt, 1);
                 first = false;
             }
         }

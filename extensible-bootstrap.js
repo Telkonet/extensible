@@ -121,7 +121,7 @@ Ext.define('Extensible', {
         diffDays: function(start, end) {
             // All calculations are in milliseconds
             var day = 1000 * 60 * 60 * 24,
-                clear = this.clearTime,
+                clear = Ext.Date.clearTime,
                 timezoneOffset = (start.getTimezoneOffset() - end.getTimezoneOffset()) * 60 * 1000,
                 diff = clear(end, true).getTime() - clear(start, true).getTime() + timezoneOffset,
                 days = Math.round(diff / day);
@@ -275,7 +275,7 @@ Ext.define('Extensible', {
          * @return {Date} The current date, with time 00:00
          */
         today: function() {
-            return this.clearTime(new Date());
+            return Ext.Date.clearTime(new Date());
         },
         
         /**
@@ -344,54 +344,12 @@ Ext.define('Extensible', {
                 newDt = dateAdd(newDt, ExtDate.MILLI, o.millis);
             }
              
-            return o.clearTime ? this.clearTime(newDt): newDt;
+            return o.clearTime ? ExtDate.clearTime(newDt): newDt;
         },
-
-        /*
+        
         clearTime: function(dt, clone) {
             return Ext.Date.clearTime(dt, clone);
         },
-        */
-
-       /**
-        * Attempts to clear all time information from this Date by setting the time to midnight of the same day,
-        * automatically adjusting for Daylight Saving Time (DST) where applicable.
-        *
-        * This implementation is a copy of Ext.Date.clearTime() but fixes a bug in the way DST is handled to work
-        * around a bug in Safari. Safari does not properly handle the DST start in the Sydney and Auckland time zones.
-        *
-        * @param {Date} date The date
-        * @param {Boolean} clone true to create a clone of this date, clear the time and return it (defaults to false).
-        * @return {Date} this or the clone.
-        */
-       clearTime : function(date, clone) {
-           if (clone) {
-               return this.clearTime(Ext.Date.clone(date));
-           }
-
-           // get current date before clearing time
-           var d = date.getDate();
-
-           // clear time
-           date.setHours(0);
-           date.setMinutes(0);
-           date.setSeconds(0);
-           date.setMilliseconds(0);
-
-           if (date.getDate() != d) { // account for DST (i.e. day of month changed when setting hour = 0)
-               // note: DST adjustments are assumed to occur in multiples of 1 hour (this is almost always the case)
-               // refer to http://www.timeanddate.com/time/aboutdst.html for the (rare) exceptions to this rule
-
-               // increment hour until cloned date == current date
-               for (var hr = 1; date.getDate() != d; hr++) {
-                   date.setDate(d);
-                   date.setHours(hr);
-               }
-           }
-
-           return date;
-       },
-
 
        /**
         * For the passed Date object, function calculates the beginning of the day and returns it as a new Date object.
@@ -424,9 +382,10 @@ dt = Extensible.getDayBeginning(currentDt, 7);
         * from the passed date.
         */
         getDayBeginning: function(dt, ndays) {
+            var D = Ext.Date;
             ndays = (ndays === undefined) ? 0 : ndays;
-            return this.clearTime(Ext.Date.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
-       },
+            return D.clearTime(D.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
+        },
 
        /**
         * For the passed Date object, function calculates the end of the day and returns it as a new Date object.
@@ -472,7 +431,7 @@ dt = Extensible.getDayEnd(currentDt, 7);
             } else {
                 unit = D. MILLI;
             }
-            return D.add(this.clearTime(D.add(dt, D.HOUR, 24 * ndays + 36 - dt.getHours()), false), unit, -1);
+            return D.add(D.clearTime(D.add(dt, D.HOUR, 24 * ndays + 36 - dt.getHours()), false), unit, -1);
         }
     }
 });
@@ -505,17 +464,6 @@ Extensible.applyOverrides = function() {
             }
         });
     }
-
-    Ext.form.field.Time.override({
-       isEqual: function(date1, date2){
-           // check we have 2 date objects
-           if ((date1 instanceof Date) && (date2 instanceof Date)) {
-               return (date1.getTime() === date2.getTime());
-           }
-           // one or both isn't a date, only equal if both are false
-           return !(date1 || date2);
-       }
-    });
     
     // This was fixed in Ext 4.0.4?
     Ext.Component.override({
@@ -556,31 +504,31 @@ Extensible.applyOverrides = function() {
                         i       = 0,
                         length  = root.length,
                         node, id, record;
-
+                        
                     if (!root.length && Ext.isObject(root)) {
                         root = [root];
                         length = 1;
                     }
-
+            
                     for (; i < length; i++) {
                         node   = root[i];
                         values = me.extractValues(node);
-
+                        
                         // Assuming that the idProperty is intended to use the id mapping, if
                         // available, getId() should read from the mapped values not the raw values.
                         // Using the non-mapped id causes updates later to silently fail since
                         // the updated data is replaced by id.
                         //id = me.getId(node);
                         id = me.getId(values);
-
+                        
                         record = new Model(values, id, node);
                         records.push(record);
-
+                            
                         if (me.implicitIncludes) {
                             me.readAssociated(record, node);
                         }
                     }
-
+            
                     return records;
                 }
             });
@@ -612,20 +560,11 @@ Extensible.applyOverrides = function() {
     if (Ext.data && Ext.data.proxy && Ext.data.proxy.Memory) {
         Ext.data.proxy.Memory.override({
             updateOperation: function(operation, callback, scope) {
-                Ext.each(operation.getRecords(), function(rec) {
-                    // Synchronize record data (after update/create mapped fields are not updated)
-                    Ext.iterate(Extensible.calendar.data.EventMappings, function (key, value) {
-                        if (key != Extensible.calendar.data.EventMappings.EventId.name && rec.get(value.name)) {
-                            rec.set(value.mapping, rec.get(value.name));
-                        }
-                    });
-
+                Ext.each(operation.records, function(rec) {
                     rec.commit();
                 });
-
-                operation.setCompleted(true);
-                operation.setSuccessful(true);
-
+                operation.setCompleted();
+                operation.setSuccessful();
                 Ext.callback(callback, scope || this, [operation]);
             },
             create: function() {
@@ -634,7 +573,7 @@ Extensible.applyOverrides = function() {
             update: function() {
                 this.updateOperation.apply(this, arguments);
             },
-            erase: function() {
+            destroy: function() {
                 this.updateOperation.apply(this, arguments);
             }
         });

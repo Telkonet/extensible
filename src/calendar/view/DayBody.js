@@ -466,7 +466,9 @@ Ext.define('Extensible.calendar.view.DayBody', {
                 });
                 evts.push({
                     data: this.getTemplateEventData(item),
-                    date: Extensible.Date.add(this.viewStart, {days: day})
+                    // Find day beginning in a way that is DST safe
+                    // date: Extensible.Date.add(this.viewStart, {days: day})
+                    date: Extensible.Date.add(this.viewStart, {days: day, hours: 12, clearTime: true})
                 });
             }
         }
@@ -657,7 +659,8 @@ Ext.define('Extensible.calendar.view.DayBody', {
             if(el.id && el.id.indexOf(this.dayElIdDelimiter) > -1) {
                 alert('DayBody.onClick unknown case!!');
                 var dt = this.getDateFromId(el.id, this.dayElIdDelimiter);
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt)));
+                // Add 12:00 to date to avoid wrong dates on days when DST starts.
+                this.onDayClick(Ext.Date.parseDate(dt + ' 12:00', 'Ymd G:i'), true, Ext.get(this.getDayId(dt)));
                 return;
             }
         }
