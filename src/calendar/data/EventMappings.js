@@ -79,41 +79,48 @@ Extensible.calendar.data.EventMappings = {
     EventId: {
         name:    'EventId',
         mapping: 'id',
-        type:    'string'
+        type:    'string',
+        critical: true
     },
     CalendarId: {
         name:    'CalendarId',
         mapping: 'cid',
-        type:    'string'
+        type:    'string',
+        critical: true
     },
     Title: {
         name:    'Title',
         mapping: 'title',
-        type:    'string'
+        type:    'string',
+        critical: true
     },
     StartDate: {
         name:       'StartDate',
         mapping:    'start',
         type:       'date',
-        dateFormat: 'c' // ISO 8601 Format. Includes TZ info since EXT JS 4.1.1, for example 2012-07-25T05:00:00+02:00
-        // dateFormat: 'Y-m-d\\TH:i:s' // ISO 8601 format without timezone information.
+        //dateFormat: 'c', // ISO 8601 Format. Includes TZ info since EXT JS 4.1.1, for example 2012-07-25T05:00:00+02:00
+        dateFormat: 'Y-m-d\\TH:i:s', // ISO 8601 format without timezone information.
+        critical: true
     },
     EndDate: {
         name:       'EndDate',
         mapping:    'end',
         type:       'date',
-        dateFormat: 'c' // ISO 8601 Format. Includes TZ info since EXT JS 4.1.1, for example 2012-07-25T05:00:00+02:00
-        // dateFormat: 'Y-m-d\\TH:i:s' // ISO 8601 format without timezone information.
+        //dateFormat: 'c', // ISO 8601 Format. Includes TZ info since EXT JS 4.1.1, for example 2012-07-25T05:00:00+02:00
+        dateFormat: 'Y-m-d\\TH:i:s', // ISO 8601 format without timezone information.
+        critical: true
     },
     Location: {
         name:    'Location',
         mapping: 'loc',
-        type:    'string'
+        type:    'string',
+        critical: true
     },
     Notes: {
         name:    'Notes',
         mapping: 'notes',
-        type:    'string'
+        type:    'string',
+        critical: true
     },
     // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
     // URLs are currently not supported.
@@ -127,19 +134,22 @@ Extensible.calendar.data.EventMappings = {
     IsAllDay: {
         name:    'IsAllDay',
         mapping: 'ad',
-        type:    'boolean'
+        type:    'boolean',
+        critical: true
     },
     Reminder: {
         name:    'Reminder',
         mapping: 'rem',
-        type:    'string'
+        type:    'string',
+        critical: true
     },
     // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
     // Introduced new field 'Who'
     Who:  {
-    name: 'Who',
-    mapping: 'who',
-    type: 'string'
+        name: 'Who',
+        mapping: 'who',
+        type: 'string',
+        critical: true
     },
 
     // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
@@ -147,7 +157,8 @@ Extensible.calendar.data.EventMappings = {
     IsReadOnly: {
         name: 'IsReadOnly',
         mapping: 'readonly',
-        type: 'boolean'
+        type: 'boolean',
+        critical: true
     },
 
     // Customization for Teamup Calendar. May 9, 2014, sidler@teamup.com
@@ -155,7 +166,8 @@ Extensible.calendar.data.EventMappings = {
     Version:  {
         name: 'Version',
         mapping: 'ver',
-        type: 'string'
+        type: 'string',
+        critical: true
     },
 
 
@@ -178,7 +190,8 @@ Extensible.calendar.data.EventMappings = {
         name:    'RRule',
         mapping: 'rrule',
         type:    'string',
-        allowNull: true
+        //allowNull: true,
+        critical: true
     },
     
     // When using recurrence, the standard EndDate value will be the end date
@@ -193,7 +206,8 @@ Extensible.calendar.data.EventMappings = {
         mapping:      'duration',
         defaultValue: -1,   // the standard int default of 0 is actually a valid duration
         allowNull:      true, // Without this, the null returned from the server is coerced to 0
-        type:         'int'
+        type:         'int',
+        critical: true
     },
 
     // This is used to associate recurring event instances back to their
@@ -219,8 +233,10 @@ Extensible.calendar.data.EventMappings = {
         name:       'RSeriesStartDate',
         mapping:    'rsstart',
         type:       'date',
-        dateFormat: 'c',
-        allowNull:    true
+        //dateFormat: 'c',
+        dateFormat: 'Y-m-d\\TH:i:s', // ISO 8601 format without timezone information.
+        allowNull:    true,
+        critical: true
     },
     
     // If the start date of a recurring event instance is changed and then saved
@@ -233,8 +249,10 @@ Extensible.calendar.data.EventMappings = {
         name:       'RInstanceStartDate',
         mapping:    'ristart',
         type:       'date',
-        dateFormat: 'c',
-        allowNull:    true
+        //dateFormat: 'c',
+        dateFormat: 'Y-m-d\\TH:i:s', // ISO 8601 format without timezone information.
+        allowNull:    true,
+        critical: true
     },
     
     // Recurrence edit mode ('single', 'future' or 'all'). This is transient data
@@ -245,6 +263,7 @@ Extensible.calendar.data.EventMappings = {
         name:    'REditMode',
         mapping: 'redit',
         type:    'string',
-        allowNull: true
+        allowNull: true,
+        critical: true
     }
 };
