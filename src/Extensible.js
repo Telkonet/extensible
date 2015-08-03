@@ -424,8 +424,9 @@ dt = Extensible.getDayBeginning(currentDt, 7);
         * from the passed date.
         */
         getDayBeginning: function(dt, ndays) {
+            var D = Ext.Date;
             ndays = (ndays === undefined) ? 0 : ndays;
-            return this.clearTime(Ext.Date.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
+            return this.clearTime(D.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
        },
 
        /**
