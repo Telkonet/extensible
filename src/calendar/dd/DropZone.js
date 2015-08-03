@@ -30,13 +30,19 @@ Ext.define('Extensible.calendar.dd.DropZone', {
         var D = Extensible.Date,
             eventDragText = (e.ctrlKey || e.altKey) ? this.copyText: this.moveText,
             start = data.type === 'eventdrag' ? n.date: D.min(data.start, n.date),
-            end = data.type === 'eventdrag' ? D.add(n.date, {days: D.diffDays(data.eventStart, data.eventEnd)}) :
-                D.max(data.start, n.date);
-        
+            //end = data.type === 'eventdrag' ? D.add(n.date, {days: D.diffDays(data.eventStart, data.eventEnd)}) :
+            //    D.max(data.start, n.date);
+            end = data.type === 'eventdrag' ? D.getDayEnd(n.date, D.diffDays(data.eventStart, data.eventEnd)) :
+                D.getDayEnd(D.max(data.start, n.date));
+            // console.log('start: ' + start + ' end: ' + end);
+
         if (!this.dragStartDate || !this.dragEndDate || (D.diffDays(start, this.dragStartDate) !== 0) ||
                 (D.diffDays(end, this.dragEndDate) !== 0)) {
             this.dragStartDate = start;
-            this.dragEndDate = D.add(end, {days: 1, millis: -1, clearTime: true});
+            // TODO What is the purpose of this line?
+            // this.dragEndDate = D.add(end, {days: 1, millis: -1, clearTime: true});
+            this.dragEndDate = end;
+            // console.log('dragStartDate: ' + this.dragStartDate + ' dragEndDate: ' + this.dragEndDate);
             this.shim(start, end);
             
             var range = Ext.Date.format(start, this.dateFormat);
@@ -97,7 +103,9 @@ Ext.define('Extensible.calendar.dd.DropZone', {
                 }
                 shim.isActive = true;
             }
-            dt = D.add(dt, {days: 1});
+            // Increment date
+            dt = D.getDayBeginning(dt, 1)
+
         }
         
         Ext.each(this.shims, function(shim) {
@@ -158,7 +166,19 @@ Ext.define('Extensible.calendar.dd.DropZone', {
         if (n && data) {
             if (data.type === 'eventdrag') {
                 var rec = this.view.getEventRecordFromEl(data.ddel),
+                    dt;
+                    // dt = Extensible.Date.copyTime(rec.data[Extensible.calendar.data.EventMappings.StartDate.name], n.date);
+
+                // New event start date is the first day of the drag zone (stored in n.date). If event is an hourly
+                // event, copy start time of original event to n.date to form the new event start date and time.
+                // If event is an all-day event, n.date is the new event start time. Note that n.date usually has its
+                // time set to midnight (12:00am) but for days when the DST starts in time zone where the DST start
+                // at midnight, time can also be 01:00am.
+                if (rec.data[Extensible.calendar.data.EventMappings.IsAllDay.name]) {
+                    dt = n.date;
+                } else {
                     dt = Extensible.Date.copyTime(rec.data[Extensible.calendar.data.EventMappings.StartDate.name], n.date);
+                }
                     
                 this.view.onEventDrop(rec, dt, (e.ctrlKey || e.altKey) ? 'copy': 'move');
                 this.onCalendarDragComplete();
@@ -167,7 +187,7 @@ Ext.define('Extensible.calendar.dd.DropZone', {
             if (data.type === 'caldrag') {
                 if (!this.dragEndDate) {
                     // this can occur on a long click where drag starts but onNodeOver is never executed
-                    this.dragStartDate = Ext.Date.clearTime(data.start);
+                    this.dragStartDate = Extensible.Date.clearTime(data.start);
                     this.dragEndDate = Extensible.Date.add(this.dragStartDate, {days: 1, millis: -1, clearTime: true});
                 }
 

@@ -451,8 +451,10 @@ Ext.define('Extensible.calendar.view.Month', {
             dayL = Math.floor(((x - box.x - padding.width) / daySize.width)),
             dayT = Math.floor(((y - box.y - padding.height) / daySize.height)),
             days = (dayT * 7) + dayL,
-            dt = Extensible.Date.add(this.viewStart, {days: days});
-        
+            // Add days in a way that is DST save
+            //dt = Extensible.Date.add(this.viewStart, {days: days});
+            dt = Extensible.Date.add(this.viewStart, {days: days, hours: 12, clearTime: true});
+
         return {
             date: dt,
             el: this.getDayEl(dt)
@@ -566,7 +568,9 @@ Ext.define('Extensible.calendar.view.Month', {
         
         if (el) {
             dt = el.id.split(this.moreElIdDelimiter)[1];
-            this.onMoreClick(Ext.Date.parseDate(dt, 'Ymd'));
+            //alert('Month.onClick() 1: parseDate(): ' + dt + ' 12:00');
+            // Make dt point to noon of clicked day to avoid DST issues.
+            this.onMoreClick(Ext.Date.parseDate(dt + ' 12:00', 'Ymd G:i'));
             return;
         }
         
@@ -574,7 +578,9 @@ Ext.define('Extensible.calendar.view.Month', {
         
         if (el) {
             dt = el.id.split(this.weekLinkIdDelimiter)[1];
-            this.fireEvent('weekclick', this, Ext.Date.parseDate(dt, 'Ymd'));
+            //alert('Month.onClick() 2: parseDate(): ' + dt + ' 12:00');
+            // Make dt point to noon of clicked day to avoid DST issues.
+            this.fireEvent('weekclick', this, Ext.Date.parseDate(dt + ' 12:00', 'Ymd G:i'));
             return;
         }
         
@@ -590,11 +596,10 @@ Ext.define('Extensible.calendar.view.Month', {
                 var parts = el.id.split(this.dayElIdDelimiter);
                 dt = parts[parts.length-1];
                     
-                //this.fireEvent('dayclick', this, Ext.Date.parseDate(dt, 'Ymd'), false, Ext.get(this.getDayId(dt)));
-                // OVERRIDE for Teamup Calendar, 28. Feb. 2014, sidler@teamup.com
-                // - Make new events all-day by default.
-                //this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), false, Ext.get(this.getDayId(dt)));
-                this.onDayClick(Ext.Date.parseDate(dt, 'Ymd'), true, Ext.get(this.getDayId(dt)));
+                //this.fireEvent('dayclick', this, Ext.Date.parseDate(dt + ' 12:00', 'Ymd G:i'), false, Ext.get(this.getDayId(dt)));
+                // Make dt point to noon of clicked day to avoid DST issues.
+                //alert('Month.onClick() 3: parseDate(): ' + dt + ' 12:00');
+                this.onDayClick(Ext.Date.parseDate(dt + ' 12:00', 'Ymd G:i'), true, Ext.get(this.getDayId(dt)));
                 return;
             }
         }

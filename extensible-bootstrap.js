@@ -121,7 +121,7 @@ Ext.define('Extensible', {
         diffDays: function(start, end) {
             // All calculations are in milliseconds
             var day = 1000 * 60 * 60 * 24,
-                clear = this.clearTime,
+                clear = Ext.Date.clearTime,
                 timezoneOffset = (start.getTimezoneOffset() - end.getTimezoneOffset()) * 60 * 1000,
                 diff = clear(end, true).getTime() - clear(start, true).getTime() + timezoneOffset,
                 days = Math.round(diff / day);
@@ -275,7 +275,7 @@ Ext.define('Extensible', {
          * @return {Date} The current date, with time 00:00
          */
         today: function() {
-            return this.clearTime(new Date());
+            return Ext.Date.clearTime(new Date());
         },
         
         /**
@@ -344,54 +344,12 @@ Ext.define('Extensible', {
                 newDt = dateAdd(newDt, ExtDate.MILLI, o.millis);
             }
              
-            return o.clearTime ? this.clearTime(newDt): newDt;
+            return o.clearTime ? ExtDate.clearTime(newDt): newDt;
         },
-
-        /*
+        
         clearTime: function(dt, clone) {
             return Ext.Date.clearTime(dt, clone);
         },
-        */
-
-       /**
-        * Attempts to clear all time information from this Date by setting the time to midnight of the same day,
-        * automatically adjusting for Daylight Saving Time (DST) where applicable.
-        *
-        * This implementation is a copy of Ext.Date.clearTime() but fixes a bug in the way DST is handled to work
-        * around a bug in Safari. Safari does not properly handle the DST start in the Sydney and Auckland time zones.
-        *
-        * @param {Date} date The date
-        * @param {Boolean} clone true to create a clone of this date, clear the time and return it (defaults to false).
-        * @return {Date} this or the clone.
-        */
-       clearTime : function(date, clone) {
-           if (clone) {
-               return this.clearTime(Ext.Date.clone(date));
-           }
-
-           // get current date before clearing time
-           var d = date.getDate();
-
-           // clear time
-           date.setHours(0);
-           date.setMinutes(0);
-           date.setSeconds(0);
-           date.setMilliseconds(0);
-
-           if (date.getDate() != d) { // account for DST (i.e. day of month changed when setting hour = 0)
-               // note: DST adjustments are assumed to occur in multiples of 1 hour (this is almost always the case)
-               // refer to http://www.timeanddate.com/time/aboutdst.html for the (rare) exceptions to this rule
-
-               // increment hour until cloned date == current date
-               for (var hr = 1; date.getDate() != d; hr++) {
-                   date.setDate(d);
-                   date.setHours(hr);
-               }
-           }
-
-           return date;
-       },
-
 
        /**
         * For the passed Date object, function calculates the beginning of the day and returns it as a new Date object.
@@ -424,9 +382,10 @@ dt = Extensible.getDayBeginning(currentDt, 7);
         * from the passed date.
         */
         getDayBeginning: function(dt, ndays) {
+            var D = Ext.Date;
             ndays = (ndays === undefined) ? 0 : ndays;
-            return this.clearTime(Ext.Date.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
-       },
+            return D.clearTime(D.add(dt, D.HOUR, 24 * ndays + 12 - dt.getHours()), false);
+        },
 
        /**
         * For the passed Date object, function calculates the end of the day and returns it as a new Date object.
@@ -472,7 +431,7 @@ dt = Extensible.getDayEnd(currentDt, 7);
             } else {
                 unit = D. MILLI;
             }
-            return D.add(this.clearTime(D.add(dt, D.HOUR, 24 * ndays + 36 - dt.getHours()), false), unit, -1);
+            return D.add(D.clearTime(D.add(dt, D.HOUR, 24 * ndays + 36 - dt.getHours()), false), unit, -1);
         }
     }
 });
@@ -505,17 +464,6 @@ Extensible.applyOverrides = function() {
             }
         });
     }
-
-    Ext.form.field.Time.override({
-       isEqual: function(date1, date2){
-           // check we have 2 date objects
-           if ((date1 instanceof Date) && (date2 instanceof Date)) {
-               return (date1.getTime() === date2.getTime());
-           }
-           // one or both isn't a date, only equal if both are false
-           return !(date1 || date2);
-       }
-    });
     
     // This was fixed in Ext 4.0.4?
     Ext.Component.override({
@@ -556,31 +504,31 @@ Extensible.applyOverrides = function() {
                         i       = 0,
                         length  = root.length,
                         node, id, record;
-
+                        
                     if (!root.length && Ext.isObject(root)) {
                         root = [root];
                         length = 1;
                     }
-
+            
                     for (; i < length; i++) {
                         node   = root[i];
                         values = me.extractValues(node);
-
+                        
                         // Assuming that the idProperty is intended to use the id mapping, if
                         // available, getId() should read from the mapped values not the raw values.
                         // Using the non-mapped id causes updates later to silently fail since
                         // the updated data is replaced by id.
                         //id = me.getId(node);
                         id = me.getId(values);
-
+                        
                         record = new Model(values, id, node);
                         records.push(record);
-
+                            
                         if (me.implicitIncludes) {
                             me.readAssociated(record, node);
                         }
                     }
-
+            
                     return records;
                 }
             });
@@ -612,20 +560,11 @@ Extensible.applyOverrides = function() {
     if (Ext.data && Ext.data.proxy && Ext.data.proxy.Memory) {
         Ext.data.proxy.Memory.override({
             updateOperation: function(operation, callback, scope) {
-                Ext.each(operation.getRecords(), function(rec) {
-                    // Synchronize record data (after update/create mapped fields are not updated)
-                    Ext.iterate(Extensible.calendar.data.EventMappings, function (key, value) {
-                        if (key != Extensible.calendar.data.EventMappings.EventId.name && rec.get(value.name)) {
-                            rec.set(value.mapping, rec.get(value.name));
-                        }
-                    });
-
+                Ext.each(operation.records, function(rec) {
                     rec.commit();
                 });
-
-                operation.setCompleted(true);
-                operation.setSuccessful(true);
-
+                operation.setCompleted();
+                operation.setSuccessful();
                 Ext.callback(callback, scope || this, [operation]);
             },
             create: function() {
@@ -634,7 +573,7 @@ Extensible.applyOverrides = function() {
             update: function() {
                 this.updateOperation.apply(this, arguments);
             },
-            erase: function() {
+            destroy: function() {
                 this.updateOperation.apply(this, arguments);
             }
         });
@@ -656,179 +595,6 @@ Extensible.applyOverrides = function() {
             }
         });
     }
-
-    Ext.override(Ext.picker.Date, {
-        selectedUpdate: function(date){
-            var me        = this,
-                t         = date.getTime(),
-                cells     = me.cells,
-                cls       = me.selectedCls,
-                cellItems = cells.elements,
-                c,
-                cLen      = cellItems.length,
-                cell,
-                hdates    = me.highlightDates ? ';' + me.highlightDates.join(';') + ';' : false;
-
-            cells.removeCls(cls);
-
-            for (c = 0; c < cLen; c++) {
-                cell = Ext.fly(cellItems[c]);
-
-                if (cell.dom.firstChild.dateValue == t) {
-                    me.fireEvent('highlightitem', me, cell);
-                    cell.addCls(cls);
-
-                    if(me.isVisible() && !me.doCancelFocus){
-                        Ext.fly(cell.dom.firstChild).focus(50);
-                    }
-
-                    break;
-                }
-            }
-
-            // Highlight dates displayed in view
-            var current,
-                cells = me.cells.elements;
-
-            for(var i = 0; i < cells.length; ++i) {
-                cells[i].className = cells[i].className.replace(' x-datepicker-highlight', '');
-
-                if (hdates){
-                    current = new Date(cells[i].title);
-                    if (hdates.indexOf(';' + Ext.Date.format(current, 'Y-m-d') + ';') != -1) {
-                        cells[i].className += ' x-datepicker-highlight';
-                    }
-                }
-            }
-        },
-        fullUpdate: function(date){
-            var me = this,
-                cells = me.cells.elements,
-                textNodes = me.textNodes,
-                disabledCls = me.disabledCellCls,
-                eDate = Ext.Date,
-                i = 0,
-                extraDays = 0,
-                visible = me.isVisible(),
-                sel = +eDate.clearTime(date, true),
-                today = +eDate.clearTime(new Date()),
-                min = me.minDate ? eDate.clearTime(me.minDate, true) : Number.NEGATIVE_INFINITY,
-                max = me.maxDate ? eDate.clearTime(me.maxDate, true) : Number.POSITIVE_INFINITY,
-                ddMatch = me.disabledDatesRE,
-                ddText = me.disabledDatesText,
-                ddays = me.disabledDays ? me.disabledDays.join('') : false,
-                ddaysText = me.disabledDaysText,
-                format = me.format,
-                days = eDate.getDaysInMonth(date),
-                firstOfMonth = eDate.getFirstDateOfMonth(date),
-                startingPos = firstOfMonth.getDay() - me.startDay,
-                previousMonth = eDate.add(date, eDate.MONTH, -1),
-                longDayFormat = me.longDayFormat,
-                disabled,
-                prevStart,
-                current,
-                disableToday,
-                tempDate,
-                setCellClass,
-                html,
-                cls,
-                formatValue,
-                value,
-                hdates = me.highlightDates ? ';' + me.highlightDates.join(';') + ';' : false;
-
-            if (startingPos < 0) {
-                startingPos += 7;
-            }
-
-            days += startingPos;
-            prevStart = eDate.getDaysInMonth(previousMonth) - startingPos;
-            current = new Date(previousMonth.getFullYear(), previousMonth.getMonth(), prevStart, me.initHour);
-
-            if (me.showToday) {
-                tempDate = eDate.clearTime(new Date());
-                disableToday = (tempDate < min || tempDate > max ||
-                (ddMatch && format && ddMatch.test(eDate.dateFormat(tempDate, format))) ||
-                (ddays && ddays.indexOf(tempDate.getDay()) != -1));
-
-                if (!me.disabled) {
-                    me.todayBtn.setDisabled(disableToday);
-                    me.todayKeyListener.setDisabled(disableToday);
-                }
-            }
-
-            setCellClass = function(cell, cls){
-                cell.className = cell.className.replace('x-datepicker-highlight','');
-                disabled = false;
-                value = +eDate.clearTime(current, true);
-                cell.title = eDate.format(current, longDayFormat);
-                // store dateValue number as an expando
-                cell.firstChild.dateValue = value;
-                if(value == today){
-                    cls += ' ' + me.todayCls;
-                    cell.title = me.todayText;
-                }
-                if(value == sel){
-                    cls += ' ' + me.selectedCls;
-                    me.fireEvent('highlightitem', me, cell);
-                    if (visible && me.floating) {
-                        Ext.fly(cell.firstChild).focus(50);
-                    }
-                }
-                // disabling, once the cell is disabled we can short circuit
-                // the other more expensive checks
-                if(value < min) {
-                    cls += ' ' + disabledCls;
-                    cell.title = me.minText;
-                    disabled = true;
-                }
-                if (!disabled && value > max) {
-                    cls += ' ' + disabledCls;
-                    cell.title = me.maxText;
-                    disabled = true;
-                }
-                if (!disabled && ddays) {
-                    if(ddays.indexOf(current.getDay()) !== -1){
-                        cell.title = ddaysText;
-                        cls += ' ' + disabledCls;
-                        disabled = true;
-                    }
-                }
-                if(!disabled && ddMatch && format){
-                    formatValue = eDate.dateFormat(current, format);
-                    if(ddMatch.test(formatValue)){
-                        cell.title = ddText.replace('%0', formatValue);
-                        cls += ' ' + disabledCls;
-                    }
-                }
-                if (hdates){
-                    if (hdates.indexOf(';' + eDate.format(current, 'Y-m-d') + ';') != -1) {
-                        cls += ' x-datepicker-highlight';
-                    }
-                }
-
-                cell.className = cls + ' ' + me.cellCls;
-            };
-
-            for(; i < me.numDays; ++i) {
-                if (i < startingPos) {
-                    html = (++prevStart);
-                    cls = me.prevCls;
-                } else if (i >= days) {
-                    html = (++extraDays);
-                    cls = me.nextCls;
-                } else {
-                    html = i - startingPos + 1;
-                    cls = me.activeCls;
-                }
-                textNodes[i].innerHTML = html;
-                current.setDate(current.getDate() + 1);
-                setCellClass(cells[i], cls);
-            }
-
-            me.monthBtn.setText(Ext.Date.format(date, me.monthYearFormat));
-        }
-    });
-
 };
 
 Ext.onReady(Extensible.applyOverrides);
