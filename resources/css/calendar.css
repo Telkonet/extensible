@@ -1066,7 +1066,7 @@ td.ext-cal-dtitle-today div {
     border-bottom: 1px solid #99BBE8;
 }
 .x-calendar-list .x-panel-body {
-    padding: 4px 2px 2px;
+    padding: 2px;
     background: #fff !important;
     font-family: helvetica, arial, sans-serif;
     font-size: 12px;
