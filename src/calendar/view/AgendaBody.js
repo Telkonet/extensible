@@ -91,7 +91,6 @@ Ext.define('Extensible.calendar.view.AgendaBody', {
          * @param {Extensible.calendar.view.AgendaBody} this
          * @param {Date} dt The date that was clicked on.
          */
-
         this.callParent(arguments);
     },
 

@@ -1017,6 +1017,11 @@ td.ext-cal-dtitle-today div {
 .extensible-cal-icon-cal-show {
     background-image:url(../images/default/silk/calendar_view_month.png) !important;
 }
+/* Brian: Image color_wheel.png does not exist. Can this style be removed?
+.extensible-cal-icon-cal-colors {
+    background-image:url(../images/default/silk/color_wheel.png) !important;
+}
+*/
 
 /*******************************************
  * 

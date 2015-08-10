@@ -207,7 +207,6 @@ Ext.define('Extensible.calendar.view.AgendaHeader', {
          * @param {Event} event
          * @param {Object} eOpts The options object passed to {@link Ext.util.Observable.addListener}.
          */
-
     },
 
     /**
