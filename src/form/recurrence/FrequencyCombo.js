@@ -72,6 +72,6 @@ Ext.define('Extensible.form.recurrence.FrequencyCombo', {
     },
     
     onSelect: function(combo, record) {
-        this.fireEvent('frequencychange', record.data.id);
+	this.fireEvent('frequencychange', record[0].data.id);
     }
 });
