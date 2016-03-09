@@ -46,7 +46,7 @@ Ext.define('Extensible.calendar.view.Day', {
      * bottom of the event, false to disallow it (defaults to true). If {@link #readOnly} is true event
      * resizing will be disabled automatically.
      */
-    enableEventResize: true,
+    enableEventResize: false,
     /**
      * @cfg {Integer} ddIncrement
      * The number of minutes between each step during various drag/drop operations in the view (defaults to 30).

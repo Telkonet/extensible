@@ -21,7 +21,7 @@ Ext.define('Extensible.form.recurrence.RangeEditWindow', {
     // Locale configs
     title: 'Recurring Event Options',
     width: 350,
-    height: 240,
+    height: 250,
     saveButtonText: 'Save',
     cancelButtonText: 'Cancel',
     

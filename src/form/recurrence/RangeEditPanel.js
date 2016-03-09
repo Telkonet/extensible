@@ -23,7 +23,7 @@ Ext.define('Extensible.form.recurrence.RangeEditPanel', {
     optionSingleDescription: 'Apply to this event only. No other events in the series will be affected.',
     optionFutureButtonText: 'Future',
     optionFutureDescription: 'Apply to this and all following events only. Past events will be unaffected.',
-    optionAllButtonText: 'All Events',
+    optionAllButtonText: 'All',
     optionAllDescription: 'Apply to every event in this series.',
     
     editModes: {
